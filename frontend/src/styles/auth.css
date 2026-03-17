@@ -1,0 +1,284 @@
+/* ===== AUTH PAGE BACKGROUND ===== */
+
+.auth-page {
+
+  height: 100vh;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  background:
+  radial-gradient(circle at 20% 30%, #1e3a8a 0%, transparent 40%),
+  radial-gradient(circle at 80% 70%, #0ea5e9 0%, transparent 40%),
+  linear-gradient(135deg,#020617,#0f172a);
+
+}
+
+
+/* ===== GLASS CARD ===== */
+
+.auth-card {
+
+  width: 420px;
+
+  padding: 40px;
+
+  border-radius: 20px;
+
+  background: rgba(255,255,255,0.07);
+
+  backdrop-filter: blur(20px);
+
+  border: 1px solid rgba(255,255,255,0.2);
+
+  box-shadow:
+  0px 25px 60px rgba(0,0,0,0.8);
+
+  transition: 0.3s;
+
+}
+
+.auth-card:hover {
+
+  transform: translateY(-5px);
+
+  box-shadow:
+  0px 40px 80px rgba(0,0,0,0.9);
+
+}
+
+
+/* ===== TITLE ===== */
+
+.auth-title {
+
+  text-align: center;
+
+  font-size: 28px;
+
+  font-weight: 600;
+
+  margin-bottom: 25px;
+
+  background: linear-gradient(
+  90deg,
+  #3b82f6,
+  #22c55e
+  );
+
+  -webkit-background-clip: text;
+
+  -webkit-text-fill-color: transparent;
+
+}
+
+
+/* ===== INPUTS ===== */
+
+.auth-input {
+
+  margin-bottom: 20px !important;
+
+  border-radius: 12px;
+
+}
+
+
+/* Uniform background including icon area */
+
+.MuiOutlinedInput-root {
+
+  border-radius: 12px !important;
+
+  background: rgba(255,255,255,0.18) !important;
+
+}
+
+
+/* Input text clearly visible */
+
+.MuiInputBase-input {
+
+  color: #ffffff !important;
+
+  font-size: 16px !important;
+
+  font-weight: 500;
+
+}
+
+
+/* Labels slightly larger */
+
+.MuiInputLabel-root {
+
+  color: #ffffff !important;
+
+  font-size: 16px !important;
+
+  font-weight: 500 !important;
+
+}
+
+
+/* Active label */
+
+.MuiInputLabel-root.Mui-focused {
+
+  color: #60a5fa !important;
+
+}
+
+
+/* Borders */
+
+.MuiOutlinedInput-notchedOutline {
+
+  border-color: rgba(255,255,255,0.7) !important;
+
+}
+
+
+/* Bigger Inputs */
+
+.MuiOutlinedInput-input {
+
+  padding: 14px !important;
+
+}
+
+
+
+/* Make icon background match input */
+
+.MuiInputAdornment-root {
+
+  background: transparent !important;
+
+}
+
+.MuiIconButton-root {
+
+  color: white !important;
+
+}
+
+
+
+/* ===== BUTTON ===== */
+
+.auth-button {
+
+  margin-top: 10px !important;
+
+  padding: 14px !important;
+
+  border-radius: 12px !important;
+
+  font-weight: bold !important;
+
+  font-size: 16px !important;
+
+  background: linear-gradient(
+  90deg,
+  #2563eb,
+  #4f46e5
+  ) !important;
+
+  box-shadow:
+  0px 10px 25px rgba(0,0,0,0.6);
+
+  transition: 0.3s !important;
+
+}
+
+.auth-button:hover {
+
+  transform: translateY(-3px);
+
+  box-shadow:
+  0px 20px 40px rgba(0,0,0,0.8);
+
+}
+
+
+
+/* ===== WIZARD CARD ===== */
+
+.wizard-card {
+
+  width: 650px;
+
+  padding: 40px;
+
+  border-radius: 20px;
+
+  background: rgba(255,255,255,0.07);
+
+  backdrop-filter: blur(20px);
+
+  border: 1px solid rgba(255,255,255,0.2);
+
+  box-shadow:
+  0px 25px 60px rgba(0,0,0,0.8);
+
+}
+
+
+/* ===== WIZARD STEPS ===== */
+
+.wizard-steps {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-bottom: 30px;
+
+}
+
+.step-circle {
+
+  width: 40px;
+
+  height: 40px;
+
+  border-radius: 50%;
+
+  background: rgba(255,255,255,0.15);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-weight: bold;
+
+  color: white;
+
+}
+
+.step-active {
+
+  background: linear-gradient(
+  90deg,
+  #3b82f6,
+  #22c55e
+  );
+
+}
+
+
+/* ===== AUTOFILL FIX ===== */
+
+input:-webkit-autofill {
+
+  -webkit-text-fill-color: white !important;
+
+  transition: background-color 9999s ease-in-out 0s;
+
+}

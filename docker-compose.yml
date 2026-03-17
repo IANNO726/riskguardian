@@ -1,0 +1,186 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: rga_postgres
+    environment:
+      POSTGRES_USER: rga_user
+      POSTGRES_PASSWORD: pasword123
+      POSTGRES_DB: risk_guardian
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - rga_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rga_user -d risk_guardian"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: rga_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - rga_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ Message Queue
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: rga_rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: rga_user
+      POSTGRES_PASSWORD: password123
+      RABBITMQ_DEFAULT_PASS: password123
+    ports:
+      - "5672:5672"      # AMQP port
+      - "15672:15672"    # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - rga_network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rga_backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      DATABASE_URL: postgresql://rga_user:password123@postgres:5432/risk_guardian
+      REDIS_URL: redis://redis:6379/0
+      RABBITMQ_URL: amqp://rga_user:password123@rabbitmq:5672/
+      DEBUG: "True"
+      LOG_LEVEL: INFO
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rga_network
+
+  # Celery Worker
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rga_celery_worker
+    command: celery -A app.celery worker --loglevel=info
+    environment:
+      DATABASE_URL: postgresql://rga_user:password123@postgres:5432/risk_guardian
+      REDIS_URL: redis://redis:6379/0
+      RABBITMQ_URL: amqp://rga_user:password123@rabbitmq:5672/
+      DEBUG: "False"
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+      - backend
+    networks:
+      - rga_network
+
+  # Celery Beat (Scheduler)
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rga_celery_beat
+    command: celery -A app.celery beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    environment:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      DATABASE_URL: postgresql://rga_user:password123@postgres:5432/risk_guardian
+      REDIS_URL: redis://redis:6379/0
+      RABBITMQ_URL: amqp://rga_user:password123@rabbitmq:5672/
+      DEBUG: "False"
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+      - backend
+    networks:
+      - rga_network
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: rga_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - rga_network
+
+  # Prometheus Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: rga_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - rga_network
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: rga_grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_INSTALL_PLUGINS: 'grafana-piechart-panel'
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - rga_network
+
+volumes:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  rga_network:
+    driver: bridge
