@@ -19,7 +19,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 import logging
 import uvicorn
-import MetaTrader5 as mt5
+from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
 import asyncio
 import os
 import threading

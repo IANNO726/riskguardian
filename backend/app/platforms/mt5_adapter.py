@@ -11,7 +11,7 @@ Fixes applied:
   ✅ Thread-safe lock for sequential account switching
 """
 
-import MetaTrader5 as mt5
+from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
 import threading
 import logging
 import os

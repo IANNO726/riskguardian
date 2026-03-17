@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response
 from datetime import datetime, timedelta
-import MetaTrader5 as mt5
+from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
 from io import BytesIO
 import logging
 

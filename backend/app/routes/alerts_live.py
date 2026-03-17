@@ -1,6 +1,6 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from datetime import datetime
-import MetaTrader5 as mt5
+from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
 import asyncio
 import logging
 

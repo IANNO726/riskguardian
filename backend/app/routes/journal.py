@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from collections import defaultdict
 from statistics import mean, stdev
-import MetaTrader5 as mt5
+from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
 import shutil
 import os
 import logging

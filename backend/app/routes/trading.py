@@ -2,7 +2,7 @@
 Trading Control Routes — Risk Lock with auto-close watcher
 """
 from fastapi import APIRouter, HTTPException
-import MetaTrader5 as mt5
+from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
 import logging
 import json
 import os
