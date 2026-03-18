@@ -50,3 +50,5 @@ conn.close()
 
 print(f"\n✅ Updated {updated} Deriv account(s) with token: {NEW_TOKEN[:8]}...")
 print("Restart your backend now.")
+
+

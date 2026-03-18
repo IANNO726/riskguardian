@@ -73,3 +73,5 @@ else:
         print("👉 Your BOT_TOKEN is wrong — check backend/.env")
     elif "bot was blocked" in desc:
         print("👉 Unblock the bot in Telegram → tap bot name → Unblock")
+
+

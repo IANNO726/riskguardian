@@ -348,3 +348,5 @@ async def calculate_margin(
         "notional_usd":     round(notional, 2),
         "note": f"${margin:.2f} required to open {lots} lots of {symbol.upper()} at 1:{leverage} leverage",
     }
+
+

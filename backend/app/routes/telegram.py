@@ -287,3 +287,5 @@ async def disconnect_telegram(
     current_user.telegram_chat_id = None
     db.commit()
     return {"message": "Telegram disconnected"}
+
+

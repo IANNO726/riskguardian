@@ -180,3 +180,5 @@ def send_trial_expired_email(to_email: str, username: str) -> bool:
     from app.emails.email_templates import get_trial_expired_email
     subject, html = get_trial_expired_email(username, FRONTEND_URL)
     return send_email(to_email, subject, html)
+
+

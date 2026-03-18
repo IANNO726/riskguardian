@@ -108,3 +108,5 @@ def complete_setup(
         "status": "Setup completed successfully",
         "mt5_verified": True
     }
+
+

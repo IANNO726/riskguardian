@@ -202,3 +202,5 @@ async def deactivate_profile(
     ).update({"is_active": False})
     db.commit()
     return {"success": True, "message": "Prop firm profile deactivated"}
+
+

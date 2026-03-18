@@ -80,7 +80,7 @@ async def connect_account(
 @router.get("/info")
 async def get_account_info():
     """Get live MT5 account information"""
-    from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
+    from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
     
     try:
         if not mt5.initialize():
@@ -144,3 +144,5 @@ async def get_account(
         "margin": 0.00,
         "free_margin": 10000.00
     }
+
+

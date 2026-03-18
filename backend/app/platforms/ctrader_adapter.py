@@ -48,3 +48,5 @@ class CTraderAdapter(BasePlatform):
     async def get_symbols(self) -> List[str]:
         """Get available symbols"""
         return []
+
+

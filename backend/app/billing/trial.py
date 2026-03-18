@@ -329,3 +329,5 @@ async def start_trial_scheduler():
             logger.error(f"Trial scheduler error: {e}")
 
         await asyncio.sleep(3600)  # run every hour
+
+

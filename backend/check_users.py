@@ -13,3 +13,5 @@ print("━━━━━━━━━━━━━━━━━━━━━━━━�
 for u in users:
     print(f"{u.id:<5} {u.username:<20} {str(u.plan):<12} {u.subscription_status}")
 db.close()
+
+

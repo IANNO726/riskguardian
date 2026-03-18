@@ -37,3 +37,5 @@ import app.models.admin_models
 # INITIALIZE DATABASE
 async def init_db():
     Base.metadata.create_all(bind=engine)
+
+

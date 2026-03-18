@@ -403,3 +403,5 @@ async def stripe_webhook(
             print(f"⚠️ Subscription {sub_id} canceled — user downgraded to free")
 
     return {"status": "ok"}
+
+

@@ -419,3 +419,5 @@ class RuleEngine:
     def get_config(self) -> Dict:
         """Get current rule configuration"""
         return self.rules_config.copy()
+
+

@@ -97,3 +97,5 @@ async def get_alert_stats(db: Session = Depends(get_db)):
         "this_week": 12,
         "this_month": 25
     }
+
+

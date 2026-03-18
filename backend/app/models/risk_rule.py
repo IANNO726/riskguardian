@@ -14,3 +14,5 @@ class RiskRule(Base):
     min_rr_ratio = Column(Float)
 
     trailing_dd_enabled = Column(Boolean, default=False)
+
+

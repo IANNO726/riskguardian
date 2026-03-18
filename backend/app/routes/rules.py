@@ -149,3 +149,5 @@ async def toggle_rule(rule_id: int, db: Session = Depends(get_db)):
         "enabled": True,
         "message": "Rule toggled successfully"
     }
+
+

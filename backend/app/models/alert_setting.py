@@ -11,3 +11,5 @@ class AlertSetting(Base):
     telegram_enabled = Column(Boolean, default=True)
     email_enabled = Column(Boolean, default=True)
     sms_enabled = Column(Boolean, default=False)
+
+

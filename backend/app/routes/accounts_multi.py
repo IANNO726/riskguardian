@@ -450,3 +450,5 @@ async def delete_account(
     db.delete(account)
     db.commit()
     return {"message": f"Account '{name}' deleted", "deleted_account_id": account_id}
+
+

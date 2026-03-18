@@ -10,3 +10,5 @@ with open(env_path, encoding='utf-8') as f:
     for i, line in enumerate(f, 1):
         if any(x in line for x in ['SMTP', 'EMAIL', 'smtp', 'email']):
             print(f"  Line {i}: {repr(line.strip())}")
+
+

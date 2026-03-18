@@ -10,3 +10,5 @@ def users_online():
     return {
         "online_users": len(online_users)
     }
+
+

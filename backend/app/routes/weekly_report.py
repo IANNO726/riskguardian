@@ -527,3 +527,5 @@ async def preview_report(
         "telegram_preview": tg_message,
         "email_subject":  subject,
     }
+
+

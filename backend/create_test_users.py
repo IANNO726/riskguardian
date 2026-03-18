@@ -64,3 +64,5 @@ print(f"  STARTER:    test_starter    / {PASSWORD}")
 print(f"  PRO:        test_pro        / {PASSWORD}")
 print(f"  ENTERPRISE: test_enterprise / {PASSWORD}")
 print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+

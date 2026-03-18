@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
 from sqlalchemy.orm import Session
 
 from app.models.journal import JournalEntry
@@ -61,3 +61,5 @@ def sync_mt5_trades():
     finally:
 
         db.close()
+
+

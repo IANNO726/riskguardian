@@ -63,3 +63,5 @@ with open(env_path, 'r', encoding='utf-8') as f:
         if any(x in line for x in ['SMTP', 'EMAIL_FROM']):
             if not line.startswith('#'):
                 print(f"  ✅ {line.strip()}")
+
+

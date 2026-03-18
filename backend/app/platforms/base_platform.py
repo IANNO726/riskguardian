@@ -51,3 +51,5 @@ class BasePlatform(ABC):
     def is_connected(self) -> bool:
         """Check if platform is connected"""
         return self.connected
+
+

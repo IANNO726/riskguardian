@@ -297,3 +297,5 @@ async def refresh_calendar(_=Depends(require_plan("pro"))):
         "event_count": len(events),
         "fetched_at":  _cache["fetched_at"].isoformat() if _cache["fetched_at"] else None,
     }
+
+

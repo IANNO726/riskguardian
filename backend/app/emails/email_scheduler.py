@@ -250,3 +250,5 @@ def _get_weekly_stats(db, user) -> dict:
             "win_rate": 0, "risk_locks_used": 0,
             "best_day": "N/A", "worst_day": "N/A", "risk_score": 0,
         }
+
+

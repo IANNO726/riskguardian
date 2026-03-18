@@ -319,3 +319,5 @@ def check_firm_limit(user, requested_firm: str) -> None:
                 "upgrade_url": "/pricing",
             }
         )
+
+

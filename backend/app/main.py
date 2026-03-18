@@ -19,7 +19,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 import logging
 import uvicorn
-from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
 import asyncio
 import os
 import threading
@@ -318,6 +318,8 @@ async def root():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
+
+
 
 
 

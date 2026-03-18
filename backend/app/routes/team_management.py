@@ -327,3 +327,5 @@ def get_my_team(
         "owner_name": owner_name,
         "joined_at":  membership.joined_at.isoformat() if membership.joined_at else None,
     }
+
+

@@ -1,5 +1,5 @@
 try:
-    from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
+    from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
     MT5_AVAILABLE = True
 except ImportError:
     mt5 = None
@@ -14,3 +14,5 @@ def get_mt5():
 
 def is_available():
     return MT5_AVAILABLE
+
+

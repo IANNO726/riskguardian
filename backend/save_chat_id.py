@@ -66,3 +66,5 @@ print(f"\n✅ Saved! telegram_chat_id = {CHAT_ID} for user '{target[1]}'")
 print("\n🎉 Live alerts are now active!")
 print("   The next time your kill switch fires or risk limit is hit,")
 print("   you'll receive a Telegram message instantly.")
+
+

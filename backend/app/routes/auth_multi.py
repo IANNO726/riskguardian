@@ -170,3 +170,5 @@ async def logout():
     Logout user (client should delete token)
     """
     return {"message": "Successfully logged out. Please delete your access token."}
+
+

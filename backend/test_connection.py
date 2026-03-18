@@ -72,3 +72,5 @@ print("  If all tests fail  → Telegram is blocked by your ISP/firewall")
 print("  If SSL fails only  → Run: pip install certifi")
 print("  If ping works      → Try with a VPN or mobile hotspot")
 print("=" * 50)
+
+

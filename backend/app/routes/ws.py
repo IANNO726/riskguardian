@@ -61,3 +61,5 @@ async def websocket_live_trades(websocket: WebSocket):
     except Exception as e:
         logger.error(f"WebSocket error: {e}")
 
+
+

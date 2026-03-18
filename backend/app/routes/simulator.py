@@ -1081,3 +1081,5 @@ async def get_result(session: SimSession):
         "equity_curve":        equity_curve,   # ← Feature 2
         "rules":               rules,
     }
+
+

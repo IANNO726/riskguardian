@@ -37,3 +37,5 @@ def risk_status(db: Session = Depends(get_db)):
         account_data=account_data
 
     )
+
+

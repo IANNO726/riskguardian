@@ -11,7 +11,7 @@ Fixes applied:
   ✅ Thread-safe lock for sequential account switching
 """
 
-from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
 import threading
 import logging
 import os
@@ -216,3 +216,5 @@ class MT5Verifier:
             _active_connection["login"]  = int(account_number)
             _active_connection["server"] = server
             return True, "MT5 credentials verified successfully", data
+
+

@@ -43,3 +43,5 @@ for col_name, col_def in columns:
 
 db.close()
 print("\nDone! Trial columns ready.")
+
+

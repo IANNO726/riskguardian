@@ -19,3 +19,5 @@ class EncryptionService:
     def decrypt(self, encrypted_text: str) -> str:
         decrypted = self.cipher.decrypt(encrypted_text.encode())
         return decrypted.decode()
+
+

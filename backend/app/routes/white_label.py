@@ -68,3 +68,5 @@ def save_branding(
     b.logo_url      = req.logo_url or ""
     db.commit()
     return {"success": True, "brand_name": b.brand_name, "primary_color": b.primary_color, "logo_url": b.logo_url}
+
+

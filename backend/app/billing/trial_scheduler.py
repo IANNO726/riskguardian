@@ -33,3 +33,5 @@ def expire_trials_task():
         return count
     finally:
         db.close()
+
+

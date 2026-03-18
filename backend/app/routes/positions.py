@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
-from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
 import logging
 from app.database.database import get_db
 
@@ -207,3 +207,5 @@ async def get_position(position_id: int, db: Session = Depends(get_db)):
         }
     except Exception as e:
         return {"error": str(e)}
+
+

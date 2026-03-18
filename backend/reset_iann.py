@@ -11,3 +11,5 @@ user.subscription_status = 'active'
 db.commit()
 db.close()
 print("✅ Iann reset to starter plan")
+
+

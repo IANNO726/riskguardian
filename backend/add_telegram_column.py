@@ -33,3 +33,5 @@ for col, definition in columns_to_add:
 conn.commit()
 conn.close()
 print("\n✅ Migration complete!")
+
+

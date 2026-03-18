@@ -653,3 +653,5 @@ def get_trial_expired_email(username: str, frontend_url: str) -> tuple[str, str]
         preheader="Your trial ended \u2014 upgrade at $39 for 48 hours only",
         frontend_url=frontend_url,
     )
+
+

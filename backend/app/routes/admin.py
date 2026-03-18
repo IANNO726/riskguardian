@@ -445,3 +445,5 @@ def risk_violations(db: Session = Depends(get_db)):
         SELECT rule_name FROM rule_trigger_logs ORDER BY id DESC LIMIT 10
     """)).fetchall()
     return [{"rule": v[0]} for v in violations]
+
+

@@ -4,7 +4,7 @@ Analytics Routes - 100% Accurate MT5 Data
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, date
-from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
 import logging
 import json
 import os
@@ -402,3 +402,5 @@ async def save_auto_lock_config(config: dict):
         json.dump(config, f, indent=2)
     logger.info(f"Auto-lock config saved: {config}")
     return {"success": True, "config": config}
+
+

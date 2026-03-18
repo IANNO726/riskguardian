@@ -1,4 +1,4 @@
-from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
 
 
 class MT5Verifier:
@@ -34,3 +34,5 @@ class MT5Verifier:
         mt5.shutdown()
 
         return True, "MT5 credentials verified successfully"
+
+

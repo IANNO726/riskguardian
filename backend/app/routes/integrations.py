@@ -542,3 +542,5 @@ def remove_tradingview(current_user: User = Depends(get_current_user), db: Sessi
         cfg.is_active = False
         db.commit()
     return {"success": True}
+
+

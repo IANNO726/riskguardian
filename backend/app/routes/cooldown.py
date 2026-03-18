@@ -223,7 +223,7 @@ async def start_auto_lock_watcher_endpoint():
 
 # ── Auto-lock background watcher ───────────────────────────────
 async def _auto_lock_watcher_loop(db_factory):
-    from app.services.mt5_wrapper import get_mt5`nmt5 = get_mt5()
+    from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
     from app.alerts.alerts import AlertType
 
     logger.info("🤖 Auto-lock watcher started")
@@ -408,3 +408,5 @@ async def _ensure_watcher_running():
 
 async def start_auto_lock_watcher():
     await _ensure_watcher_running()
+
+

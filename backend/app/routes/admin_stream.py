@@ -44,3 +44,5 @@ async def live_trades_stream(websocket: WebSocket):
     except WebSocketDisconnect:
 
         connections.remove(websocket)
+
+

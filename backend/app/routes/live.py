@@ -24,3 +24,5 @@ async def live_trades(ws: WebSocket):
 
     except Exception:
         await ws.close()
+
+

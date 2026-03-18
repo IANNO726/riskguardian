@@ -46,3 +46,5 @@ for col_name, col_def in columns:
 
 db.close()
 print("\nDone! Email columns are ready.")
+
+

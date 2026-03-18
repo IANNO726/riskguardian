@@ -11,3 +11,5 @@ class AISetting(Base):
     emotional_detection = Column(Boolean, default=True)
     predictive_drawdown = Column(Boolean, default=True)
     risk_optimizer = Column(Boolean, default=True)
+
+

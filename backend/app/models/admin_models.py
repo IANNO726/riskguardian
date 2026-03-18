@@ -32,3 +32,5 @@ class PlatformMetrics(Base):
     trades_today = Column(Integer, default=0)
     revenue_today = Column(Integer, default=0)
     visitors_today = Column(Integer, default=0)
+
+

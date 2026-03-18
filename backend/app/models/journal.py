@@ -48,3 +48,5 @@ class JournalEntry(Base):
 
     # Relationships
     user = relationship("User", back_populates="journal_entries")
+
+

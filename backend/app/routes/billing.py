@@ -244,3 +244,5 @@ async def dev_set_plan(
     db.commit()
 
     return {"message": f"✅ Plan updated to '{plan}'", "plan": plan}
+
+

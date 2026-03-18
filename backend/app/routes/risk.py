@@ -130,3 +130,5 @@ async def validate_trade_rules(
         "status": "ok" if not violations else "violated",
         "violations": violations
     }
+
+

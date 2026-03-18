@@ -231,3 +231,5 @@ def create_trade_page(trade) -> str | None:
     except Exception as e:
         logger.error(f"❌ Notion unexpected error: {e}")
         return None
+
+

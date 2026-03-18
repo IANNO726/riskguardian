@@ -69,3 +69,5 @@ with engine.connect() as conn:
     print("Subscriptions table ready")
 
 print("Migration complete. Restart your backend.")
+
+

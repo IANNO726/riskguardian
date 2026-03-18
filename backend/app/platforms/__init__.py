@@ -7,3 +7,5 @@ from .mt4_adapter import MT4Adapter
 from .ctrader_adapter import CTraderAdapter
 
 __all__ = ['BasePlatform', 'MT5Adapter', 'MT4Adapter', 'CTraderAdapter']
+
+

@@ -32,3 +32,5 @@ for col, typ in additions:
 print('Final cols:', [r[1] for r in conn.execute(text('PRAGMA table_info(risk_rules)')).fetchall()])
 conn.close()
 print('Migration complete')
+
+
