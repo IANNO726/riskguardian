@@ -50,3 +50,4 @@ class JournalEntry(Base):
     user = relationship("User", back_populates="journal_entries")
 
 
+

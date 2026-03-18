@@ -182,3 +182,4 @@ def send_trial_expired_email(to_email: str, username: str) -> bool:
     return send_email(to_email, subject, html)
 
 
+

@@ -16,3 +16,4 @@ class RiskRule(Base):
     trailing_dd_enabled = Column(Boolean, default=False)
 
 
+

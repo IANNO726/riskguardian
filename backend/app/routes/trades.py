@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, timedelta
-from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
 import logging
 
 from app.database.database import get_db
@@ -206,5 +206,6 @@ async def get_trade_stats(
         "largest_win": max(wins) if wins else 0,
         "largest_loss": min(losses) if losses else 0
     }
+
 
 

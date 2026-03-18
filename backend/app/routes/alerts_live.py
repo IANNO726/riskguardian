@@ -1,6 +1,6 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from datetime import datetime
-from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
 import asyncio
 import logging
 
@@ -94,5 +94,6 @@ async def get_recent_alerts():
     alerts.sort(key=lambda x: x['time'], reverse=True)
     
     return {"alerts": alerts[:10]}  # Return last 10 alerts
+
 
 

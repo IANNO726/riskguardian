@@ -447,3 +447,4 @@ def risk_violations(db: Session = Depends(get_db)):
     return [{"rule": v[0]} for v in violations]
 
 
+

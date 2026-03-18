@@ -252,3 +252,4 @@ def _get_weekly_stats(db, user) -> dict:
         }
 
 
+

@@ -544,3 +544,4 @@ def remove_tradingview(current_user: User = Depends(get_current_user), db: Sessi
     return {"success": True}
 
 
+

@@ -6,3 +6,4 @@ Base.metadata.create_all(bind=engine)
 print('Done: white_label_branding table created')
 
 
+

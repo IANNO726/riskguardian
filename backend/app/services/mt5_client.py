@@ -1,4 +1,4 @@
-from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
 import logging
 from app.core.config import settings
 
@@ -145,5 +145,6 @@ def test_connection():
 
 if __name__ == "__main__":
     test_connection()
+
 
 

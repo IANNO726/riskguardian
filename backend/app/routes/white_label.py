@@ -70,3 +70,4 @@ def save_branding(
     return {"success": True, "brand_name": b.brand_name, "primary_color": b.primary_color, "logo_url": b.logo_url}
 
 
+

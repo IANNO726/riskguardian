@@ -50,3 +50,4 @@ class MT4Adapter(BasePlatform):
         return []
 
 
+

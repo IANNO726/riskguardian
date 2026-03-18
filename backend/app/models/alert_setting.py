@@ -13,3 +13,4 @@ class AlertSetting(Base):
     sms_enabled = Column(Boolean, default=False)
 
 
+

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response
 from datetime import datetime, timedelta
-from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
 from io import BytesIO
 import logging
 
@@ -131,5 +131,6 @@ async def export_trading_report():
     except Exception as e:
         logger.error(f"Failed to generate report: {e}")
         raise HTTPException(status_code=500, detail=f"Report generation failed: {str(e)}")
+
 
 

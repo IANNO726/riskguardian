@@ -13,3 +13,4 @@ class AISetting(Base):
     risk_optimizer = Column(Boolean, default=True)
 
 
+

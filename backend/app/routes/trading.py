@@ -2,7 +2,7 @@
 Trading Control Routes — Risk Lock with auto-close watcher
 """
 from fastapi import APIRouter, HTTPException
-from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
 import logging
 import json
 import os
@@ -243,5 +243,6 @@ async def activate_risk_lock_with_duration(minutes: int = 60):
         "existing_positions_allowed": len(allowed),
         "message": f"Risk Lock active for {minutes} minutes",
     }
+
 
 

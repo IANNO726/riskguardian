@@ -50,3 +50,4 @@ class CTraderAdapter(BasePlatform):
         return []
 
 
+

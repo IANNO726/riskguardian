@@ -6,3 +6,4 @@ Base.metadata.create_all(bind=engine)
 print('Done: integration_configs, tradingview_alerts, sheets_export_logs created')
 
 
+

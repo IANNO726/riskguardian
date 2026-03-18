@@ -2,7 +2,7 @@
 Automatic MT5 Reconnect Service
 """
 
-from app.services.mt5_wrapper import get_mt5\nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
 import time
 import logging
 
@@ -40,5 +40,6 @@ def auto_reconnect():
             logger.error(f"Reconnect error: {e}")
 
             time.sleep(10)
+
 
 
