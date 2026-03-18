@@ -64,5 +64,8 @@ notion-client==2.2.1
 # PDF Generation
 reportlab==4.0.7
 
+# System Monitoring
+psutil==5.9.8
+
 # Rate Limiting
 slowapi==0.1.9
