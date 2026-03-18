@@ -180,13 +180,11 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
-# ================= CORS =================
-
-origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
+# ================= CORS (🔥 FIXED) =================
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[o.strip() for o in origins if o],
+    allow_origins=["*"],  # ✅ FIX: allow all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -229,7 +227,6 @@ async def root():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
-
 
 
 
