@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Box, Typography, Chip, Avatar, Fab, TextField, Button, IconButton, Dialog, DialogContent, DialogTitle, CircularProgress, Select, MenuItem, FormControl, InputLabel, Grid } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Add, Edit, Delete, Close, EmojiEvents, SentimentVeryDissatisfied, OpenInNew, AutoAwesome, Refresh } from '@mui/icons-material';
 import axios from 'axios';
 
 const NOTION_TEMPLATE = "https://notion.so/2017d61000d5808cb316f29e507ed863";
-const API = 'http://localhost:8000/api/v1';
+const API = 'https://riskguardian.onrender.com/api/v1';
 
 const EMOTION_OPTIONS = ['Calm', 'Confident', 'Anxious', 'Fearful', 'Greedy', 'Disciplined', 'Frustrated', 'Excited', 'Neutral'];
 const STRATEGY_OPTIONS = ['Trend Following', 'Breakout', 'Scalping', 'Swing Trading', 'News Trading', 'Support/Resistance', 'Price Action', 'Other'];
@@ -28,18 +28,18 @@ const generateAIFeedback = (entry: JournalEntry): string => {
   const pos = ['calm', 'confident', 'disciplined', 'neutral'];
   const hasNeg = neg.some(e => emotion.includes(e));
   const hasPos = pos.some(e => emotion.includes(e));
-  if (isWin && hasNeg) feedback += `⚠️ **Emotional Warning:** Profit while feeling ${entry.emotional_state} can reinforce bad habits.\n\n`;
-  else if (!isWin && hasNeg) feedback += `🔴 **Emotional Risk:** ${entry.emotional_state} state likely contributed to this loss.\n\n`;
-  else if (hasPos) feedback += `✅ **Emotional Discipline:** ${entry.emotional_state} mindset — keep this up.\n\n`;
-  if (pnl > 0) feedback += `💰 **Result:** +$${pnl.toFixed(2)} — document what you did right.\n\n`;
-  else if (pnl < 0) feedback += `📉 **Loss:** -$${Math.abs(pnl).toFixed(2)} — review your entry criteria.\n\n`;
-  if (lessons && lessons.length > 10) feedback += `📚 **Learning:** Great job documenting lessons. Review these weekly.\n\n`;
-  else if (!lessons) feedback += `💡 **Tip:** Add lessons learned for every trade — even winners.\n\n`;
+  if (isWin && hasNeg) feedback += `âš ï¸ **Emotional Warning:** Profit while feeling ${entry.emotional_state} can reinforce bad habits.\n\n`;
+  else if (!isWin && hasNeg) feedback += `ðŸ”´ **Emotional Risk:** ${entry.emotional_state} state likely contributed to this loss.\n\n`;
+  else if (hasPos) feedback += `âœ… **Emotional Discipline:** ${entry.emotional_state} mindset â€” keep this up.\n\n`;
+  if (pnl > 0) feedback += `ðŸ’° **Result:** +$${pnl.toFixed(2)} â€” document what you did right.\n\n`;
+  else if (pnl < 0) feedback += `ðŸ“‰ **Loss:** -$${Math.abs(pnl).toFixed(2)} â€” review your entry criteria.\n\n`;
+  if (lessons && lessons.length > 10) feedback += `ðŸ“š **Learning:** Great job documenting lessons. Review these weekly.\n\n`;
+  else if (!lessons) feedback += `ðŸ’¡ **Tip:** Add lessons learned for every trade â€” even winners.\n\n`;
   let score = 50;
   if (isWin) score += 20; if (hasPos) score += 15; if (lessons.length > 10) score += 10;
   if (entry.strategy_used) score += 5; if ((entry.notes?.length ?? 0) > 30) score += 5; if (hasNeg) score -= 10;
   score = Math.min(100, Math.max(0, score));
-  feedback += `${score >= 70 ? '🟢' : score >= 50 ? '🟡' : '🔴'} **Score: ${score}/100**`;
+  feedback += `${score >= 70 ? 'ðŸŸ¢' : score >= 50 ? 'ðŸŸ¡' : 'ðŸ”´'} **Score: ${score}/100**`;
   return feedback;
 };
 
@@ -51,12 +51,12 @@ const MobileFeedback: React.FC<{ entry: JournalEntry }> = ({ entry }) => {
   if (!shown) return (
     <Button onClick={get} disabled={loading} size="small" startIcon={loading ? <CircularProgress size={12} /> : <AutoAwesome sx={{ fontSize: 12 }} />}
       sx={{ mt: 1, borderRadius: '8px', background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.25)', color: '#c084fc', fontSize: '11px', fontWeight: 600, textTransform: 'none', px: 1.5, py: 0.6 }}>
-      {loading ? 'Analyzing...' : '✨ AI Feedback'}
+      {loading ? 'Analyzing...' : 'âœ¨ AI Feedback'}
     </Button>
   );
   return (
     <Box sx={{ mt: 1.5, p: 1.5, borderRadius: '10px', background: 'rgba(168,85,247,0.08)', border: '1px solid rgba(168,85,247,0.2)' }}>
-      <Typography sx={{ fontSize: '10px', fontWeight: 700, color: '#a855f7', mb: 1, textTransform: 'uppercase', letterSpacing: '0.08em' }}>✨ AI Analysis</Typography>
+      <Typography sx={{ fontSize: '10px', fontWeight: 700, color: '#a855f7', mb: 1, textTransform: 'uppercase', letterSpacing: '0.08em' }}>âœ¨ AI Analysis</Typography>
       {text.split('\n\n').filter(Boolean).map((p, i) => (
         <Typography key={i} sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, mb: 0.8 }}>
           {p.split('**').map((part, j) => j % 2 === 1 ? <strong key={j} style={{ color: 'white' }}>{part}</strong> : part)}
@@ -108,7 +108,7 @@ const MobileJournal: React.FC = () => {
     if (window.confirm('Delete this entry?')) { await axios.delete(`${API}/journal/${id}`); fetchEntries(); }
   };
 
-  const formatDate = (d: string) => { try { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); } catch { return '—'; } };
+  const formatDate = (d: string) => { try { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); } catch { return 'â€”'; } };
 
   // apply filters
   let displayed = [...entries];
@@ -154,7 +154,7 @@ const MobileJournal: React.FC = () => {
 
         {/* Filters */}
         <Box sx={{ display: 'flex', gap: 0.8, mb: 1.5, flexWrap: 'wrap' }}>
-          {[{ v: 'all', l: 'All' }, { v: 'wins', l: '✅ Wins' }, { v: 'losses', l: '❌ Losses' }].map(f => (
+          {[{ v: 'all', l: 'All' }, { v: 'wins', l: 'âœ… Wins' }, { v: 'losses', l: 'âŒ Losses' }].map(f => (
             <Chip key={f.v} label={f.l} onClick={() => setFilter(f.v as any)} size="small"
               sx={{ height: 28, fontSize: '11px', fontWeight: 600, cursor: 'pointer', background: filter === f.v ? 'linear-gradient(135deg, #a855f7, #ec4899)' : 'rgba(255,255,255,0.05)', color: filter === f.v ? 'white' : 'rgba(255,255,255,0.6)', border: filter === f.v ? 'none' : '1px solid rgba(255,255,255,0.1)' }} />
           ))}
@@ -174,7 +174,7 @@ const MobileJournal: React.FC = () => {
         <AnimatePresence mode="popLayout">
           {displayed.length === 0 ? (
             <Box sx={{ py: 8, textAlign: 'center' }}>
-              <Typography sx={{ fontSize: '40px', opacity: 0.15, mb: 1 }}>📓</Typography>
+              <Typography sx={{ fontSize: '40px', opacity: 0.15, mb: 1 }}>ðŸ““</Typography>
               <Typography sx={{ fontSize: '14px', color: 'rgba(255,255,255,0.3)' }}>No entries yet</Typography>
             </Box>
           ) : displayed.map((entry, i) => {
@@ -189,7 +189,7 @@ const MobileJournal: React.FC = () => {
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                       <Avatar sx={{ width: 36, height: 36, background: hasPnl ? (isWin ? 'linear-gradient(135deg,#22c55e,#16a34a)' : 'linear-gradient(135deg,#ef4444,#dc2626)') : 'linear-gradient(135deg,#a855f7,#ec4899)', fontSize: '16px' }}>
-                        {hasPnl ? (isWin ? '🏆' : '📉') : '📓'}
+                        {hasPnl ? (isWin ? 'ðŸ†' : 'ðŸ“‰') : 'ðŸ““'}
                       </Avatar>
                       <Box>
                         <Typography sx={{ fontSize: '15px', fontWeight: 700, color: 'white' }}>{entry.symbol || 'General'}</Typography>
@@ -207,13 +207,13 @@ const MobileJournal: React.FC = () => {
                   {entry.notes && <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, mb: 1.5, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{entry.notes}</Typography>}
 
                   {entry.lessons_learned && <Box sx={{ p: 1.2, borderRadius: '8px', background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', mb: 1.5 }}>
-                    <Typography sx={{ fontSize: '10px', color: '#fbbf24', fontWeight: 600, mb: 0.3 }}>💡 LESSONS</Typography>
+                    <Typography sx={{ fontSize: '10px', color: '#fbbf24', fontWeight: 600, mb: 0.3 }}>ðŸ’¡ LESSONS</Typography>
                     <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)' }}>{entry.lessons_learned}</Typography>
                   </Box>}
 
                   <Box sx={{ display: 'flex', gap: 0.8, flexWrap: 'wrap', mb: 0.5 }}>
-                    {entry.strategy_used && <Chip label={`📊 ${entry.strategy_used}`} size="small" sx={{ height: 20, fontSize: '10px', background: 'rgba(59,130,246,0.1)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.2)' }} />}
-                    {entry.emotional_state && <Chip label={`😶 ${entry.emotional_state}`} size="small" sx={{ height: 20, fontSize: '10px', background: 'rgba(168,85,247,0.1)', color: '#c084fc', border: '1px solid rgba(168,85,247,0.2)' }} />}
+                    {entry.strategy_used && <Chip label={`ðŸ“Š ${entry.strategy_used}`} size="small" sx={{ height: 20, fontSize: '10px', background: 'rgba(59,130,246,0.1)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.2)' }} />}
+                    {entry.emotional_state && <Chip label={`ðŸ˜¶ ${entry.emotional_state}`} size="small" sx={{ height: 20, fontSize: '10px', background: 'rgba(168,85,247,0.1)', color: '#c084fc', border: '1px solid rgba(168,85,247,0.2)' }} />}
                     {entry.notion_link && <Chip icon={<OpenInNew sx={{ fontSize: '10px !important' }} />} label="Notion" size="small" onClick={() => window.open(entry.notion_link, '_blank')} sx={{ height: 20, fontSize: '10px', background: 'rgba(168,85,247,0.1)', color: '#a855f7', cursor: 'pointer' }} />}
                   </Box>
 
@@ -254,9 +254,9 @@ const MobileJournal: React.FC = () => {
               </Select>
             </FormControl>
             <Box>
-              <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', mb: 1.5 }}>📓 Notion (Optional)</Typography>
+              <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', mb: 1.5 }}>ðŸ““ Notion (Optional)</Typography>
               <Box sx={{ display: 'flex', gap: 1, mb: 1.5 }}>
-                {['template', 'custom'].map(m => <Button key={m} onClick={() => setNotionMode(m as any)} size="small" sx={{ flex: 1, borderRadius: '10px', textTransform: 'none', fontSize: '12px', ...(notionMode === m ? { background: 'linear-gradient(135deg,#a855f7,#ec4899)', color: 'white' } : { border: '1px solid rgba(168,85,247,0.3)', color: '#a855f7' }) }}>{m === 'template' ? '📋 Template' : '🔗 Custom'}</Button>)}
+                {['template', 'custom'].map(m => <Button key={m} onClick={() => setNotionMode(m as any)} size="small" sx={{ flex: 1, borderRadius: '10px', textTransform: 'none', fontSize: '12px', ...(notionMode === m ? { background: 'linear-gradient(135deg,#a855f7,#ec4899)', color: 'white' } : { border: '1px solid rgba(168,85,247,0.3)', color: '#a855f7' }) }}>{m === 'template' ? 'ðŸ“‹ Template' : 'ðŸ”— Custom'}</Button>)}
               </Box>
               {notionMode === 'template'
                 ? <Button href={NOTION_TEMPLATE} target="_blank" fullWidth startIcon={<OpenInNew />} onClick={() => setFormData({ ...formData, notion_link: NOTION_TEMPLATE })} sx={{ py: 1.5, borderRadius: '10px', background: 'linear-gradient(135deg,#a855f7,#ec4899)', color: 'white', fontWeight: 600, textTransform: 'none' }}>Open Template</Button>
@@ -273,3 +273,4 @@ const MobileJournal: React.FC = () => {
 };
 
 export default MobileJournal;
+

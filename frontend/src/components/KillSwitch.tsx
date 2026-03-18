@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import { Box, Typography } from '@mui/material'
 
 const KillSwitch: React.FC<{ active: boolean }> = ({ active }) => {
@@ -17,7 +17,7 @@ const KillSwitch: React.FC<{ active: boolean }> = ({ active }) => {
       textAlign: 'center'
     }}>
       <Typography variant="h3">
-        🔒 TRADING LOCKED
+        ðŸ”’ TRADING LOCKED
         <br />
         Risk violation detected
       </Typography>
@@ -26,3 +26,4 @@ const KillSwitch: React.FC<{ active: boolean }> = ({ active }) => {
 }
 
 export default KillSwitch
+

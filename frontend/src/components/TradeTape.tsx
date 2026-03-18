@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Box } from '@mui/material';
 
 interface Props {
@@ -24,7 +24,7 @@ const TradeTape: React.FC<Props> = ({ events }) => {
         paddingLeft: '100%',
         animation: 'scroll 20s linear infinite'
       }}>
-        {events.join('   •   ')}
+        {events.join('   â€¢   ')}
       </div>
 
       <style>{`
@@ -38,3 +38,4 @@ const TradeTape: React.FC<Props> = ({ events }) => {
 };
 
 export default TradeTape;
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+﻿import React, { useEffect, useState } from 'react'
 import { HashRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Snackbar, Alert, Slide } from '@mui/material'
 
@@ -19,8 +19,8 @@ import JournalView from './pages/JournalView'
 import Settings from './pages/Settings'
 import EnterprisePage from './pages/EnterprisePage'
 import MultiAccountDashboard from './pages/MultiAccountDashboard'
-import RiskCheck from './pages/RiskCheck'   // ✅ NEW
-import Simulator from './pages/Simulator'   // ✅ NEW
+import RiskCheck from './pages/RiskCheck'   // âœ… NEW
+import Simulator from './pages/Simulator'   // âœ… NEW
 
 import AdminDashboard from './pages/AdminDashboard'
 import AdminTrades from './pages/AdminTrades'
@@ -42,9 +42,9 @@ const RootRedirect = () => {
 };
 
 const PLAN_LABELS: Record<string, string> = {
-  starter:    '🎉 Starter Plan activated! Welcome aboard.',
-  pro:        '🚀 Pro Plan activated! All features unlocked.',
-  enterprise: '👑 Enterprise Plan activated! Full access granted.',
+  starter:    'ðŸŽ‰ Starter Plan activated! Welcome aboard.',
+  pro:        'ðŸš€ Pro Plan activated! All features unlocked.',
+  enterprise: 'ðŸ‘‘ Enterprise Plan activated! Full access granted.',
 }
 
 const PaymentToast = () => {
@@ -69,12 +69,12 @@ const PaymentToast = () => {
         localStorage.setItem('selected_plan', plan)
       } catch {}
       setTimeout(() => { refreshPlan() }, 2000)
-      setMessage(PLAN_LABELS[plan] || '🎉 Subscription activated!')
+      setMessage(PLAN_LABELS[plan] || 'ðŸŽ‰ Subscription activated!')
       setIsSuccess(true)
       setOpen(true)
       navigate('/app', { replace: true })
     } else if (payment === 'cancelled') {
-      setMessage('Payment cancelled — no charge was made.')
+      setMessage('Payment cancelled â€” no charge was made.')
       setIsSuccess(false)
       setOpen(true)
       navigate('/app', { replace: true })
@@ -106,15 +106,15 @@ function App() {
         <PlanProvider>
           <Routes>
 
-            {/* ── Root ── */}
+            {/* â”€â”€ Root â”€â”€ */}
             <Route path="/" element={<RootRedirect />} />
 
-            {/* ── Public ── */}
+            {/* â”€â”€ Public â”€â”€ */}
             <Route path="/login"    element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/setup"    element={<ProtectedRoute><SetupWizard /></ProtectedRoute>} />
 
-            {/* ── App routes ── */}
+            {/* â”€â”€ App routes â”€â”€ */}
             <Route path="/app" element={
               <ProtectedRoute><AppWithToast><Dashboard /></AppWithToast></ProtectedRoute>
             }/>
@@ -129,7 +129,7 @@ function App() {
               </ProtectedRoute>
             }/>
 
-            {/* ✅ Risk Check — Starter+ */}
+            {/* âœ… Risk Check â€” Starter+ */}
             <Route path="/app/risk-check" element={
               <ProtectedRoute>
                 <AppWithToast>
@@ -198,7 +198,7 @@ function App() {
             <Route path="/app/admin/risk"     element={<ProtectedRoute><AppWithToast><AdminRisk /></AppWithToast></ProtectedRoute>}/>
             <Route path="/app/founder"        element={<ProtectedRoute><AppWithToast><FounderDashboard /></AppWithToast></ProtectedRoute>}/>
 
-            {/* ── Catch all ── */}
+            {/* â”€â”€ Catch all â”€â”€ */}
             <Route path="*" element={
               localStorage.getItem('access_token')
                 ? <Navigate to="/app" replace />
@@ -213,6 +213,7 @@ function App() {
 }
 
 export default App
+
 
 
 

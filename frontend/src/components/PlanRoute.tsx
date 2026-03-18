@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { usePlan, Plan, startCheckout } from '../hooks/usePlan';
 import { UpgradePrompt } from './FeatureGate';
@@ -20,7 +20,7 @@ interface PlanRouteProps {
 
 const PlanRoute: React.FC<PlanRouteProps> = ({ requiredPlan, children, featureName }) => {
   const { plan, loading } = usePlan();
-  const [upgradeLoading, setUpgradeLoading] = useState(false); // ✅ NEW
+  const [upgradeLoading, setUpgradeLoading] = useState(false); // âœ… NEW
   const hasAccess = PLAN_ORDER.indexOf(plan) >= PLAN_ORDER.indexOf(requiredPlan);
 
   if (loading) {
@@ -38,7 +38,7 @@ const PlanRoute: React.FC<PlanRouteProps> = ({ requiredPlan, children, featureNa
         <UpgradePrompt
           requiredPlan={requiredPlan}
           featureName={name}
-          upgradeLoading={upgradeLoading} // ✅ NEW
+          upgradeLoading={upgradeLoading} // âœ… NEW
           onUpgrade={() => !upgradeLoading && startCheckout(requiredPlan, setUpgradeLoading)}
         />
       </Box>
@@ -49,3 +49,4 @@ const PlanRoute: React.FC<PlanRouteProps> = ({ requiredPlan, children, featureNa
 };
 
 export default PlanRoute;
+

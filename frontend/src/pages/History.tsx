@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import HistoryView from '../components/HistoryView';
 
 const History: React.FC = () => {
@@ -6,6 +6,7 @@ const History: React.FC = () => {
 };
 
 export default History;
+
 
 
 

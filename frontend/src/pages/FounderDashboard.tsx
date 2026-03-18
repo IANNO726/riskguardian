@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 import {
@@ -166,11 +166,11 @@ Founder Command Center
 
 <Grid container spacing={3} mb={4}>
 
-<Metric title="Users Online 👥" value={onlineUsers}/>
+<Metric title="Users Online ðŸ‘¥" value={onlineUsers}/>
 
-<Metric title="Monthly Revenue 💰" value={`$${revenue.monthly_revenue||0}`}/>
+<Metric title="Monthly Revenue ðŸ’°" value={`$${revenue.monthly_revenue||0}`}/>
 
-<Metric title="CPU Usage 🖥" value={`${health.cpu||0}%`}/>
+<Metric title="CPU Usage ðŸ–¥" value={`${health.cpu||0}%`}/>
 
 <Metric title="Memory Usage" value={`${health.memory||0}%`}/>
 
@@ -184,7 +184,7 @@ Founder Command Center
 <CardContent>
 
 <Typography variant="h6" mb={2}>
-🌍 Global Trader Activity
+ðŸŒ Global Trader Activity
 </Typography>
 
 <Box sx={{height:320}}>
@@ -261,7 +261,7 @@ strokeWidth={1}
 <CardContent>
 
 <Typography variant="h6" mb={2}>
-🔥 MT5 Trade Firehose
+ðŸ”¥ MT5 Trade Firehose
 </Typography>
 
 {trades.slice(0,10).map((t,i)=>(
@@ -301,7 +301,7 @@ animation:"tradePulse 1s ease"
 <CardContent>
 
 <Typography variant="h6" mb={2}>
-📈 Revenue Growth
+ðŸ“ˆ Revenue Growth
 </Typography>
 
 <ResponsiveContainer width="100%" height={250}>
@@ -336,13 +336,13 @@ stroke="#22c55e"
 <CardContent>
 
 <Typography variant="h6" mb={2}>
-⚠ Prop Firm Risk Monitor
+âš  Prop Firm Risk Monitor
 </Typography>
 
 {risk.map((r,i)=>(
 
 <Box key={i}>
-{r.user} — {r.rule}
+{r.user} â€” {r.rule}
 </Box>
 
 ))}
@@ -394,3 +394,4 @@ color:"white",
 borderRadius:3,
 boxShadow:"0px 8px 25px rgba(0,0,0,0.5)"
 }
+

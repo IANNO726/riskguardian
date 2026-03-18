@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import {
   Box, Card, CardContent, Typography, Grid, Switch,
   FormControlLabel, Chip, LinearProgress
@@ -96,3 +96,4 @@ const TradingRules: React.FC = () => {
 };
 
 export default TradingRules;
+

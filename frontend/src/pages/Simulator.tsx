@@ -1,13 +1,13 @@
-/**
- * Simulator.tsx — Prop Firm Survival Simulator
+﻿/**
+ * Simulator.tsx â€” Prop Firm Survival Simulator
  *
  * NEW in this version:
- *   Feature 1 — PassProbabilityGauge: live pass % gauge in the dashboard
- *   Feature 2 — EquityCurveChart: P&L + drawdown chart on the result screen
- *   Feature 3 — Session persistence: challenge survives page reload via localStorage
- *   Feature 4 — PsychologicalScenario: pressure moments injected mid-simulation
- *   Feature 5 — NewsCalendar: live ForexFactory events shown in trade form
- *   Feature 6 — MultiSessionComparison: compare up to 5 challenge sessions side-by-side
+ *   Feature 1 â€” PassProbabilityGauge: live pass % gauge in the dashboard
+ *   Feature 2 â€” EquityCurveChart: P&L + drawdown chart on the result screen
+ *   Feature 3 â€” Session persistence: challenge survives page reload via localStorage
+ *   Feature 4 â€” PsychologicalScenario: pressure moments injected mid-simulation
+ *   Feature 5 â€” NewsCalendar: live ForexFactory events shown in trade form
+ *   Feature 6 â€” MultiSessionComparison: compare up to 5 challenge sessions side-by-side
  */
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
@@ -18,17 +18,17 @@ import {
   ResponsiveContainer, Legend,
 } from "recharts";
 
-const API  = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const API  = process.env.REACT_APP_API_URL || "https://riskguardian.onrender.com";
 const tok  = () => localStorage.getItem("access_token") || "";
 const hdrs = () => ({ Authorization: `Bearer ${tok()}`, "Content-Type": "application/json" });
 
-// ── Session persistence keys ──────────────────────────────────────────────────
+// â”€â”€ Session persistence keys â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STORAGE_KEY_SESSION  = "rg_sim_session";
 const STORAGE_KEY_RULES    = "rg_sim_rules";
 const STORAGE_KEY_METRICS  = "rg_sim_metrics";
-const STORAGE_KEY_SAVED    = "rg_saved_sim_sessions";  // Feature 6 — saved sessions for comparison
+const STORAGE_KEY_SAVED    = "rg_saved_sim_sessions";  // Feature 6 â€” saved sessions for comparison
 
-// ── Domain interfaces ─────────────────────────────────────────────────────────
+// â”€â”€ Domain interfaces â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface SimTrade {
   symbol: string; lot_size: number; entry: number; sl: number; tp: number;
   result: string; direction: string;
@@ -70,7 +70,7 @@ interface PassProb {
   };
 }
 
-// ── Psychological scenarios library ───────────────────────────────────────────
+// â”€â”€ Psychological scenarios library â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface PsychScenario {
   id: string;
   trigger: (s: SimSession, rules: any) => boolean;
@@ -86,23 +86,23 @@ const PSYCH_SCENARIOS: PsychScenario[] = [
       const pct = (s.balance - s.account_size) / s.account_size * 100;
       return pct >= r.profit_target_pct * 0.85 && pct < r.profit_target_pct;
     },
-    title: "🎯 Almost There",
-    body: `You're just ${String.fromCharCode(8776)}1–2% away from passing. The finish line is in sight. What do you do?`,
+    title: "ðŸŽ¯ Almost There",
+    body: `You're just ${String.fromCharCode(8776)}1â€“2% away from passing. The finish line is in sight. What do you do?`,
     choices: [
-      { label: "Keep my normal lot size and process", tip: "Correct — stay mechanical. Most traders fail here by overtrading.", correct: true },
-      { label: "Increase lot size to get there faster", tip: "Dangerous — this is how traders blow challenges on the final day.", correct: false },
-      { label: "Avoid trading until tomorrow's session", tip: "Reasonable but unnecessary — your edge still works today.", correct: false },
+      { label: "Keep my normal lot size and process", tip: "Correct â€” stay mechanical. Most traders fail here by overtrading.", correct: true },
+      { label: "Increase lot size to get there faster", tip: "Dangerous â€” this is how traders blow challenges on the final day.", correct: false },
+      { label: "Avoid trading until tomorrow's session", tip: "Reasonable but unnecessary â€” your edge still works today.", correct: false },
     ],
   },
   {
     id: "consecutive_losses",
     trigger: (s) => s.consecutive_losses >= 3,
-    title: "😤 3 Losses in a Row",
+    title: "ðŸ˜¤ 3 Losses in a Row",
     body: "You've just taken your third consecutive loss. Your daily loss is at 40% of the limit. What's your next move?",
     choices: [
-      { label: "Stop trading for the day — protect the daily limit", tip: "Correct — 3 losses often signals the market is not aligned with your strategy today.", correct: true },
+      { label: "Stop trading for the day â€” protect the daily limit", tip: "Correct â€” 3 losses often signals the market is not aligned with your strategy today.", correct: true },
       { label: "Increase size to recover the losses faster", tip: "This is textbook revenge trading and the fastest path to a blown account.", correct: false },
-      { label: "Take one more trade at normal size", tip: "Risky — you're emotionally compromised after 3 losses. Taking a break is better.", correct: false },
+      { label: "Take one more trade at normal size", tip: "Risky â€” you're emotionally compromised after 3 losses. Taking a break is better.", correct: false },
     ],
   },
   {
@@ -111,12 +111,12 @@ const PSYCH_SCENARIOS: PsychScenario[] = [
       const dd = (s.peak_balance - s.balance) / s.peak_balance * 100;
       return dd >= r.max_drawdown_pct * 0.65;
     },
-    title: "📉 Drawdown Pressure",
+    title: "ðŸ“‰ Drawdown Pressure",
     body: "You're using over 65% of your maximum drawdown allowance. You feel pressure to recover quickly. What do you do?",
     choices: [
-      { label: "Reduce lot size significantly until I recover", tip: "Correct — smaller size protects your remaining buffer while you find your rhythm.", correct: true },
-      { label: "Stop trading for a few days and come back fresh", tip: "Also valid — protecting the account is always the priority.", correct: true },
-      { label: "Take higher-risk trades to recover faster", tip: "The worst choice — trying to recover fast is what turns a salvageable situation into a blown account.", correct: false },
+      { label: "Reduce lot size significantly until I recover", tip: "Correct â€” smaller size protects your remaining buffer while you find your rhythm.", correct: true },
+      { label: "Stop trading for a few days and come back fresh", tip: "Also valid â€” protecting the account is always the priority.", correct: true },
+      { label: "Take higher-risk trades to recover faster", tip: "The worst choice â€” trying to recover fast is what turns a salvageable situation into a blown account.", correct: false },
     ],
   },
   {
@@ -125,28 +125,28 @@ const PSYCH_SCENARIOS: PsychScenario[] = [
       const lastTrade = s.trades[s.trades.length - 1];
       return !!(lastTrade && lastTrade.pnl > 0 && lastTrade.pnl / s.account_size * 100 > 1.5);
     },
-    title: "🏆 Big Win — Now What?",
-    body: "You just had your best trade of the challenge — over 1.5% in a single trade. How do you follow up?",
+    title: "ðŸ† Big Win â€” Now What?",
+    body: "You just had your best trade of the challenge â€” over 1.5% in a single trade. How do you follow up?",
     choices: [
-      { label: "Continue with the same process and lot size", tip: "Correct — consistency is what separates professionals.", correct: true },
-      { label: "Take a break — lock in the win mentally", tip: "Also valid — stepping away after a big win prevents overconfidence trades.", correct: true },
-      { label: "Increase size — I'm in the zone", tip: "Overconfidence is as dangerous as fear. The market doesn't care about your previous trade.", correct: false },
+      { label: "Continue with the same process and lot size", tip: "Correct â€” consistency is what separates professionals.", correct: true },
+      { label: "Take a break â€” lock in the win mentally", tip: "Also valid â€” stepping away after a big win prevents overconfidence trades.", correct: true },
+      { label: "Increase size â€” I'm in the zone", tip: "Overconfidence is as dangerous as fear. The market doesn't care about your previous trade.", correct: false },
     ],
   },
   {
     id: "news_upcoming",
     trigger: (s) => s.day_start_balance > 0 && s.daily_trades === 0 && s.day % 5 === 0,
-    title: "📰 High-Impact News Day",
+    title: "ðŸ“° High-Impact News Day",
     body: "There's a major economic release (NFP / CPI / FOMC) in 30 minutes. You have an open setup. What do you do?",
     choices: [
-      { label: "Wait for the news to pass before entering", tip: "Correct — high-impact news creates unpredictable spreads and gaps.", correct: true },
-      { label: "Enter now before the news — the move will be huge", tip: "Dangerous — news can go either direction and spreads widen dramatically at release.", correct: false },
-      { label: "Enter after the first spike settles", tip: "Valid — waiting for the initial volatility to absorb reduces slippage risk.", correct: true },
+      { label: "Wait for the news to pass before entering", tip: "Correct â€” high-impact news creates unpredictable spreads and gaps.", correct: true },
+      { label: "Enter now before the news â€” the move will be huge", tip: "Dangerous â€” news can go either direction and spreads widen dramatically at release.", correct: false },
+      { label: "Enter after the first spike settles", tip: "Valid â€” waiting for the initial volatility to absorb reduces slippage risk.", correct: true },
     ],
   },
 ];
 
-// ── Shared style helpers ──────────────────────────────────────────────────────
+// â”€â”€ Shared style helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const card  = () => ({ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"16px" });
 const INP: React.CSSProperties = { width:"100%", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.09)", borderRadius:"10px", padding:"11px 13px", color:"white", fontSize:"14px", fontFamily:"inherit", outline:"none" };
 const SEL: React.CSSProperties = { ...INP, cursor:"pointer", appearance:"none", WebkitAppearance:"none", MozAppearance:"none", background:"#1a1f2e", color:"white", backgroundImage:"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\")", backgroundRepeat:"no-repeat", backgroundPosition:"right 12px center", paddingRight:"34px" };
@@ -173,10 +173,10 @@ function StatCard({ label, value, sub, color }: { label: string; value: string; 
   );
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// FEATURE 1 — PassProbabilityGauge
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// FEATURE 1 â€” PassProbabilityGauge
 // Live arc gauge showing 0-100% pass probability with factor breakdown
-// ═════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function PassProbabilityGauge({ session, onLoad }: { session: SimSession; onLoad?: (p: PassProb) => void }) {
   const [data,    setData]    = useState<PassProb | null>(null);
   const [loading, setLoading] = useState(false);
@@ -233,7 +233,7 @@ function PassProbabilityGauge({ session, onLoad }: { session: SimSession; onLoad
           Pass Probability
         </Typography>
         <Box onClick={() => setOpen(v => !v)} sx={{ fontSize:"11px", color:"rgba(255,255,255,0.3)", cursor:"pointer", "&:hover":{ color:"white" } }}>
-          {open ? "▲ hide factors" : "▼ show factors"}
+          {open ? "â–² hide factors" : "â–¼ show factors"}
         </Box>
       </Box>
 
@@ -257,7 +257,7 @@ function PassProbabilityGauge({ session, onLoad }: { session: SimSession; onLoad
               <text x={cx} y={cy + 10} textAnchor="middle" fill={color} fontSize="22" fontWeight="900" fontFamily="'Roboto Mono', monospace">{prob}%</text>
               {/* Band */}
               <text x={cx} y={cy + 26} textAnchor="middle" fill="rgba(255,255,255,0.25)" fontSize="10">
-                {data?.confidence_low}–{data?.confidence_high}%
+                {data?.confidence_low}â€“{data?.confidence_high}%
               </text>
             </svg>
           )}
@@ -268,7 +268,7 @@ function PassProbabilityGauge({ session, onLoad }: { session: SimSession; onLoad
           <Box sx={{ px:"10px", py:"4px", borderRadius:"8px", display:"inline-block", mb:"8px",
             background: `${color}18`, border: `1px solid ${color}35` }}>
             <Typography sx={{ fontSize:"12px", fontWeight:800, color }}>
-              {data?.status === "on_track" ? "✅ On Track" : data?.status === "caution" ? "⚠️ Caution" : data?.status === "at_risk" ? "🔶 At Risk" : "🔴 Critical"}
+              {data?.status === "on_track" ? "âœ… On Track" : data?.status === "caution" ? "âš ï¸ Caution" : data?.status === "at_risk" ? "ðŸ”¶ At Risk" : "ðŸ”´ Critical"}
             </Typography>
           </Box>
           <Typography sx={{ fontSize:"12px", color:"rgba(255,255,255,0.5)", lineHeight:1.6 }}>{data?.message}</Typography>
@@ -288,7 +288,7 @@ function PassProbabilityGauge({ session, onLoad }: { session: SimSession; onLoad
         </Box>
       </Box>
 
-      {/* Factor breakdown — collapsible */}
+      {/* Factor breakdown â€” collapsible */}
       {open && factors && (
         <Box sx={{ mt:"14px", pt:"12px", borderTop:"1px solid rgba(255,255,255,0.06)" }}>
           <Box sx={{ display:"flex", gap:"6px", flexWrap:"wrap" }}>
@@ -323,10 +323,10 @@ function PassProbabilityGauge({ session, onLoad }: { session: SimSession; onLoad
   );
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// FEATURE 2 — EquityCurveChart
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// FEATURE 2 â€” EquityCurveChart
 // P&L% area chart + drawdown area chart from the result equity_curve data
-// ═════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function EquityCurveChart({ equityCurve, accountSize, target, maxDD }: {
   equityCurve: any[];
   accountSize: number;
@@ -348,7 +348,7 @@ function EquityCurveChart({ equityCurve, accountSize, target, maxDD }: {
     if (!d) return null;
     return (
       <Box sx={{ background:"#1e2533", border:"1px solid rgba(255,255,255,0.12)", borderRadius:"10px", p:"10px 14px", fontSize:"12px" }}>
-        <Typography sx={{ color:"rgba(255,255,255,0.4)", fontSize:"10px", mb:"4px" }}>Trade #{d.trade} · Day {d.day} · {d.symbol}</Typography>
+        <Typography sx={{ color:"rgba(255,255,255,0.4)", fontSize:"10px", mb:"4px" }}>Trade #{d.trade} Â· Day {d.day} Â· {d.symbol}</Typography>
         <Typography sx={{ color: d.pnl_pct >= 0 ? "#22c55e" : "#ef4444", fontWeight:800, fontFamily:'"Roboto Mono",monospace' }}>
           {d.pnl_pct >= 0 ? "+" : ""}{d.pnl_pct.toFixed(3)}%
         </Typography>
@@ -427,10 +427,10 @@ function EquityCurveChart({ equityCurve, accountSize, target, maxDD }: {
   );
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// FEATURE 4 — PsychologicalScenario modal
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// FEATURE 4 â€” PsychologicalScenario modal
 // Triggered mid-simulation when certain conditions are met
-// ═════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function PsychologicalScenario({ scenario, onClose }: {
   scenario: PsychScenario;
   onClose: () => void;
@@ -463,7 +463,7 @@ function PsychologicalScenario({ scenario, onClose }: {
           <Box sx={{ display:"flex", alignItems:"center", gap:"10px", mb:"16px" }}>
             <Box sx={{ px:"10px", py:"4px", borderRadius:"8px", background:"rgba(168,85,247,0.15)", border:"1px solid rgba(168,85,247,0.3)" }}>
               <Typography sx={{ fontSize:"11px", fontWeight:800, color:"#a855f7", textTransform:"uppercase", letterSpacing:"0.08em" }}>
-                🧠 Psychological Challenge
+                ðŸ§  Psychological Challenge
               </Typography>
             </Box>
           </Box>
@@ -499,7 +499,7 @@ function PsychologicalScenario({ scenario, onClose }: {
                     }}
                   >
                     <Typography sx={{ fontSize:"13px", fontWeight:600, color }}>
-                      {isChosen ? (isCorrect ? "✅ " : "❌ ") : ""}
+                      {isChosen ? (isCorrect ? "âœ… " : "âŒ ") : ""}
                       {c.label}
                     </Typography>
                   </Box>
@@ -508,7 +508,7 @@ function PsychologicalScenario({ scenario, onClose }: {
                       background: isCorrect ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)",
                       border: `1px solid ${isCorrect ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}` }}>
                       <Typography sx={{ fontSize:"12px", color: isCorrect ? "#86efac" : "#fca5a5", lineHeight:1.6 }}>
-                        💡 {c.tip}
+                        ðŸ’¡ {c.tip}
                       </Typography>
                     </Box>
                   )}
@@ -527,7 +527,7 @@ function PsychologicalScenario({ scenario, onClose }: {
               transition:"all 0.2s",
             }}
           >
-            {revealed ? "Continue Challenge →" : "Choose an answer above"}
+            {revealed ? "Continue Challenge â†’" : "Choose an answer above"}
           </Box>
         </Box>
       </Box>
@@ -535,10 +535,10 @@ function PsychologicalScenario({ scenario, onClose }: {
   );
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// FEATURE 3 — Session persistence helpers
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// FEATURE 3 â€” Session persistence helpers
 // Saves/loads session + rules to localStorage on every state change
-// ═════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function saveSession(session: SimSession | null, rules: any, metrics: Metrics | null) {
   try {
     if (session) {
@@ -568,7 +568,7 @@ function loadSession(): { session: SimSession | null; rules: any; metrics: Metri
   }
 }
 
-// ── Dark Calendar ─────────────────────────────────────────────────────────────
+// â”€â”€ Dark Calendar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAYS   = ["S","M","T","W","T","F","S"];
 
@@ -632,11 +632,11 @@ function DarkCalendar({ onRange, onClose }: {
     <Box sx={{ position:"fixed", inset:0, zIndex:9999, display:"flex", alignItems:"center", justifyContent:"center", background:"rgba(0,0,0,0.65)" }} onClick={onClose}>
       <Box sx={{ background:"#1e2533", borderRadius:"16px", p:"20px 22px", width:"320px", boxShadow:"0 24px 64px rgba(0,0,0,0.6)", border:"1px solid rgba(255,255,255,0.1)" }} onClick={e => e.stopPropagation()}>
         <Box sx={{ display:"flex", alignItems:"center", justifyContent:"space-between", mb:"16px" }}>
-          <Box onClick={prevMonth} sx={{ cursor:"pointer", px:"8px", py:"4px", borderRadius:"8px", "&:hover":{background:"rgba(255,255,255,0.08)"}, fontSize:"16px", color:"rgba(255,255,255,0.6)" }}>‹</Box>
+          <Box onClick={prevMonth} sx={{ cursor:"pointer", px:"8px", py:"4px", borderRadius:"8px", "&:hover":{background:"rgba(255,255,255,0.08)"}, fontSize:"16px", color:"rgba(255,255,255,0.6)" }}>â€¹</Box>
           <Typography sx={{ fontWeight:800, fontSize:"14px", color:"white", letterSpacing:"0.05em" }}>
             {MONTHS[viewMonth].toUpperCase()} {viewYear}
           </Typography>
-          <Box onClick={nextMonth} sx={{ cursor:"pointer", px:"8px", py:"4px", borderRadius:"8px", "&:hover":{background:"rgba(255,255,255,0.08)"}, fontSize:"16px", color:"rgba(255,255,255,0.6)" }}>›</Box>
+          <Box onClick={nextMonth} sx={{ cursor:"pointer", px:"8px", py:"4px", borderRadius:"8px", "&:hover":{background:"rgba(255,255,255,0.08)"}, fontSize:"16px", color:"rgba(255,255,255,0.6)" }}>â€º</Box>
         </Box>
         <Box sx={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", mb:"6px" }}>
           {DAYS.map((d,i) => <Typography key={i} sx={{ textAlign:"center", fontSize:"11px", fontWeight:700, color:"rgba(255,255,255,0.3)", py:"4px" }}>{d}</Typography>)}
@@ -660,7 +660,7 @@ function DarkCalendar({ onRange, onClose }: {
         </Box>
         <Box sx={{ mt:"14px", mb:"8px", px:"4px" }}>
           <Typography sx={{ fontSize:"12px", color:"rgba(255,255,255,0.4)", textAlign:"center" }}>
-            {start && end ? `${fmt(start)} → ${fmt(end)} (${Math.round((end.getTime()-start.getTime())/86400000)} days)` : start ? "Now pick the close date" : "Pick the open date"}
+            {start && end ? `${fmt(start)} â†’ ${fmt(end)} (${Math.round((end.getTime()-start.getTime())/86400000)} days)` : start ? "Now pick the close date" : "Pick the open date"}
           </Typography>
         </Box>
         <Box sx={{ display:"flex", justifyContent:"flex-end", gap:"10px", mt:"4px" }}>
@@ -672,11 +672,11 @@ function DarkCalendar({ onRange, onClose }: {
   );
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// FEATURE 5 — NewsCalendar (inline widget for the trade form)
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// FEATURE 5 â€” NewsCalendar (inline widget for the trade form)
 // Fetches upcoming high-impact events from /api/v1/simulator/news
 // Shows as compact warning pills above the submit button
-// ═════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 interface NewsEvent {
   title:          string;
@@ -688,8 +688,8 @@ interface NewsEvent {
 }
 
 const CURRENCY_FLAGS: Record<string, string> = {
-  USD:"🇺🇸", EUR:"🇪🇺", GBP:"🇬🇧", JPY:"🇯🇵",
-  AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭", NZD:"🇳🇿",
+  USD:"ðŸ‡ºðŸ‡¸", EUR:"ðŸ‡ªðŸ‡º", GBP:"ðŸ‡¬ðŸ‡§", JPY:"ðŸ‡¯ðŸ‡µ",
+  AUD:"ðŸ‡¦ðŸ‡º", CAD:"ðŸ‡¨ðŸ‡¦", CHF:"ðŸ‡¨ðŸ‡­", NZD:"ðŸ‡³ðŸ‡¿",
 };
 
 function fmtMins(m: number): string {
@@ -742,11 +742,11 @@ function NewsCalendarInline({ symbol, onImminent }: {
     }}>
       {/* Header row */}
       <Box sx={{ display:"flex", alignItems:"center", gap:"8px", cursor:"pointer" }} onClick={() => setExpanded(v => !v)}>
-        <Typography sx={{ fontSize:"11px" }}>📅</Typography>
+        <Typography sx={{ fontSize:"11px" }}>ðŸ“…</Typography>
         <Typography sx={{ fontSize:"11px", fontWeight:800,
           color: imminent.length > 0 ? "#ef4444" : "#38bdf8",
           textTransform:"uppercase", letterSpacing:"0.07em" }}>
-          {imminent.length > 0 ? `⚠ ${imminent.length} news imminent` : `${events.length} upcoming events`}
+          {imminent.length > 0 ? `âš  ${imminent.length} news imminent` : `${events.length} upcoming events`}
         </Typography>
         {imminent.length > 0 && (
           <Box sx={{ px:"8px", py:"2px", borderRadius:"6px", background:"rgba(239,68,68,0.15)", border:"1px solid rgba(239,68,68,0.3)" }}>
@@ -756,18 +756,18 @@ function NewsCalendarInline({ symbol, onImminent }: {
           </Box>
         )}
         <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.25)", ml:"auto" }}>
-          {expanded ? "▲ hide" : "▼ show"}
+          {expanded ? "â–² hide" : "â–¼ show"}
         </Typography>
       </Box>
 
-      {/* Compact pill list — always visible for imminent */}
+      {/* Compact pill list â€” always visible for imminent */}
       {imminent.length > 0 && (
         <Box sx={{ display:"flex", flexWrap:"wrap", gap:"6px", mt:"8px" }}>
           {imminent.map((ev, i) => (
             <Box key={i} sx={{ display:"flex", alignItems:"center", gap:"5px", px:"8px", py:"4px", borderRadius:"7px", background:"rgba(239,68,68,0.12)", border:"1px solid rgba(239,68,68,0.25)" }}>
-              <Typography sx={{ fontSize:"12px" }}>{CURRENCY_FLAGS[ev.currency] || "🌐"}</Typography>
+              <Typography sx={{ fontSize:"12px" }}>{CURRENCY_FLAGS[ev.currency] || "ðŸŒ"}</Typography>
               <Typography sx={{ fontSize:"11px", color:"white", fontWeight:700, maxWidth:"160px", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
-                {ev.currency} {ev.title.slice(0,22)}{ev.title.length > 22 ? "…" : ""}
+                {ev.currency} {ev.title.slice(0,22)}{ev.title.length > 22 ? "â€¦" : ""}
               </Typography>
               <Typography sx={{ fontSize:"10px", color:"#fca5a5", fontWeight:700 }}>{fmtMins(ev.minutes_away)}</Typography>
             </Box>
@@ -780,14 +780,14 @@ function NewsCalendarInline({ symbol, onImminent }: {
         <Box sx={{ mt:"8px", pt:"8px", borderTop:"1px solid rgba(255,255,255,0.06)" }}>
           {[...imminent, ...upcoming].slice(0, 8).map((ev, i) => (
             <Box key={i} sx={{ display:"flex", alignItems:"center", gap:"8px", py:"5px", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
-              <Typography sx={{ fontSize:"14px", flexShrink:0 }}>{CURRENCY_FLAGS[ev.currency] || "🌐"}</Typography>
+              <Typography sx={{ fontSize:"14px", flexShrink:0 }}>{CURRENCY_FLAGS[ev.currency] || "ðŸŒ"}</Typography>
               <Box sx={{ flex:1, minWidth:0 }}>
                 <Typography sx={{ fontSize:"12px", color:"white", fontWeight:600, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
                   {ev.title}
                 </Typography>
                 <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.35)" }}>
-                  {ev.currency} · {fmtEvtTime(ev.datetime_utc)}
-                  {ev.forecast ? ` · Fcst: ${ev.forecast}` : ""}
+                  {ev.currency} Â· {fmtEvtTime(ev.datetime_utc)}
+                  {ev.forecast ? ` Â· Fcst: ${ev.forecast}` : ""}
                 </Typography>
               </Box>
               <Box sx={{ px:"8px", py:"3px", borderRadius:"7px", flexShrink:0,
@@ -813,10 +813,10 @@ function NewsCalendarInline({ symbol, onImminent }: {
 }
 
 
-// ═════════════════════════════════════════════════════════════════════════════
-// FEATURE 6 — Multi-Session Comparison
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// FEATURE 6 â€” Multi-Session Comparison
 // Sessions are saved to localStorage after each completed challenge.
-// ═════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 interface SavedSimSession {
   id:      string;
@@ -843,7 +843,7 @@ function saveSimSession(session: any, rules: any): string {
   const pnl = session.account_size > 0 ? (session.balance - session.account_size) / session.account_size * 100 : 0;
   const entry: SavedSimSession = {
     id,
-    label:   `${rules.name || "Challenge"} — ${new Date().toLocaleDateString()}`,
+    label:   `${rules.name || "Challenge"} â€” ${new Date().toLocaleDateString()}`,
     savedAt: new Date().toISOString(),
     firm:    rules.name || "Custom",
     account: session.account_size || 0,
@@ -891,15 +891,15 @@ function CompareTab() {
 
   return (
     <Box sx={{ maxWidth:"760px", mx:"auto", mt:2 }}>
-      <Typography sx={{ fontSize:"18px", fontWeight:800, color:"white", mb:"4px" }}>📊 Compare Sessions</Typography>
+      <Typography sx={{ fontSize:"18px", fontWeight:800, color:"white", mb:"4px" }}>ðŸ“Š Compare Sessions</Typography>
       <Typography sx={{ fontSize:"13px", color:"rgba(255,255,255,0.4)", mb:"20px" }}>
-        Select 2–5 completed sessions to compare. Sessions are saved automatically when a challenge ends.
+        Select 2â€“5 completed sessions to compare. Sessions are saved automatically when a challenge ends.
       </Typography>
       {saved.length === 0 ? (
         <Box sx={{ textAlign:"center", py:6, borderRadius:"16px", background:"rgba(255,255,255,0.02)", border:"1px dashed rgba(255,255,255,0.1)" }}>
-          <Typography sx={{ fontSize:"32px", opacity:0.2, mb:"8px" }}>📊</Typography>
+          <Typography sx={{ fontSize:"32px", opacity:0.2, mb:"8px" }}>ðŸ“Š</Typography>
           <Typography sx={{ fontSize:"14px", color:"rgba(255,255,255,0.3)" }}>No saved sessions yet</Typography>
-          <Typography sx={{ fontSize:"12px", color:"rgba(255,255,255,0.2)", mt:"4px" }}>Complete a challenge and click "💾 Save Session" on the result screen</Typography>
+          <Typography sx={{ fontSize:"12px", color:"rgba(255,255,255,0.2)", mt:"4px" }}>Complete a challenge and click "ðŸ’¾ Save Session" on the result screen</Typography>
         </Box>
       ) : (
         <>
@@ -912,27 +912,27 @@ function CompareTab() {
                 <Box key={s.id} onClick={() => toggleSel(s.id)} sx={{ p:"14px 16px", borderRadius:"14px", cursor:"pointer", background:isSel?`${color}10`:"rgba(255,255,255,0.03)", border:`2px solid ${isSel?color:"rgba(255,255,255,0.08)"}`, transition:"all 0.15s", position:"relative", "&:hover":{ borderColor:color } }}>
                   {isSel && <Box sx={{ position:"absolute", top:"8px", right:"8px", width:"20px", height:"20px", borderRadius:"50%", background:color, display:"flex", alignItems:"center", justifyContent:"center" }}><Typography sx={{ fontSize:"10px", fontWeight:900, color:"white" }}>{selIdx+1}</Typography></Box>}
                   <Typography sx={{ fontSize:"12px", fontWeight:700, color:"white", pr:"24px", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{s.label}</Typography>
-                  <Typography sx={{ fontSize:"11px", color:"rgba(255,255,255,0.3)", mt:"2px" }}>{s.firm} · ${s.account.toLocaleString()}</Typography>
+                  <Typography sx={{ fontSize:"11px", color:"rgba(255,255,255,0.3)", mt:"2px" }}>{s.firm} Â· ${s.account.toLocaleString()}</Typography>
                   <Box sx={{ display:"flex", gap:"6px", mt:"8px", alignItems:"center" }}>
                     <Box sx={{ px:"7px", py:"2px", borderRadius:"5px", fontSize:"11px", fontWeight:700, background:s.pnlPct>=0?"rgba(34,197,94,0.15)":"rgba(239,68,68,0.15)", color:s.pnlPct>=0?"#22c55e":"#ef4444", border:`1px solid ${s.pnlPct>=0?"rgba(34,197,94,0.35)":"rgba(239,68,68,0.35)"}` }}>{s.pnlPct>=0?"+":""}{s.pnlPct}%</Box>
-                    <Box sx={{ px:"7px", py:"2px", borderRadius:"5px", fontSize:"11px", fontWeight:700, background:s.passed?"rgba(34,197,94,0.1)":"rgba(239,68,68,0.1)", color:s.passed?"#22c55e":"#ef4444" }}>{s.passed?"✅ PASSED":"❌ BLOWN"}</Box>
-                    <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.25)", ml:"auto", cursor:"pointer", "&:hover":{ color:"#ef4444" } }} onClick={e=>{e.stopPropagation();deleteSaved(s.id);}}>✕</Typography>
+                    <Box sx={{ px:"7px", py:"2px", borderRadius:"5px", fontSize:"11px", fontWeight:700, background:s.passed?"rgba(34,197,94,0.1)":"rgba(239,68,68,0.1)", color:s.passed?"#22c55e":"#ef4444" }}>{s.passed?"âœ… PASSED":"âŒ BLOWN"}</Box>
+                    <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.25)", ml:"auto", cursor:"pointer", "&:hover":{ color:"#ef4444" } }} onClick={e=>{e.stopPropagation();deleteSaved(s.id);}}>âœ•</Typography>
                   </Box>
                 </Box>
               );
             })}
           </Box>
-          {err && <Typography sx={{ color:"#ef4444", fontSize:"13px", mb:"10px" }}>⚠ {err}</Typography>}
+          {err && <Typography sx={{ color:"#ef4444", fontSize:"13px", mb:"10px" }}>âš  {err}</Typography>}
           {selected.length >= 2 && (
             <Box onClick={!loading?compare:undefined} sx={{ py:"12px", borderRadius:"12px", textAlign:"center", cursor:loading?"not-allowed":"pointer", fontWeight:800, fontSize:"14px", mb:"20px", background:loading?"rgba(168,85,247,0.2)":"linear-gradient(135deg,#a855f7,#6366f1)", color:"white", opacity:loading?0.7:1 }}>
-              {loading?<CircularProgress size={14} sx={{color:"white"}}/>:`Compare ${selected.length} Sessions →`}
+              {loading?<CircularProgress size={14} sx={{color:"white"}}/>:`Compare ${selected.length} Sessions â†’`}
             </Box>
           )}
           {result && (
             <Box>
               {result.overall_winner && (
                 <Box sx={{ p:"16px 20px", mb:"16px", borderRadius:"14px", background:"rgba(251,191,36,0.08)", border:"1px solid rgba(251,191,36,0.25)", display:"flex", alignItems:"center", gap:"12px", flexWrap:"wrap" }}>
-                  <Typography sx={{ fontSize:"28px" }}>🏆</Typography>
+                  <Typography sx={{ fontSize:"28px" }}>ðŸ†</Typography>
                   <Box><Typography sx={{ fontSize:"11px", color:"rgba(255,255,255,0.4)", fontWeight:700, textTransform:"uppercase" }}>Overall Winner</Typography><Typography sx={{ fontSize:"20px", fontWeight:900, color:"#fbbf24" }}>{result.overall_winner}</Typography></Box>
                   <Box sx={{ ml:"auto", display:"flex", gap:"8px" }}>
                     {Object.entries(result.score_tally as Record<string,number>).sort((a,b)=>b[1]-a[1]).map(([label,score],i)=>(
@@ -948,8 +948,8 @@ function CompareTab() {
                 {result.sessions.map((sess:any,i:number)=>(
                   <Box key={i} sx={{ flex:"1 1 140px", p:"12px 14px", borderRadius:"12px", background:sess.passed?"rgba(34,197,94,0.08)":"rgba(239,68,68,0.08)", border:`1px solid ${sess.passed?"rgba(34,197,94,0.25)":"rgba(239,68,68,0.25)"}` }}>
                     <Box sx={{ display:"flex", alignItems:"center", gap:"6px", mb:"4px" }}><Box sx={{ width:"8px", height:"8px", borderRadius:"50%", background:_SESSION_COLORS[i] }}/><Typography sx={{ fontSize:"11px", fontWeight:700, color:"rgba(255,255,255,0.6)" }}>{sess.label}</Typography></Box>
-                    <Typography sx={{ fontSize:"16px", fontWeight:800, color:sess.passed?"#22c55e":"#ef4444" }}>{sess.passed?"✅ PASSED":"❌ BLOWN"}</Typography>
-                    <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.35)", mt:"2px" }}>{sess.firm} · ${sess.account_size?.toLocaleString()}</Typography>
+                    <Typography sx={{ fontSize:"16px", fontWeight:800, color:sess.passed?"#22c55e":"#ef4444" }}>{sess.passed?"âœ… PASSED":"âŒ BLOWN"}</Typography>
+                    <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.35)", mt:"2px" }}>{sess.firm} Â· ${sess.account_size?.toLocaleString()}</Typography>
                   </Box>
                 ))}
               </Box>
@@ -981,7 +981,7 @@ function CompareTab() {
                         return (
                           <Box key={si} sx={{ p:"10px 8px", textAlign:"center", borderLeft:"1px solid rgba(255,255,255,0.05)", background:isWinner?`${_SESSION_COLORS[si]}08`:"transparent" }}>
                             <Typography sx={{ fontSize:"13px", fontWeight:isWinner?800:500, color:col, fontFamily:'"Roboto Mono",monospace' }}>{metric.fmt(val??0)}</Typography>
-                            {isWinner&&<Typography sx={{ fontSize:"9px", color:_SESSION_COLORS[si], fontWeight:700, textTransform:"uppercase" }}>★ BEST</Typography>}
+                            {isWinner&&<Typography sx={{ fontSize:"9px", color:_SESSION_COLORS[si], fontWeight:700, textTransform:"uppercase" }}>â˜… BEST</Typography>}
                           </Box>
                         );
                       })}
@@ -998,7 +998,7 @@ function CompareTab() {
 }
 
 
-// ── Custom firm storage ───────────────────────────────────────────────────────
+// â”€â”€ Custom firm storage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface SavedFirm {
   key: string; name: string; account_sizes: number[];
   daily_loss_limit_pct: number; max_drawdown_pct: number;
@@ -1012,7 +1012,7 @@ async function saveFirms(firms: SavedFirm[]) {
   try { await (window as any).storage?.set("simulator:custom_firms", JSON.stringify(firms)); } catch {}
 }
 
-// ── Firm plans data ───────────────────────────────────────────────────────────
+// â”€â”€ Firm plans data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface FirmPlan {
   planKey: string; planName: string;
   banned_pair_keywords?: string[]; allow_news_trading?: boolean; allow_weekend_holding?: boolean; max_lot_size?: number | null;
@@ -1023,8 +1023,8 @@ interface FirmPlan {
 }
 interface FirmDef { key: string; name: string; plans: FirmPlan[]; }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BUILTIN_FIRMS — All rules verified from official firm websites, March 2026
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// BUILTIN_FIRMS â€” All rules verified from official firm websites, March 2026
 //
 // Sources checked:
 //   The5ers:    the5ers.com/hyper-growth  /high-stakes  /bootcamp
@@ -1032,7 +1032,7 @@ interface FirmDef { key: string; name: string; plans: FirmPlan[]; }
 //   FundedNext: help.fundednext.com (official help center articles)
 //   FundingPips:fundingpips.com/en/challenges
 //   E8 Markets: help.e8markets.com (official help center articles)
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface FirmPlanExtended extends FirmPlan {
   trailing_dd?: boolean;
   count_profitable_days?: boolean;
@@ -1044,7 +1044,7 @@ interface FirmPlanExtended extends FirmPlan {
 
 const BUILTIN_FIRMS: FirmDef[] = [
 
-  // ── THE5ERS ────────────────────────────────────────────────────────────────
+  // â”€â”€ THE5ERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Source: the5ers.com/hyper-growth, /high-stakes, /bootcamp (March 2026)
   { key:"The5ers", name:"The5ers", plans:[
 
@@ -1058,7 +1058,7 @@ const BUILTIN_FIRMS: FirmDef[] = [
       planName:"Hyper Growth (1-Step)",
       account_sizes:[5000,10000,20000],
       profit_target_pct:10,
-      daily_loss_limit_pct:3,        // Daily PAUSE at 3% — not a termination
+      daily_loss_limit_pct:3,        // Daily PAUSE at 3% â€” not a termination
       max_drawdown_pct:6,            // Stop Out Level: 6% from initial balance
       min_trading_days:0,            // No minimum days requirement
       max_risk_per_trade_pct:2,
@@ -1070,7 +1070,7 @@ const BUILTIN_FIRMS: FirmDef[] = [
       payout_pct:100,
       starting_payout_pct:50,        // Starts 50/50, scales to 100%
       news_window_minutes:0,
-      description:"1-Step. 10% target. 6% stop-out. 3% daily PAUSE (not a breach — trading stops for the day). No min days. News OK. Account doubles every 10% target. Up to $4M.",
+      description:"1-Step. 10% target. 6% stop-out. 3% daily PAUSE (not a breach â€” trading stops for the day). No min days. News OK. Account doubles every 10% target. Up to $4M.",
     } as FirmPlanExtended,
 
     {
@@ -1079,7 +1079,7 @@ const BUILTIN_FIRMS: FirmDef[] = [
       // "Minimum Profitable Days: 3"
       // "Executing orders 2 min before until 2 min after high-impact news NOT allowed"
       planKey:"high_stakes_p1",
-      planName:"High Stakes · Phase 1 (2-Step)",
+      planName:"High Stakes Â· Phase 1 (2-Step)",
       account_sizes:[2500,5000,10000,25000,50000,100000],
       profit_target_pct:10,
       daily_loss_limit_pct:5,
@@ -1101,7 +1101,7 @@ const BUILTIN_FIRMS: FirmDef[] = [
       // Source: the5ers.com/high-stakes
       // "Step 2 Profit Target: 5% | Same risk rules as Phase 1"
       planKey:"high_stakes_p2",
-      planName:"High Stakes · Phase 2 (2-Step)",
+      planName:"High Stakes Â· Phase 2 (2-Step)",
       account_sizes:[2500,5000,10000,25000,50000,100000],
       profit_target_pct:5,           // Phase 2 target drops to 5%
       daily_loss_limit_pct:5,
@@ -1116,12 +1116,12 @@ const BUILTIN_FIRMS: FirmDef[] = [
       payout_pct:80,
       starting_payout_pct:80,
       news_window_minutes:2,
-      description:"2-Step Phase 2. 5% target. Same risk rules. 3 min profitable days. Upon passing → funded at entered account size.",
+      description:"2-Step Phase 2. 5% target. Same risk rules. 3 min profitable days. Upon passing â†’ funded at entered account size.",
     } as FirmPlanExtended,
 
     {
       // Source: the5ers.com/bootcamp
-      // "Profit Target: 6% | Max Loss: 5% | Daily Pause: — (no daily pause in evaluation)"
+      // "Profit Target: 6% | Max Loss: 5% | Daily Pause: â€” (no daily pause in evaluation)"
       // "No minimum trading days"
       // Funded stage: 4% max loss, 3% daily pause
       planKey:"bootcamp",
@@ -1145,7 +1145,7 @@ const BUILTIN_FIRMS: FirmDef[] = [
 
   ]},
 
-  // ── FTMO ───────────────────────────────────────────────────────────────────
+  // â”€â”€ FTMO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Source: ftmo.com/en/how-it-works + academy.ftmo.com (March 2026)
   { key:"FTMO", name:"FTMO", plans:[
 
@@ -1155,16 +1155,16 @@ const BUILTIN_FIRMS: FirmDef[] = [
       // "No time limit (unlimited)"
       // No crypto on FTMO standard accounts
       planKey:"2step_p1",
-      planName:"2-Step Challenge · Phase 1",
+      planName:"2-Step Challenge Â· Phase 1",
       account_sizes:[10000,25000,50000,100000,200000],
       profit_target_pct:10,
-      daily_loss_limit_pct:5,        // "5% of initial balance" — resets daily at midnight CET
-      max_drawdown_pct:10,           // "10% maximum loss — static, NOT trailing"
+      daily_loss_limit_pct:5,        // "5% of initial balance" â€” resets daily at midnight CET
+      max_drawdown_pct:10,           // "10% maximum loss â€” static, NOT trailing"
       min_trading_days:4,            // "Minimum duration: 4 trading days"
       max_risk_per_trade_pct:2,
       allow_news_trading:true,       // Allowed during evaluation; no news ban in challenge
       allow_weekend_holding:true,    // Allowed for standard challenge
-      trailing_dd:false,             // STATIC drawdown — confirmed NOT trailing
+      trailing_dd:false,             // STATIC drawdown â€” confirmed NOT trailing
       count_profitable_days:false,
       daily_pause_not_breach:false,
       payout_pct:90,
@@ -1178,7 +1178,7 @@ const BUILTIN_FIRMS: FirmDef[] = [
       // Source: ftmo.com/en/how-it-works
       // "5% profit target in Verification | Same 5% daily / 10% max DD | 4 min trading days"
       planKey:"2step_verification",
-      planName:"2-Step Verification · Phase 2",
+      planName:"2-Step Verification Â· Phase 2",
       account_sizes:[10000,25000,50000,100000,200000],
       profit_target_pct:5,           // Verification target drops to 5%
       daily_loss_limit_pct:5,
@@ -1200,14 +1200,14 @@ const BUILTIN_FIRMS: FirmDef[] = [
     {
       // Source: ftmo.com 1-Step product page + academy.ftmo.com
       // "10% profit target | 3% daily loss (formula: prev balance - 3% initial) | 6% dynamic DD"
-      // "Best Day Rule: best day ≤ 50% of total positive days profit"
+      // "Best Day Rule: best day â‰¤ 50% of total positive days profit"
       // 1-Step uses EOD dynamic (trailing-style) drawdown on funded stage
       planKey:"1step",
       planName:"1-Step Challenge",
       account_sizes:[10000,25000,50000,100000,200000],
       profit_target_pct:10,
       daily_loss_limit_pct:3,        // DIFFERENT from 2-Step: 3% of initial balance
-      max_drawdown_pct:6,            // Dynamic EOD drawdown — moves with balance
+      max_drawdown_pct:6,            // Dynamic EOD drawdown â€” moves with balance
       min_trading_days:0,
       max_risk_per_trade_pct:2,
       allow_news_trading:true,
@@ -1246,20 +1246,20 @@ const BUILTIN_FIRMS: FirmDef[] = [
 
   ]},
 
-  // ── FUNDEDNEXT ─────────────────────────────────────────────────────────────
+  // â”€â”€ FUNDEDNEXT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Source: help.fundednext.com (official help center), March 2026
   { key:"FundedNext", name:"FundedNext", plans:[
 
     {
       // Source: help.fundednext.com/articles/8021076 (Stellar 2-Step rules)
       // "5% daily loss limit | 10% maximum loss limit | At least 5 separate trading days"
-      // "No consistency rule" — confirmed by FundedNext
+      // "No consistency rule" â€” confirmed by FundedNext
       planKey:"stellar_2step_p1",
-      planName:"Stellar 2-Step · Phase 1",
+      planName:"Stellar 2-Step Â· Phase 1",
       account_sizes:[6000,15000,25000,50000,100000,200000],
       profit_target_pct:8,           // Phase 1: 8%
       daily_loss_limit_pct:5,
-      max_drawdown_pct:10,           // Static — NOT trailing for Stellar 2-Step
+      max_drawdown_pct:10,           // Static â€” NOT trailing for Stellar 2-Step
       min_trading_days:5,            // "At least 5 separate trading days, min 1 trade/day"
       max_risk_per_trade_pct:3,
       allow_news_trading:true,       // Allowed; profits within 5-min window capped at 40% on funded
@@ -1276,7 +1276,7 @@ const BUILTIN_FIRMS: FirmDef[] = [
     {
       // Source: help.fundednext.com/articles/8021076 (Stellar 2-Step rules)
       planKey:"stellar_2step_p2",
-      planName:"Stellar 2-Step · Phase 2",
+      planName:"Stellar 2-Step Â· Phase 2",
       account_sizes:[6000,15000,25000,50000,100000,200000],
       profit_target_pct:5,           // Phase 2 drops to 5%
       daily_loss_limit_pct:5,
@@ -1297,7 +1297,7 @@ const BUILTIN_FIRMS: FirmDef[] = [
     {
       // Source: help.fundednext.com/articles/8021061 (Stellar 1-Step rules)
       // "3% daily loss limit | 6% maximum loss limit | At least 2 separate trading days"
-      // NOTE: 3% daily is MUCH tighter than the 2-Step — key difference
+      // NOTE: 3% daily is MUCH tighter than the 2-Step â€” key difference
       planKey:"stellar_1step",
       planName:"Stellar 1-Step",
       account_sizes:[6000,15000,25000,50000,100000,200000],
@@ -1343,12 +1343,12 @@ const BUILTIN_FIRMS: FirmDef[] = [
     {
       // Source: help.fundednext.com/articles/11641163 (Stellar Instant rules)
       // "No daily loss limit | 6% TRAILING maximum loss limit"
-      // "The floor rises UP with profit — losses do NOT reduce it"
-      // This is instant funding — no evaluation phase
+      // "The floor rises UP with profit â€” losses do NOT reduce it"
+      // This is instant funding â€” no evaluation phase
       planKey:"stellar_instant",
       planName:"Stellar Instant (No Evaluation)",
       account_sizes:[5000,10000,20000],
-      profit_target_pct:0,           // No target — instant funded
+      profit_target_pct:0,           // No target â€” instant funded
       daily_loss_limit_pct:0,        // NO daily loss limit on Stellar Instant
       max_drawdown_pct:6,            // 6% trailing drawdown (floor rises with profit)
       min_trading_days:0,
@@ -1361,41 +1361,41 @@ const BUILTIN_FIRMS: FirmDef[] = [
       payout_pct:80,
       starting_payout_pct:80,
       news_window_minutes:0,
-      description:"Instant funding — no challenge needed. 6% TRAILING drawdown (floor rises with profit, never drops). No daily loss limit. 80% payout.",
+      description:"Instant funding â€” no challenge needed. 6% TRAILING drawdown (floor rises with profit, never drops). No daily loss limit. 80% payout.",
     } as FirmPlanExtended,
 
   ]},
 
-  // ── FUNDINGPIPS ────────────────────────────────────────────────────────────
+  // â”€â”€ FUNDINGPIPS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Source: fundingpips.com/en/challenges (March 2026)
   { key:"FundingPips", name:"FundingPips", plans:[
 
     {
       // Source: fundingpips.com/en/challenges + proptradingvibes.com/fundingpips (verified)
       // "Phase 1: 8% | Phase 2: 5% | 5% daily | 10% max | 3 min trading days"
-      // Static drawdown (NOT trailing) — key feature of FundingPips
+      // Static drawdown (NOT trailing) â€” key feature of FundingPips
       planKey:"2step_std_p1",
-      planName:"2-Step Standard · Phase 1",
+      planName:"2-Step Standard Â· Phase 1",
       account_sizes:[5000,10000,25000,50000,100000],
       profit_target_pct:8,
       daily_loss_limit_pct:5,        // 5% static daily loss
-      max_drawdown_pct:10,           // 10% static max drawdown — NOT trailing
+      max_drawdown_pct:10,           // 10% static max drawdown â€” NOT trailing
       min_trading_days:3,
       max_risk_per_trade_pct:2,
       allow_news_trading:true,       // Allowed in evaluation (5-min restriction only on funded)
       allow_weekend_holding:true,
-      trailing_dd:false,             // STATIC — this is FundingPips' main selling point
+      trailing_dd:false,             // STATIC â€” this is FundingPips' main selling point
       count_profitable_days:false,
       daily_pause_not_breach:false,
       payout_pct:80,
       starting_payout_pct:80,
       news_window_minutes:0,
-      description:"2-Step Standard Phase 1. 8% target. 5% daily. 10% max (static DD — not trailing). 3 min days. 80% payout. No time limit.",
+      description:"2-Step Standard Phase 1. 8% target. 5% daily. 10% max (static DD â€” not trailing). 3 min days. 80% payout. No time limit.",
     } as FirmPlanExtended,
 
     {
       planKey:"2step_std_p2",
-      planName:"2-Step Standard · Phase 2",
+      planName:"2-Step Standard Â· Phase 2",
       account_sizes:[5000,10000,25000,50000,100000],
       profit_target_pct:5,
       daily_loss_limit_pct:5,
@@ -1414,10 +1414,10 @@ const BUILTIN_FIRMS: FirmDef[] = [
     } as FirmPlanExtended,
 
     {
-      // Source: fundingpips.com — "2-Step Pro: 6% both phases | 3% daily | 6% max"
-      // Cheapest entry ($29 for $5K) but tightest rules — only for low-drawdown strategies
+      // Source: fundingpips.com â€” "2-Step Pro: 6% both phases | 3% daily | 6% max"
+      // Cheapest entry ($29 for $5K) but tightest rules â€” only for low-drawdown strategies
       planKey:"2step_pro_p1",
-      planName:"2-Step Pro · Phase 1 (Budget)",
+      planName:"2-Step Pro Â· Phase 1 (Budget)",
       account_sizes:[5000,10000,25000,50000,100000],
       profit_target_pct:6,           // Both phases: 6%
       daily_loss_limit_pct:3,        // TIGHT: 3% daily (same as FTMO 1-Step / FundedNext 1-Step)
@@ -1436,8 +1436,8 @@ const BUILTIN_FIRMS: FirmDef[] = [
     } as FirmPlanExtended,
 
     {
-      // Source: fundingpips.com — "1-Step: 10% target | 5% daily | 6% max | 3 min days"
-      // Note: max DD is 6% (tighter than 2-Step Standard's 10%) — counterintuitive
+      // Source: fundingpips.com â€” "1-Step: 10% target | 5% daily | 6% max | 3 min days"
+      // Note: max DD is 6% (tighter than 2-Step Standard's 10%) â€” counterintuitive
       planKey:"1step",
       planName:"1-Step Evaluation",
       account_sizes:[5000,10000,25000,50000,100000],
@@ -1459,9 +1459,9 @@ const BUILTIN_FIRMS: FirmDef[] = [
 
   ]},
 
-  // ── E8 MARKETS ─────────────────────────────────────────────────────────────
+  // â”€â”€ E8 MARKETS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Source: help.e8markets.com (official help center), March 2026
-  // Note: previously known as "E8 Funding" — same firm, rebranded
+  // Note: previously known as "E8 Funding" â€” same firm, rebranded
   { key:"E8Markets", name:"E8 Markets", plans:[
 
     {
@@ -1470,7 +1470,7 @@ const BUILTIN_FIRMS: FirmDef[] = [
       // "In phase 1 and phase 2, you can trade news without any restrictions"
       // 40% Best Day rule applies at FUNDED stage (not during evaluation)
       planKey:"classic_p1",
-      planName:"E8 Classic · Phase 1 (2-Step)",
+      planName:"E8 Classic Â· Phase 1 (2-Step)",
       account_sizes:[5000,10000,25000,50000,100000,200000],
       profit_target_pct:8,
       daily_loss_limit_pct:4,        // 4% daily (from starting balance of the day)
@@ -1492,7 +1492,7 @@ const BUILTIN_FIRMS: FirmDef[] = [
       // Source: help.e8markets.com/articles/12041696 (E8 Classic Phase 2)
       // "Phase 2 Profit Target: 4%"
       planKey:"classic_p2",
-      planName:"E8 Classic · Phase 2 (2-Step)",
+      planName:"E8 Classic Â· Phase 2 (2-Step)",
       account_sizes:[5000,10000,25000,50000,100000,200000],
       profit_target_pct:4,           // Phase 2 target: 4%
       daily_loss_limit_pct:4,
@@ -1520,12 +1520,12 @@ const BUILTIN_FIRMS: FirmDef[] = [
       account_sizes:[5000,10000,25000,50000,100000,200000,400000,500000],
       profit_target_pct:6,
       daily_loss_limit_pct:3,        // 3% from starting balance of the day
-      max_drawdown_pct:4,            // 4% Dynamic (EOD trailing) — adjusts based on daily peaks
+      max_drawdown_pct:4,            // 4% Dynamic (EOD trailing) â€” adjusts based on daily peaks
       min_trading_days:0,
       max_risk_per_trade_pct:2,
       allow_news_trading:true,
       allow_weekend_holding:true,
-      trailing_dd:true,              // EOD Dynamic Drawdown — trailing based on daily balance highs
+      trailing_dd:true,              // EOD Dynamic Drawdown â€” trailing based on daily balance highs
       count_profitable_days:false,
       daily_pause_not_breach:false,
       payout_pct:80,
@@ -1538,7 +1538,7 @@ const BUILTIN_FIRMS: FirmDef[] = [
 
 ];
 
-// ── SetupScreen ───────────────────────────────────────────────────────────────
+// â”€â”€ SetupScreen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function SetupScreen({ onStart }: { onStart: (session: SimSession, rules: any) => void }) {
   const [firmKey,     setFirmKey]     = useState("The5ers");
   const [planKey,     setPlanKey]     = useState("hyper_growth");
@@ -1614,7 +1614,7 @@ function SetupScreen({ onStart }: { onStart: (session: SimSession, rules: any) =
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Failed to start");
       const rules = {
-        name: selectedSavedFirm?.name || (selectedFirmDef?.name || firmKey) + " · " + ((effectivePlan as any).planName || ""),
+        name: selectedSavedFirm?.name || (selectedFirmDef?.name || firmKey) + " Â· " + ((effectivePlan as any).planName || ""),
         daily_loss_limit_pct:     effectivePlan.daily_loss_limit_pct,
         max_drawdown_pct:         effectivePlan.max_drawdown_pct,
         profit_target_pct:        effectivePlan.profit_target_pct,
@@ -1643,7 +1643,7 @@ function SetupScreen({ onStart }: { onStart: (session: SimSession, rules: any) =
   return (
     <Box sx={{ maxWidth:"720px", mx:"auto" }}>
       <Box sx={{ textAlign:"center", mb:"28px" }}>
-        <Typography sx={{ fontSize:"32px", fontWeight:900, color:"white", lineHeight:1.1 }}>🏆 Prop Firm Simulator</Typography>
+        <Typography sx={{ fontSize:"32px", fontWeight:900, color:"white", lineHeight:1.1 }}>ðŸ† Prop Firm Simulator</Typography>
         <Typography sx={{ fontSize:"14px", color:"rgba(255,255,255,0.4)", mt:"8px" }}>Practice a funded challenge without risking real money</Typography>
       </Box>
 
@@ -1656,9 +1656,9 @@ function SetupScreen({ onStart }: { onStart: (session: SimSession, rules: any) =
             return (
               <Box key={f.key} sx={{ position:"relative", display:"inline-flex", alignItems:"center" }}>
                 <Box onClick={() => setFirmKey(f.key)} sx={{ px:"16px", py:"10px", pr:isS?"32px":"16px", borderRadius:"12px", cursor:"pointer", background:firmKey===f.key?"rgba(56,189,248,0.15)":"rgba(255,255,255,0.04)", border:firmKey===f.key?"1px solid rgba(56,189,248,0.45)":"1px solid rgba(255,255,255,0.08)", transition:"all 0.15s" }}>
-                  <Typography sx={{ fontSize:"13px", fontWeight:800, color:firmKey===f.key?"#38bdf8":"rgba(255,255,255,0.6)" }}>{isS?"✏️ ":""}{f.name}</Typography>
+                  <Typography sx={{ fontSize:"13px", fontWeight:800, color:firmKey===f.key?"#38bdf8":"rgba(255,255,255,0.6)" }}>{isS?"âœï¸ ":""}{f.name}</Typography>
                 </Box>
-                {isS && <Box onClick={() => deleteFirm(f.key)} sx={{ position:"absolute", right:"8px", top:"50%", transform:"translateY(-50%)", fontSize:"11px", color:"rgba(239,68,68,0.45)", cursor:"pointer", "&:hover":{ color:"#ef4444" } }}>✕</Box>}
+                {isS && <Box onClick={() => deleteFirm(f.key)} sx={{ position:"absolute", right:"8px", top:"50%", transform:"translateY(-50%)", fontSize:"11px", color:"rgba(239,68,68,0.45)", cursor:"pointer", "&:hover":{ color:"#ef4444" } }}>âœ•</Box>}
               </Box>
             );
           })}
@@ -1696,7 +1696,7 @@ function SetupScreen({ onStart }: { onStart: (session: SimSession, rules: any) =
           <Box sx={{ display:"flex", justifyContent:"space-between", alignItems:"center", mb:"12px", flexWrap:"wrap", gap:"6px" }}>
             <Typography sx={{ fontSize:"12px", color:"rgba(255,255,255,0.4)" }}>{(effectivePlan as any).description || (effectivePlan as any).planName}</Typography>
             {Object.keys(overrides).length > 0 && (
-              <Box onClick={() => setOverrides({})} sx={{ px:"10px", py:"4px", borderRadius:"7px", cursor:"pointer", fontSize:"11px", fontWeight:700, color:"#f59e0b", background:"rgba(245,158,11,0.08)", border:"1px solid rgba(245,158,11,0.2)" }}>↩ Reset</Box>
+              <Box onClick={() => setOverrides({})} sx={{ px:"10px", py:"4px", borderRadius:"7px", cursor:"pointer", fontSize:"11px", fontWeight:700, color:"#f59e0b", background:"rgba(245,158,11,0.08)", border:"1px solid rgba(245,158,11,0.2)" }}>â†© Reset</Box>
             )}
           </Box>
           <Grid container spacing={1.5}>
@@ -1716,14 +1716,14 @@ function SetupScreen({ onStart }: { onStart: (session: SimSession, rules: any) =
               </Grid>
             ))}
           </Grid>
-          <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.2)", mt:"10px" }}>✏️ Click any value to override it for this challenge</Typography>
+          <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.2)", mt:"10px" }}>âœï¸ Click any value to override it for this challenge</Typography>
         </Box>
       )}
 
       {/* Custom firm creator */}
       {showCreator && (
         <Box sx={{ ...card(), p:"20px 22px", mb:3, background:"rgba(34,197,94,0.03)", border:"1px solid rgba(34,197,94,0.15)" }}>
-          <Typography sx={{ fontSize:"13px", fontWeight:800, color:"#22c55e", mb:"14px" }}>➕ Add Your Prop Firm</Typography>
+          <Typography sx={{ fontSize:"13px", fontWeight:800, color:"#22c55e", mb:"14px" }}>âž• Add Your Prop Firm</Typography>
           <Grid container spacing={1.5}>
             {[
               { k:"name",                   label:"Firm Name *",           ph:"e.g. Topstep, Apex",       sm:6 },
@@ -1743,7 +1743,7 @@ function SetupScreen({ onStart }: { onStart: (session: SimSession, rules: any) =
           </Grid>
           {saveMsg && <Typography sx={{ color:"#f59e0b", fontSize:"12px", mt:"10px" }}>{saveMsg}</Typography>}
           <Box sx={{ display:"flex", gap:"10px", mt:"14px" }}>
-            <Box onClick={saveNewFirm} sx={{ px:"20px", py:"9px", borderRadius:"10px", cursor:"pointer", fontWeight:800, fontSize:"13px", background:"linear-gradient(135deg,#22c55e,#16a34a)", color:"white" }}>💾 Save Firm</Box>
+            <Box onClick={saveNewFirm} sx={{ px:"20px", py:"9px", borderRadius:"10px", cursor:"pointer", fontWeight:800, fontSize:"13px", background:"linear-gradient(135deg,#22c55e,#16a34a)", color:"white" }}>ðŸ’¾ Save Firm</Box>
             <Box onClick={() => setShowCreator(false)} sx={{ px:"20px", py:"9px", borderRadius:"10px", cursor:"pointer", fontWeight:700, fontSize:"13px", background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.1)", color:"rgba(255,255,255,0.4)" }}>Cancel</Box>
           </Box>
         </Box>
@@ -1765,13 +1765,13 @@ function SetupScreen({ onStart }: { onStart: (session: SimSession, rules: any) =
       {error && <Typography sx={{ color:"#ef4444", fontSize:"13px", mb:"12px" }}>{error}</Typography>}
 
       <Box onClick={!loading ? start : undefined} sx={{ py:"15px", borderRadius:"14px", textAlign:"center", cursor:loading?"not-allowed":"pointer", fontWeight:800, fontSize:"16px", background:"linear-gradient(135deg,#0ea5e9,#6366f1)", color:"white", boxShadow:"0 8px 32px rgba(56,189,248,0.25)", transition:"all 0.15s", opacity:loading?0.7:1 }}>
-        {loading ? <CircularProgress size={16} sx={{color:"white"}} /> : "🚀 Start Challenge →"}
+        {loading ? <CircularProgress size={16} sx={{color:"white"}} /> : "ðŸš€ Start Challenge â†’"}
       </Box>
     </Box>
   );
 }
 
-// ── TradeForm ─────────────────────────────────────────────────────────────────
+// â”€â”€ TradeForm â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function TradeForm({ session, rules, onTrade, onNextDay }: {
   session: SimSession; rules: any;
   onTrade: (updated: SimSession, metrics: Metrics, violations: string[], alerts: string[]) => void;
@@ -1813,7 +1813,7 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
     let assetLabel   = "";
     let pipValueUSD  = 0;  // $ per 1 pip per 1 standard lot
 
-    // ── Deriv Step Index ──────────────────────────────────────────────────────
+    // â”€â”€ Deriv Step Index â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if (sym.includes("STEPINDEX") || sym.includes("MULTISTEP") || sym.includes("SKEWSTEP")) {
       // $10 per point per lot (proprietary Deriv product)
       riskDollar   = dist * 10 * lots;
@@ -1821,7 +1821,7 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
       assetLabel   = "Step Index";
       return { dollar: riskDollar.toFixed(2), reward: rewardDollar.toFixed(2), pct: (riskDollar / session.balance * 100).toFixed(4), rr: tpDist ? Math.round(tpDist / dist * 100) / 100 : null, assetLabel, pipValue: "10.00" };
 
-    // ── Other Deriv synthetics ────────────────────────────────────────────────
+    // â”€â”€ Other Deriv synthetics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     } else if (
       sym.includes("VOLATILITY") || sym.includes("CRASH") || sym.includes("BOOM") ||
       sym.includes("JUMP")       || sym.includes("RANGEBREAK")
@@ -1831,25 +1831,25 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
       assetLabel   = "Synthetic";
       return { dollar: riskDollar.toFixed(2), reward: rewardDollar.toFixed(2), pct: (riskDollar / session.balance * 100).toFixed(4), rr: tpDist ? Math.round(tpDist / dist * 100) / 100 : null, assetLabel, pipValue: "1.00" };
 
-    // ── Gold / Silver ─────────────────────────────────────────────────────────
-    // XAUUSD: 1 lot = 100 troy oz. 1 pip = $0.01 move → pip value = $0.01 * 100 = $1.00/pip/lot
+    // â”€â”€ Gold / Silver â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // XAUUSD: 1 lot = 100 troy oz. 1 pip = $0.01 move â†’ pip value = $0.01 * 100 = $1.00/pip/lot
     } else if (sym.includes("XAUUSD") || sym === "GOLD") {
       pipValueUSD  = 1.0;   // $1 per pip ($0.01 move) per lot (100 oz)
       const pips   = dist / 0.01;
       riskDollar   = pips * pipValueUSD * lots;
       rewardDollar = tpDist ? (tpDist / 0.01) * pipValueUSD * lots : 0;
-      assetLabel   = "Gold · $1/pip/lot";
+      assetLabel   = "Gold Â· $1/pip/lot";
 
-    // ── XAGUSD (Silver) ───────────────────────────────────────────────────────
-    // 1 lot = 5000 oz. pip = $0.001 → pip value = $5/pip/lot
+    // â”€â”€ XAGUSD (Silver) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // 1 lot = 5000 oz. pip = $0.001 â†’ pip value = $5/pip/lot
     } else if (sym.includes("XAGUSD") || sym === "SILVER") {
       pipValueUSD  = 5.0;
       const pips   = dist / 0.001;
       riskDollar   = pips * pipValueUSD * lots;
       rewardDollar = tpDist ? (tpDist / 0.001) * pipValueUSD * lots : 0;
-      assetLabel   = "Silver · $5/pip/lot";
+      assetLabel   = "Silver Â· $5/pip/lot";
 
-    // ── Equity indices ────────────────────────────────────────────────────────
+    // â”€â”€ Equity indices â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // $1 per point per lot (standard CFD, varies by broker but this is the baseline)
     } else if (
       sym.includes("US30")  || sym.includes("US500") || sym.includes("US100") ||
@@ -1860,18 +1860,18 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
     ) {
       riskDollar   = dist * lots;
       rewardDollar = tpDist ? tpDist * lots : 0;
-      assetLabel   = "Index · $1/pt/lot";
+      assetLabel   = "Index Â· $1/pt/lot";
 
-    // ── Crypto CFD ────────────────────────────────────────────────────────────
+    // â”€â”€ Crypto CFD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     } else if (sym.includes("BTC") || sym.includes("ETH") || sym.includes("XRP") ||
                sym.includes("SOL") || sym.includes("ADA") || sym.includes("DOGE")) {
       riskDollar   = dist * lots;
       rewardDollar = tpDist ? tpDist * lots : 0;
       assetLabel   = "Crypto";
 
-    // ── Standard Forex ────────────────────────────────────────────────────────
+    // â”€â”€ Standard Forex â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     } else {
-      // ── RULE 1: Quote is USD → always $10/pip/lot ──────────────────────────
+      // â”€â”€ RULE 1: Quote is USD â†’ always $10/pip/lot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       // EUR/USD, GBP/USD, AUD/USD, NZD/USD
       const quoteIsUSD = sym.endsWith("USD") && !sym.startsWith("USD");
       if (quoteIsUSD) {
@@ -1879,46 +1879,46 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
         const pips   = dist / 0.0001;
         riskDollar   = pips * pipValueUSD * lots;
         rewardDollar = tpDist ? (tpDist / 0.0001) * pipValueUSD * lots : 0;
-        assetLabel   = `${symbol} · $10/pip/lot`;
+        assetLabel   = `${symbol} Â· $10/pip/lot`;
 
-      // ── RULE 2: Base is USD, quote is JPY (USD/JPY) ───────────────────────
+      // â”€â”€ RULE 2: Base is USD, quote is JPY (USD/JPY) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       // pip_value_usd = 1000 / entry_price  (entry IS the USDJPY rate)
       } else if (sym.startsWith("USD") && sym.endsWith("JPY")) {
         pipValueUSD  = 1000 / entryPx;
         const pips   = dist / 0.01;
         riskDollar   = pips * pipValueUSD * lots;
         rewardDollar = tpDist ? (tpDist / 0.01) * pipValueUSD * lots : 0;
-        assetLabel   = `USDJPY · $${pipValueUSD.toFixed(2)}/pip/lot`;
+        assetLabel   = `USDJPY Â· $${pipValueUSD.toFixed(2)}/pip/lot`;
 
-      // ── RULE 3: Base is USD, quote NOT JPY (USD/CHF, USD/CAD, USD/SEK...) ──
+      // â”€â”€ RULE 3: Base is USD, quote NOT JPY (USD/CHF, USD/CAD, USD/SEK...) â”€â”€
       // pip_value_usd = 0.0001 / entry_price * 100,000 = 10 / entry_price
       } else if (sym.startsWith("USD") && !sym.endsWith("JPY")) {
         pipValueUSD  = 10 / entryPx;
         const pips   = dist / 0.0001;
         riskDollar   = pips * pipValueUSD * lots;
         rewardDollar = tpDist ? (tpDist / 0.0001) * pipValueUSD * lots : 0;
-        assetLabel   = `${symbol} · $${pipValueUSD.toFixed(2)}/pip/lot`;
+        assetLabel   = `${symbol} Â· $${pipValueUSD.toFixed(2)}/pip/lot`;
 
-      // ── RULE 4: JPY cross (EUR/JPY, GBP/JPY, CHF/JPY, AUD/JPY etc.) ────────
+      // â”€â”€ RULE 4: JPY cross (EUR/JPY, GBP/JPY, CHF/JPY, AUD/JPY etc.) â”€â”€â”€â”€â”€â”€â”€â”€
       // KEY INSIGHT: ALL JPY cross pairs have the same pip value in USD = 1000 / USDJPY
       // We don't have live USDJPY. Best approximation: use a reference rate.
       // Reference USDJPY ~158 (current 2026 rate). This gives ~$6.33/pip/lot.
-      // For CHFJPY at USDJPY=159.74 → $6.26 (myfxbook verified).
+      // For CHFJPY at USDJPY=159.74 â†’ $6.26 (myfxbook verified).
       // User can see the assetLabel shows the rate used.
       } else if (sym.endsWith("JPY")) {
         // Use a fixed reference USDJPY of 158.5 (mid-range 2026 approximation)
         // For USDJPY-specific accuracy, if trading USDJPY use entry directly (Rule 2 above)
         const REF_USDJPY = 158.5;
-        pipValueUSD  = 1000 / REF_USDJPY;  // ~$6.31/pip — matches myfxbook $6.26 within rounding
+        pipValueUSD  = 1000 / REF_USDJPY;  // ~$6.31/pip â€” matches myfxbook $6.26 within rounding
         const pips   = dist / 0.01;
         riskDollar   = pips * pipValueUSD * lots;
         rewardDollar = tpDist ? (tpDist / 0.01) * pipValueUSD * lots : 0;
-        assetLabel   = `${symbol} · ~$${pipValueUSD.toFixed(2)}/pip/lot`;
+        assetLabel   = `${symbol} Â· ~$${pipValueUSD.toFixed(2)}/pip/lot`;
 
-      // ── RULE 5: Non-JPY crosses (EUR/GBP, EUR/CHF, GBP/CHF, EUR/CAD etc.) ──
+      // â”€â”€ RULE 5: Non-JPY crosses (EUR/GBP, EUR/CHF, GBP/CHF, EUR/CAD etc.) â”€â”€
       // Quote currency is NOT USD and NOT JPY.
       // pip value in quote currency = 10 units
-      // We need quote→USD rate. Use static reference rates for common currencies.
+      // We need quoteâ†’USD rate. Use static reference rates for common currencies.
       } else {
         // Detect quote currency (last 3 chars)
         const quoteCcy = sym.slice(-3);
@@ -1942,11 +1942,11 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
           CZK: 0.044,
         };
         const conv = quoteToUSD[quoteCcy] ?? 1.0;
-        pipValueUSD  = 10 * conv;   // 10 units of quote currency × conversion rate to USD
+        pipValueUSD  = 10 * conv;   // 10 units of quote currency Ã— conversion rate to USD
         const pips   = dist / 0.0001;
         riskDollar   = pips * pipValueUSD * lots;
         rewardDollar = tpDist ? (tpDist / 0.0001) * pipValueUSD * lots : 0;
-        assetLabel   = `${symbol} · $${pipValueUSD.toFixed(2)}/pip/lot`;
+        assetLabel   = `${symbol} Â· $${pipValueUSD.toFixed(2)}/pip/lot`;
       }
     }
 
@@ -1995,8 +1995,8 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
   return (
     <Box sx={{ ...card(), p:"20px 22px" }}>
       <Box sx={{ display:"flex", justifyContent:"space-between", alignItems:"center", mb:"16px", flexWrap:"wrap", gap:"8px" }}>
-        <Typography sx={{ fontSize:"14px", fontWeight:800, color:"rgba(255,255,255,0.85)" }}>📅 Day {session.day} — Submit Trade</Typography>
-        <Box onClick={!loading?nextDay:undefined} sx={{ px:"14px", py:"7px", borderRadius:"10px", cursor:"pointer", fontSize:"12px", fontWeight:700, background:"rgba(168,85,247,0.12)", border:"1px solid rgba(168,85,247,0.3)", color:"#a855f7", transition:"all 0.15s" }}>➡ End Day {session.day}</Box>
+        <Typography sx={{ fontSize:"14px", fontWeight:800, color:"rgba(255,255,255,0.85)" }}>ðŸ“… Day {session.day} â€” Submit Trade</Typography>
+        <Box onClick={!loading?nextDay:undefined} sx={{ px:"14px", py:"7px", borderRadius:"10px", cursor:"pointer", fontSize:"12px", fontWeight:700, background:"rgba(168,85,247,0.12)", border:"1px solid rgba(168,85,247,0.3)", color:"#a855f7", transition:"all 0.15s" }}>âž¡ End Day {session.day}</Box>
       </Box>
 
       <Grid container spacing={1.5}>
@@ -2014,16 +2014,16 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
         <Grid item xs={12} sm={5}><Typography sx={LBL}>Trade Duration</Typography>
           <Box onClick={() => setShowCal(true)} sx={{ ...INP as any, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"space-between", userSelect:"none", "&:hover":{ borderColor:"rgba(56,189,248,0.4)" }, transition:"all 0.15s" }}>
             <Typography sx={{ fontSize:"14px", color:form.open_date?"white":"rgba(255,255,255,0.25)" }}>
-              {form.open_date && form.close_date ? `${form.open_date} → ${form.close_date}` : "📅 Pick open & close date"}
+              {form.open_date && form.close_date ? `${form.open_date} â†’ ${form.close_date}` : "ðŸ“… Pick open & close date"}
             </Typography>
-            <Typography sx={{ fontSize:"16px", color:"rgba(255,255,255,0.3)", ml:"8px" }}>📅</Typography>
+            <Typography sx={{ fontSize:"16px", color:"rgba(255,255,255,0.3)", ml:"8px" }}>ðŸ“…</Typography>
           </Box>
         </Grid>
         <Grid item xs={12} sm={4} sx={{ display:"flex", alignItems:"flex-end" }}>
           <Box sx={{ px:"12px", py:"9px", borderRadius:"10px", background:"rgba(56,189,248,0.06)", border:"1px solid rgba(56,189,248,0.14)", width:"100%" }}>
             <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.25)", fontWeight:700, textTransform:"uppercase" }}>Duration</Typography>
             <Typography sx={{ fontSize:"14px", fontWeight:800, color:"#38bdf8", mt:"1px", fontFamily:'"Roboto Mono",monospace', whiteSpace:"nowrap" }}>
-              {form.timeframe} · {+form.days_held > 0 ? `${form.days_held} day${+form.days_held>1?"s":""}` : "intraday"}
+              {form.timeframe} Â· {+form.days_held > 0 ? `${form.days_held} day${+form.days_held>1?"s":""}` : "intraday"}
             </Typography>
           </Box>
         </Grid>
@@ -2053,7 +2053,7 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
             </Typography>
           )}
           {+riskPreview.pct > rules.max_risk_per_trade_pct && (
-            <Typography sx={{ fontSize:"12px", color:"#ef4444", fontWeight:700 }}>⚠ Exceeds {rules.max_risk_per_trade_pct}% limit</Typography>
+            <Typography sx={{ fontSize:"12px", color:"#ef4444", fontWeight:700 }}>âš  Exceeds {rules.max_risk_per_trade_pct}% limit</Typography>
           )}
         </Box>
       )}
@@ -2065,7 +2065,7 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
           <Box sx={{ display:"flex", gap:"6px" }}>
             {(["buy","sell"] as const).map(d => (
               <Box key={d} onClick={() => f("direction", d)} sx={{ px:"22px", py:"9px", borderRadius:"10px", cursor:"pointer", fontSize:"13px", fontWeight:800, textAlign:"center", background:form.direction===d?(d==="buy"?"rgba(34,197,94,0.15)":"rgba(239,68,68,0.15)"):"rgba(255,255,255,0.04)", border:form.direction===d?(d==="buy"?"1px solid rgba(34,197,94,0.5)":"1px solid rgba(239,68,68,0.5)"):"1px solid rgba(255,255,255,0.08)", color:form.direction===d?(d==="buy"?"#22c55e":"#ef4444"):"rgba(255,255,255,0.4)", transition:"all 0.15s" }}>
-                {d==="buy" ? "▲ BUY" : "▼ SELL"}
+                {d==="buy" ? "â–² BUY" : "â–¼ SELL"}
               </Box>
             ))}
           </Box>
@@ -2089,7 +2089,7 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
       {swapAndCommission && (
         <Box sx={{ mb:"14px", p:"14px 16px", borderRadius:"11px", background:"rgba(245,158,11,0.04)", border:"1px solid rgba(245,158,11,0.15)" }}>
           <Typography sx={{ fontSize:"11px", fontWeight:800, color:"rgba(245,158,11,0.7)", textTransform:"uppercase", letterSpacing:"0.07em", mb:"10px" }}>
-            Swap & Commission — {swapAndCommission.effectiveDays} effective days · {form.direction.toUpperCase()}
+            Swap & Commission â€” {swapAndCommission.effectiveDays} effective days Â· {form.direction.toUpperCase()}
           </Typography>
           <Box sx={{ display:"flex", gap:"10px", flexWrap:"wrap" }}>
             {(() => {
@@ -2116,10 +2116,10 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
       {/* News / weekend flags */}
       <Box sx={{ mb:"12px", display:"flex", gap:"8px", flexWrap:"wrap" }}>
         <Box onClick={() => setForm(p => ({...p, is_news_trade:!p.is_news_trade}))} sx={{ px:"12px", py:"7px", borderRadius:"9px", cursor:"pointer", fontSize:"12px", fontWeight:700, background:form.is_news_trade?"rgba(239,68,68,0.12)":"rgba(255,255,255,0.04)", border:form.is_news_trade?"1px solid rgba(239,68,68,0.4)":"1px solid rgba(255,255,255,0.08)", color:form.is_news_trade?"#fca5a5":"rgba(255,255,255,0.35)", transition:"all 0.15s" }}>
-          📰 News trade {form.is_news_trade?"(flagged)":"(none)"}
+          ðŸ“° News trade {form.is_news_trade?"(flagged)":"(none)"}
         </Box>
         <Box onClick={() => setForm(p => ({...p, is_weekend_hold:!p.is_weekend_hold}))} sx={{ px:"12px", py:"7px", borderRadius:"9px", cursor:"pointer", fontSize:"12px", fontWeight:700, background:form.is_weekend_hold?"rgba(245,158,11,0.12)":"rgba(255,255,255,0.04)", border:form.is_weekend_hold?"1px solid rgba(245,158,11,0.4)":"1px solid rgba(255,255,255,0.08)", color:form.is_weekend_hold?"#fcd34d":"rgba(255,255,255,0.35)", transition:"all 0.15s" }}>
-          📅 Weekend hold {form.is_weekend_hold?"(flagged)":"(none)"}
+          ðŸ“… Weekend hold {form.is_weekend_hold?"(flagged)":"(none)"}
         </Box>
       </Box>
 
@@ -2129,12 +2129,12 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
         {screenshot ? (
           <Box sx={{ position:"relative" }}>
             <img src={screenshot} alt="trade screenshot" style={{ width:"100%", maxHeight:"160px", objectFit:"cover", borderRadius:"10px", border:"1px solid rgba(255,255,255,0.1)" }} />
-            <Box onClick={() => setScreenshot("")} sx={{ position:"absolute", top:"6px", right:"6px", px:"8px", py:"3px", borderRadius:"6px", background:"rgba(0,0,0,0.7)", color:"#ef4444", fontSize:"11px", fontWeight:700, cursor:"pointer" }}>✕ Remove</Box>
+            <Box onClick={() => setScreenshot("")} sx={{ position:"absolute", top:"6px", right:"6px", px:"8px", py:"3px", borderRadius:"6px", background:"rgba(0,0,0,0.7)", color:"#ef4444", fontSize:"11px", fontWeight:700, cursor:"pointer" }}>âœ• Remove</Box>
           </Box>
         ) : (
           <label style={{ display:"block", cursor:"pointer" }}>
             <Box sx={{ p:"12px", borderRadius:"10px", border:"1px dashed rgba(255,255,255,0.12)", textAlign:"center", background:"rgba(255,255,255,0.02)", "&:hover":{ borderColor:"rgba(56,189,248,0.3)" }, transition:"all 0.15s" }}>
-              <Typography sx={{ fontSize:"12px", color:"rgba(255,255,255,0.25)" }}>📷 Click to attach chart screenshot</Typography>
+              <Typography sx={{ fontSize:"12px", color:"rgba(255,255,255,0.25)" }}>ðŸ“· Click to attach chart screenshot</Typography>
             </Box>
             <input type="file" accept="image/*" style={{ display:"none" }} onChange={e => { const file=e.target.files?.[0]; if(!file)return; const reader=new FileReader(); reader.onload=ev=>setScreenshot(ev.target?.result as string??""); reader.readAsDataURL(file); e.target.value=""; }} />
           </label>
@@ -2147,7 +2147,7 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
         <textarea value={form.notes} onChange={e => f("notes", e.target.value)} placeholder="Entry reason, mistakes, lessons learned..." rows={2} style={{ ...INP, resize:"vertical", minHeight:"52px", lineHeight:"1.5" }} />
       </Box>
 
-      {/* FEATURE 5 — News calendar widget: shows upcoming ForexFactory events */}
+      {/* FEATURE 5 â€” News calendar widget: shows upcoming ForexFactory events */}
       <NewsCalendarInline
         symbol={form.symbol}
         onImminent={(evts) => {
@@ -2161,13 +2161,13 @@ function TradeForm({ session, rules, onTrade, onNextDay }: {
       {error && <Typography sx={{ color:"#ef4444", fontSize:"12px", mb:"10px", mt:"8px" }}>{error}</Typography>}
 
       <Box onClick={!loading?submit:undefined} sx={{ py:"12px", borderRadius:"12px", textAlign:"center", cursor:loading?"not-allowed":"pointer", fontWeight:800, fontSize:"14px", background:loading?"rgba(56,189,248,0.2)":"linear-gradient(135deg,#0ea5e9,#6366f1)", color:"white", display:"flex", alignItems:"center", justifyContent:"center", gap:1, opacity:loading?0.7:1, boxShadow:loading?"none":"0 6px 20px rgba(56,189,248,0.2)", transition:"all 0.15s", mt:"12px" }}>
-        {loading ? <CircularProgress size={14} sx={{color:"white"}}/> : "📈 Record Trade →"}
+        {loading ? <CircularProgress size={14} sx={{color:"white"}}/> : "ðŸ“ˆ Record Trade â†’"}
       </Box>
     </Box>
   );
 }
 
-// ── ChallengeDashboard ────────────────────────────────────────────────────────
+// â”€â”€ ChallengeDashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ChallengeDashboard({ session, metrics, rules, violations, alerts, onReset }: {
   session: SimSession; metrics: Metrics; rules: any;
   violations: string[]; alerts: string[]; onReset: () => void;
@@ -2181,24 +2181,24 @@ function ChallengeDashboard({ session, metrics, rules, violations, alerts, onRes
     <Box sx={{ maxWidth:"760px", mx:"auto" }}>
       {violations.length > 0 && (
         <Box sx={{ mb:"8px", p:"12px 14px", borderRadius:"10px", background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.2)" }}>
-          {violations.map((v,i) => <Typography key={i} sx={{ fontSize:"13px", color:"#fca5a5" }}>🚫 {v}</Typography>)}
+          {violations.map((v,i) => <Typography key={i} sx={{ fontSize:"13px", color:"#fca5a5" }}>ðŸš« {v}</Typography>)}
         </Box>
       )}
       {alerts.length > 0 && (
         <Box sx={{ mb:"8px", p:"10px 14px", borderRadius:"10px", background:"rgba(245,158,11,0.07)", border:"1px solid rgba(245,158,11,0.2)" }}>
-          {alerts.map((a,i) => <Typography key={i} sx={{ fontSize:"12px", color:"#fcd34d" }}>⚠️ {a}</Typography>)}
+          {alerts.map((a,i) => <Typography key={i} sx={{ fontSize:"12px", color:"#fcd34d" }}>âš ï¸ {a}</Typography>)}
         </Box>
       )}
 
       {/* Status chips */}
       <Box sx={{ display:"flex", gap:"7px", flexWrap:"wrap", mb:"12px" }}>
-        {metrics.trailing_dd && <Box sx={{ px:"10px", py:"3px", borderRadius:"20px", background:"rgba(139,92,246,0.12)", border:"1px solid rgba(139,92,246,0.3)", fontSize:"11px", fontWeight:700, color:"#a78bfa" }}>Trailing DD · floor ${(metrics.trailing_dd_floor||0).toLocaleString("en",{minimumFractionDigits:2})}</Box>}
+        {metrics.trailing_dd && <Box sx={{ px:"10px", py:"3px", borderRadius:"20px", background:"rgba(139,92,246,0.12)", border:"1px solid rgba(139,92,246,0.3)", fontSize:"11px", fontWeight:700, color:"#a78bfa" }}>Trailing DD Â· floor ${(metrics.trailing_dd_floor||0).toLocaleString("en",{minimumFractionDigits:2})}</Box>}
         <Box sx={{ px:"10px", py:"3px", borderRadius:"20px", background:"rgba(56,189,248,0.08)", border:"1px solid rgba(56,189,248,0.2)", fontSize:"11px", fontWeight:700, color:"#38bdf8" }}>{metrics.count_profitable_days ? `${metrics.profitable_days} profitable days / ${metrics.min_trading_days} min` : `Day ${session.day} / ${rules.min_trading_days > 0 ? rules.min_trading_days + " min" : "no min"}`}</Box>
         <Box sx={{ px:"10px", py:"3px", borderRadius:"20px", background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.1)", fontSize:"11px", fontWeight:700, color:"rgba(255,255,255,0.4)" }}>{metrics.daily_trades} trades today</Box>
         {metrics.consecutive_losses >= 2 && <Box sx={{ px:"10px", py:"3px", borderRadius:"20px", background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.3)", fontSize:"11px", fontWeight:700, color:"#fca5a5" }}>{metrics.consecutive_losses}x losses in a row</Box>}
-        <Box sx={{ px:"10px", py:"3px", borderRadius:"20px", background:"rgba(34,197,94,0.08)", border:"1px solid rgba(34,197,94,0.2)", fontSize:"11px", fontWeight:700, color:"#86efac" }}>{rules.starting_payout_pct ?? rules.payout_pct}% → {rules.payout_pct}% payout</Box>
-        {rules.daily_pause_not_breach && <Box sx={{ px:"10px", py:"3px", borderRadius:"20px", background:"rgba(245,158,11,0.1)", border:"1px solid rgba(245,158,11,0.3)", fontSize:"11px", fontWeight:700, color:"#fcd34d" }}>⚠️ {rules.daily_loss_limit_pct}% = daily PAUSE (not breach)</Box>}
-        {rules.news_window_minutes > 0 && <Box sx={{ px:"10px", py:"3px", borderRadius:"20px", background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.2)", fontSize:"11px", fontWeight:700, color:"rgba(239,68,68,0.7)" }}>📰 {rules.news_window_minutes}-min news window</Box>}
+        <Box sx={{ px:"10px", py:"3px", borderRadius:"20px", background:"rgba(34,197,94,0.08)", border:"1px solid rgba(34,197,94,0.2)", fontSize:"11px", fontWeight:700, color:"#86efac" }}>{rules.starting_payout_pct ?? rules.payout_pct}% â†’ {rules.payout_pct}% payout</Box>
+        {rules.daily_pause_not_breach && <Box sx={{ px:"10px", py:"3px", borderRadius:"20px", background:"rgba(245,158,11,0.1)", border:"1px solid rgba(245,158,11,0.3)", fontSize:"11px", fontWeight:700, color:"#fcd34d" }}>âš ï¸ {rules.daily_loss_limit_pct}% = daily PAUSE (not breach)</Box>}
+        {rules.news_window_minutes > 0 && <Box sx={{ px:"10px", py:"3px", borderRadius:"20px", background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.2)", fontSize:"11px", fontWeight:700, color:"rgba(239,68,68,0.7)" }}>ðŸ“° {rules.news_window_minutes}-min news window</Box>}
       </Box>
 
       {/* Stat cards */}
@@ -2209,13 +2209,13 @@ function ChallengeDashboard({ session, metrics, rules, violations, alerts, onRes
         <Grid item xs={6} sm={3}><StatCard label={metrics.count_profitable_days?"Profitable Days":"Day"} value={metrics.count_profitable_days?`${metrics.profitable_days}`:`${session.day}`} sub={`${rules.min_trading_days} min required`} color="#a855f7" /></Grid>
       </Grid>
 
-      {/* FEATURE 1 — Pass probability gauge */}
+      {/* FEATURE 1 â€” Pass probability gauge */}
       {session.trades.length > 0 && <PassProbabilityGauge session={session} />}
 
       {/* Progress bars */}
       <Box sx={{ ...card(), p:"20px 22px", mb:2 }}>
         <Typography sx={{ fontSize:"12px", fontWeight:800, color:"rgba(255,255,255,0.4)", textTransform:"uppercase", letterSpacing:"0.07em", mb:"16px" }}>
-          Challenge Progress — {rules.name}{metrics.trailing_dd ? " · Trailing DD" : ""}
+          Challenge Progress â€” {rules.name}{metrics.trailing_dd ? " Â· Trailing DD" : ""}
         </Typography>
         <Box sx={{ mb:"16px" }}>
           <Box sx={{ display:"flex", justifyContent:"space-between", mb:"6px" }}>
@@ -2252,7 +2252,7 @@ function ChallengeDashboard({ session, metrics, rules, violations, alerts, onRes
                     <Typography sx={{ fontSize:"11px", color:"rgba(255,255,255,0.25)" }}>D{t.day}</Typography>
                     <Typography sx={{ fontSize:"10px", fontWeight:800, px:"6px", py:"1px", borderRadius:"4px", background:t.direction==="buy"?"rgba(34,197,94,0.12)":"rgba(239,68,68,0.12)", color:t.direction==="buy"?"#22c55e":"#ef4444", border:t.direction==="buy"?"1px solid rgba(34,197,94,0.2)":"1px solid rgba(239,68,68,0.2)" }}>{(t.direction||"buy").toUpperCase()}</Typography>
                     <Typography sx={{ fontSize:"12px", color:"rgba(255,255,255,0.6)", fontWeight:700 }}>{t.symbol}</Typography>
-                    <Typography sx={{ fontSize:"11px", color:"rgba(255,255,255,0.3)" }}>x{t.lot_size} · {t.rr_ratio}R</Typography>
+                    <Typography sx={{ fontSize:"11px", color:"rgba(255,255,255,0.3)" }}>x{t.lot_size} Â· {t.rr_ratio}R</Typography>
                     {t.timeframe && <Typography sx={{ fontSize:"10px", color:"rgba(56,189,248,0.6)", fontWeight:700, px:"5px", borderRadius:"4px", background:"rgba(56,189,248,0.08)" }}>{t.timeframe}</Typography>}
                   </Box>
                   <Typography sx={{ fontSize:"13px", fontWeight:800, color:t.pnl>0?"#22c55e":t.pnl<0?"#ef4444":"#f59e0b", fontFamily:'"Roboto Mono",monospace' }}>{t.pnl>0?"+":""}{t.pnl.toFixed(2)}</Typography>
@@ -2272,7 +2272,7 @@ function ChallengeDashboard({ session, metrics, rules, violations, alerts, onRes
   );
 }
 
-// ── ResultScreen ──────────────────────────────────────────────────────────────
+// â”€â”€ ResultScreen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ResultScreen({ session, rules, onReset }: { session: SimSession; rules: any; onReset: () => void }) {
   const [report, setReport] = useState<any>(null);
 
@@ -2282,9 +2282,9 @@ function ResultScreen({ session, rules, onReset }: { session: SimSession; rules:
   }, []);
 
   const statusConfig: Record<string, { label:string; color:string; bg:string; icon:string }> = {
-    passed:          { label:"Challenge Passed! 🎉", color:"#22c55e", bg:"rgba(34,197,94,0.1)",  icon:"🏆" },
-    blown:           { label:"Account Blown 💀",     color:"#ef4444", bg:"rgba(239,68,68,0.1)",  icon:"💀" },
-    daily_limit_hit: { label:"Daily Limit Hit ⛔",   color:"#f59e0b", bg:"rgba(245,158,11,0.1)", icon:"⛔" },
+    passed:          { label:"Challenge Passed! ðŸŽ‰", color:"#22c55e", bg:"rgba(34,197,94,0.1)",  icon:"ðŸ†" },
+    blown:           { label:"Account Blown ðŸ’€",     color:"#ef4444", bg:"rgba(239,68,68,0.1)",  icon:"ðŸ’€" },
+    daily_limit_hit: { label:"Daily Limit Hit â›”",   color:"#f59e0b", bg:"rgba(245,158,11,0.1)", icon:"â›”" },
   };
   const cfg = statusConfig[session.status] || statusConfig.blown;
   const pnl = session.balance - session.account_size;
@@ -2296,7 +2296,7 @@ function ResultScreen({ session, rules, onReset }: { session: SimSession; rules:
       <Box sx={{ ...card(), p:"28px", mb:3, background:cfg.bg, border:`1px solid ${cfg.color}33`, textAlign:"center" }}>
         <Typography sx={{ fontSize:"40px", mb:"8px" }}>{cfg.icon}</Typography>
         <Typography sx={{ fontSize:"24px", fontWeight:900, color:cfg.color }}>{cfg.label}</Typography>
-        <Typography sx={{ fontSize:"14px", color:"rgba(255,255,255,0.5)", mt:"6px" }}>{rules.name} · ${session.account_size.toLocaleString()} account · Day {session.day}</Typography>
+        <Typography sx={{ fontSize:"14px", color:"rgba(255,255,255,0.5)", mt:"6px" }}>{rules.name} Â· ${session.account_size.toLocaleString()} account Â· Day {session.day}</Typography>
       </Box>
 
       {/* Summary stats */}
@@ -2311,7 +2311,7 @@ function ResultScreen({ session, rules, onReset }: { session: SimSession; rules:
         ))}
       </Grid>
 
-      {/* FEATURE 2 — Equity curve chart */}
+      {/* FEATURE 2 â€” Equity curve chart */}
       {report?.equity_curve?.length > 1 && (
         <EquityCurveChart
           equityCurve={report.equity_curve}
@@ -2372,7 +2372,7 @@ function ResultScreen({ session, rules, onReset }: { session: SimSession; rules:
             <Box key={d.day} sx={{ display:"flex", justifyContent:"space-between", py:"7px", borderBottom:"1px solid rgba(255,255,255,0.04)", flexWrap:"wrap", gap:"6px" }}>
               <Typography sx={{ fontSize:"12px", color:"rgba(255,255,255,0.5)", fontWeight:700 }}>Day {d.day}</Typography>
               <Box sx={{ display:"flex", gap:"16px" }}>
-                <Typography sx={{ fontSize:"12px", color:"rgba(255,255,255,0.35)" }}>{d.trades} trades · {d.wins}W {d.losses}L</Typography>
+                <Typography sx={{ fontSize:"12px", color:"rgba(255,255,255,0.35)" }}>{d.trades} trades Â· {d.wins}W {d.losses}L</Typography>
                 <Typography sx={{ fontSize:"12px", fontWeight:800, color:d.pnl>=0?"#22c55e":"#ef4444", fontFamily:'"Roboto Mono",monospace' }}>{d.pnl>=0?"+":""}{d.pnl.toFixed(2)}</Typography>
               </Box>
             </Box>
@@ -2380,26 +2380,26 @@ function ResultScreen({ session, rules, onReset }: { session: SimSession; rules:
         </Box>
       )}
 
-      {/* FEATURE 6 — Save session for comparison */}
+      {/* FEATURE 6 â€” Save session for comparison */}
       <SaveSessionButton session={session} rules={rules} />
 
       <Box onClick={onReset} sx={{ py:"13px", borderRadius:"13px", textAlign:"center", cursor:"pointer", fontWeight:800, fontSize:"14px", background:"linear-gradient(135deg,#0ea5e9,#6366f1)", color:"white", boxShadow:"0 6px 20px rgba(56,189,248,0.2)", transition:"all 0.15s" }}>
-        🔄 Start New Challenge
+        ðŸ”„ Start New Challenge
       </Box>
     </Box>
   );
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// FEATURE 6 — SaveSessionButton (used in ResultScreen)
-// ═════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// FEATURE 6 â€” SaveSessionButton (used in ResultScreen)
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function SaveSessionButton({ session, rules }: { session: any; rules: any }) {
   const [saved,   setSaved]   = useState(false);
   const [label,   setLabel]   = useState("");
   const [editing, setEditing] = useState(false);
 
   const doSave = () => {
-    const finalLabel = label.trim() || `${rules?.name || "Challenge"} — ${new Date().toLocaleDateString()}`;
+    const finalLabel = label.trim() || `${rules?.name || "Challenge"} â€” ${new Date().toLocaleDateString()}`;
     const id  = `simS_${Date.now()}`;
     const pnl = session.account_size > 0 ? (session.balance - session.account_size) / session.account_size * 100 : 0;
     const entry: SavedSimSession = {
@@ -2419,7 +2419,7 @@ function SaveSessionButton({ session, rules }: { session: any; rules: any }) {
   if (saved) {
     return (
       <Box sx={{ py:"11px", borderRadius:"12px", textAlign:"center", background:"rgba(34,197,94,0.1)", border:"1px solid rgba(34,197,94,0.25)", mb:"12px" }}>
-        <Typography sx={{ fontSize:"13px", fontWeight:700, color:"#22c55e" }}>✅ Session saved — view in Compare tab</Typography>
+        <Typography sx={{ fontSize:"13px", fontWeight:700, color:"#22c55e" }}>âœ… Session saved â€” view in Compare tab</Typography>
       </Box>
     );
   }
@@ -2431,14 +2431,14 @@ function SaveSessionButton({ session, rules }: { session: any; rules: any }) {
           <Typography sx={{ fontSize:"11px", fontWeight:700, color:"rgba(255,255,255,0.4)", textTransform:"uppercase", letterSpacing:"0.07em", mb:"8px" }}>Session Label</Typography>
           <input
             style={{ ...INP, marginBottom:"10px" }}
-            placeholder={`${rules?.name || "Challenge"} — ${new Date().toLocaleDateString()}`}
+            placeholder={`${rules?.name || "Challenge"} â€” ${new Date().toLocaleDateString()}`}
             value={label}
             onChange={e => setLabel(e.target.value)}
             autoFocus
           />
           <Box sx={{ display:"flex", gap:"8px" }}>
             <Box onClick={doSave} sx={{ flex:1, py:"9px", borderRadius:"10px", textAlign:"center", cursor:"pointer", fontWeight:800, fontSize:"13px", background:"linear-gradient(135deg,#a855f7,#6366f1)", color:"white" }}>
-              💾 Save
+              ðŸ’¾ Save
             </Box>
             <Box onClick={() => setEditing(false)} sx={{ px:"16px", py:"9px", borderRadius:"10px", cursor:"pointer", fontSize:"13px", fontWeight:700, color:"rgba(255,255,255,0.4)", background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.1)" }}>
               Cancel
@@ -2447,7 +2447,7 @@ function SaveSessionButton({ session, rules }: { session: any; rules: any }) {
         </Box>
       ) : (
         <Box onClick={() => setEditing(true)} sx={{ py:"11px", borderRadius:"12px", textAlign:"center", cursor:"pointer", fontWeight:700, fontSize:"13px", background:"rgba(168,85,247,0.08)", border:"1px solid rgba(168,85,247,0.25)", color:"#a855f7", mb:"0px", transition:"all 0.15s", "&:hover":{ background:"rgba(168,85,247,0.14)" } }}>
-          💾 Save Session for Comparison
+          ðŸ’¾ Save Session for Comparison
         </Box>
       )}
     </Box>
@@ -2455,11 +2455,11 @@ function SaveSessionButton({ session, rules }: { session: any; rules: any }) {
 }
 
 
-// ═════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // PAGE ROOT
-// ═════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 export default function Simulator() {
-  // FEATURE 3 — Load persisted session on mount
+  // FEATURE 3 â€” Load persisted session on mount
   const persisted = loadSession();
   const [session,    setSession]    = useState<SimSession | null>(persisted.session);
   const [rules,      setRules]      = useState<any>(persisted.rules);
@@ -2467,19 +2467,19 @@ export default function Simulator() {
   const [violations, setViolations] = useState<string[]>([]);
   const [alerts,     setAlerts]     = useState<string[]>([]);
 
-  // FEATURE 4 — Psychological scenario state
+  // FEATURE 4 â€” Psychological scenario state
   const [activeScenario,   setActiveScenario]   = useState<PsychScenario | null>(null);
   const [seenScenarioIds,  setSeenScenarioIds]  = useState<Set<string>>(new Set());
 
-  // FEATURE 6 — Active tab: "challenge" | "compare"
+  // FEATURE 6 â€” Active tab: "challenge" | "compare"
   const [activeTab, setActiveTab] = useState<"challenge" | "compare">("challenge");
 
-  // FEATURE 3 — Persist on every state change
+  // FEATURE 3 â€” Persist on every state change
   useEffect(() => {
     saveSession(session, rules, metrics);
   }, [session, rules, metrics]);
 
-  // FEATURE 4 — Check for scenario triggers after each trade
+  // FEATURE 4 â€” Check for scenario triggers after each trade
   const checkScenarios = useCallback((s: SimSession, r: any) => {
     for (const scenario of PSYCH_SCENARIOS) {
       if (!seenScenarioIds.has(scenario.id) && scenario.trigger(s, r)) {
@@ -2518,22 +2518,22 @@ export default function Simulator() {
       {/* Header */}
       <Box sx={{ mb:"20px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:1 }}>
         <Box>
-          <Typography sx={{ fontSize:{xs:"20px",md:"26px"}, fontWeight:900, color:"white" }}>🏆 Prop Firm Survival Simulator</Typography>
-          <Typography sx={{ fontSize:"13px", color:"rgba(255,255,255,0.35)", mt:"4px" }}>Practice your funded challenge — no real money, full rule enforcement</Typography>
+          <Typography sx={{ fontSize:{xs:"20px",md:"26px"}, fontWeight:900, color:"white" }}>ðŸ† Prop Firm Survival Simulator</Typography>
+          <Typography sx={{ fontSize:"13px", color:"rgba(255,255,255,0.35)", mt:"4px" }}>Practice your funded challenge â€” no real money, full rule enforcement</Typography>
         </Box>
-        {/* FEATURE 3 — Show resume badge if session was restored */}
+        {/* FEATURE 3 â€” Show resume badge if session was restored */}
         {session && persisted.session && activeTab === "challenge" && (
           <Box sx={{ px:"12px", py:"6px", borderRadius:"10px", background:"rgba(34,197,94,0.1)", border:"1px solid rgba(34,197,94,0.25)" }}>
-            <Typography sx={{ fontSize:"12px", fontWeight:700, color:"#22c55e" }}>✅ Session restored — Day {session.day}</Typography>
+            <Typography sx={{ fontSize:"12px", fontWeight:700, color:"#22c55e" }}>âœ… Session restored â€” Day {session.day}</Typography>
           </Box>
         )}
       </Box>
 
-      {/* FEATURE 6 — Tab switcher */}
+      {/* FEATURE 6 â€” Tab switcher */}
       <Box sx={{ display:"flex", gap:"8px", mb:"24px" }}>
         {[
-          { id:"challenge", label:"🏆 Challenge", desc:"Active simulation" },
-          { id:"compare",   label:"📊 Compare",   desc:"Side-by-side sessions" },
+          { id:"challenge", label:"ðŸ† Challenge", desc:"Active simulation" },
+          { id:"compare",   label:"ðŸ“Š Compare",   desc:"Side-by-side sessions" },
         ].map(tab => (
           <Box key={tab.id} onClick={() => setActiveTab(tab.id as any)} sx={{
             px:"18px", py:"9px", borderRadius:"12px", cursor:"pointer",
@@ -2547,7 +2547,7 @@ export default function Simulator() {
         ))}
       </Box>
 
-      {/* FEATURE 4 — Psychological scenario overlay */}
+      {/* FEATURE 4 â€” Psychological scenario overlay */}
       {activeScenario && (
         <PsychologicalScenario
           scenario={activeScenario}
@@ -2555,7 +2555,7 @@ export default function Simulator() {
         />
       )}
 
-      {/* ── Challenge tab ── */}
+      {/* â”€â”€ Challenge tab â”€â”€ */}
       {activeTab === "challenge" && (
         <>
           {/* Setup screen */}
@@ -2603,9 +2603,10 @@ export default function Simulator() {
         </>
       )}
 
-      {/* ── Compare tab ── */}
+      {/* â”€â”€ Compare tab â”€â”€ */}
       {activeTab === "compare" && <CompareTab />}
 
     </Box>
   );
 }
+

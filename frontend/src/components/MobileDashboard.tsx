@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Box, Typography, IconButton, Avatar, Chip, LinearProgress, Button } from '@mui/material';
 import {
   TrendingUp,
@@ -60,7 +60,7 @@ const MobileDashboard: React.FC = () => {
   };
 
   const handleCloseAll = () => {
-    if (window.confirm('⚠️ Are you sure you want to close ALL positions?')) {
+    if (window.confirm('âš ï¸ Are you sure you want to close ALL positions?')) {
       setAlerts(prev => [{ 
         id: Date.now(), 
         type: 'warning', 
@@ -187,8 +187,8 @@ const MobileDashboard: React.FC = () => {
       {/* Quick Stats Grid */}
       <Box sx={{ px: 2, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 3 }}>
         {[
-          { label: 'Positions', value: data.positions, color: '#3b82f6', icon: '📊' },
-          { label: 'Risk Level', value: `${data.riskLevel}%`, color: '#f59e0b', icon: '⚡' },
+          { label: 'Positions', value: data.positions, color: '#3b82f6', icon: 'ðŸ“Š' },
+          { label: 'Risk Level', value: `${data.riskLevel}%`, color: '#f59e0b', icon: 'âš¡' },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -341,9 +341,9 @@ const MobileDashboard: React.FC = () => {
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
                   <Typography sx={{ fontSize: '18px' }}>
-                    {alert.type === 'success' ? '🟢' :
-                     alert.type === 'warning' ? '🟡' :
-                     alert.type === 'error' ? '🔴' : '🔵'}
+                    {alert.type === 'success' ? 'ðŸŸ¢' :
+                     alert.type === 'warning' ? 'ðŸŸ¡' :
+                     alert.type === 'error' ? 'ðŸ”´' : 'ðŸ”µ'}
                   </Typography>
                   <Box sx={{ flex: 1 }}>
                     <Typography sx={{ fontSize: '12px', color: '#fff', mb: 0.5 }}>
@@ -386,7 +386,7 @@ const MobileDashboard: React.FC = () => {
           fontWeight: 600,
           textTransform: 'none',
         }}>
-          🛑 Close All
+          ðŸ›‘ Close All
         </Button>
 
         <Button onClick={handlePauseTrading} sx={{
@@ -399,7 +399,7 @@ const MobileDashboard: React.FC = () => {
           fontWeight: 600,
           textTransform: 'none',
         }}>
-          ⏸ Pause
+          â¸ Pause
         </Button>
 
         <Button onClick={handleExportReport} sx={{
@@ -412,7 +412,7 @@ const MobileDashboard: React.FC = () => {
           fontWeight: 600,
           textTransform: 'none',
         }}>
-          📊 Export
+          ðŸ“Š Export
         </Button>
 
         <Button onClick={handleRefresh} sx={{
@@ -425,7 +425,7 @@ const MobileDashboard: React.FC = () => {
           fontWeight: 600,
           textTransform: 'none',
         }}>
-          🔄 Refresh
+          ðŸ”„ Refresh
         </Button>
       </Box>
 
@@ -440,3 +440,4 @@ const MobileDashboard: React.FC = () => {
 };
 
 export default MobileDashboard;
+

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Box, Typography, Chip, LinearProgress, Avatar } from '@mui/material';
 import { motion } from 'framer-motion';
 import {
@@ -362,3 +362,4 @@ const MobileAnalytics: React.FC = () => {
 };
 
 export default MobileAnalytics;
+

@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
 const ProtectedRoute: React.FC<{ children: any }> = ({ children }) => {
@@ -15,3 +15,4 @@ const ProtectedRoute: React.FC<{ children: any }> = ({ children }) => {
 };
 
 export default ProtectedRoute;
+

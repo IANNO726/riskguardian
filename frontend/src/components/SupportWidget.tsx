@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, TextField, Button, IconButton, Fab, Badge, CircularProgress } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
@@ -17,7 +17,7 @@ const SUPPORT_RESPONSES: Record<string, string> = {
   billing: "For billing questions, I can see your account is on the Pro plan. Invoices are sent automatically to your email. Need anything specific?",
   mt5: "For MT5 connection issues: 1) Check your server name matches exactly 2) Ensure MT5 is running 3) Verify your credentials in Settings. Still stuck? Let me escalate this.",
   journal: "The AI Journal syncs every 60 seconds from MT5. If trades aren't showing, try clicking 'Sync MT5 Trades' manually. Need more help?",
-  stripe: "For payment issues, your test transactions show in Stripe Dashboard → Payments. Production payments require going live in Stripe settings.",
+  stripe: "For payment issues, your test transactions show in Stripe Dashboard â†’ Payments. Production payments require going live in Stripe settings.",
 };
 
 const getAutoResponse = (text: string): string => {
@@ -37,8 +37,8 @@ const SupportWidget: React.FC = () => {
       id: 1,
       role: 'system',
       text: plan === 'pro' || plan === 'enterprise'
-        ? '👋 Hi! You have priority support. Average response time: < 2 hours.'
-        : '👋 Hi! Upgrade to Pro for priority support with < 2hr response times.',
+        ? 'ðŸ‘‹ Hi! You have priority support. Average response time: < 2 hours.'
+        : 'ðŸ‘‹ Hi! Upgrade to Pro for priority support with < 2hr response times.',
       time: new Date()
     }
   ]);
@@ -124,10 +124,10 @@ const SupportWidget: React.FC = () => {
           {plan === 'free' || plan === 'starter' ? (
             <Box sx={{ mx: 2, mt: 2, p: 1.5, borderRadius: '12px', background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.25)' }}>
               <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', mb: 1 }}>
-                🚀 Get priority support with <strong>Pro</strong> — responses in under 2 hours.
+                ðŸš€ Get priority support with <strong>Pro</strong> â€” responses in under 2 hours.
               </Typography>
               <Box onClick={() => startCheckout('pro')} sx={{ fontSize: '12px', fontWeight: 700, color: '#a855f7', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}>
-                Upgrade to Pro →
+                Upgrade to Pro â†’
               </Box>
             </Box>
           ) : null}
@@ -187,3 +187,4 @@ const SupportWidget: React.FC = () => {
 };
 
 export default SupportWidget;
+

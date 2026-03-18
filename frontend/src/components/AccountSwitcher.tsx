@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -85,7 +85,7 @@ const AccountSwitcher: React.FC = () => {
             color: 'rgba(255,255,255,0.5)',
             lineHeight: 1,
           }}>
-            {currentAccount.platform} • {currentAccount.account_number}
+            {currentAccount.platform} â€¢ {currentAccount.account_number}
           </Typography>
         </Box>
 
@@ -184,7 +184,7 @@ const AccountSwitcher: React.FC = () => {
                   fontSize: '11px',
                   color: 'rgba(255,255,255,0.5)',
                 }}>
-                  {account.platform} • {account.broker_name}
+                  {account.platform} â€¢ {account.broker_name}
                 </Typography>
               </Box>
 
@@ -239,3 +239,4 @@ const AccountSwitcher: React.FC = () => {
 };
 
 export default AccountSwitcher;
+

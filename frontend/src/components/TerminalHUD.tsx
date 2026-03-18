@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Box, Typography } from '@mui/material';
 
 interface Props {
@@ -41,3 +41,4 @@ const TerminalHUD: React.FC<Props> = ({ profit, connected }) => {
 };
 
 export default TerminalHUD;
+

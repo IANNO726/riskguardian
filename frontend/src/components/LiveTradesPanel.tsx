@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Card, CardContent, Typography, Stack, Box, Chip, Grid } from "@mui/material";
 import { useLiveTrades } from "../hooks/useLiveTrades";
 
@@ -76,3 +76,4 @@ export default function LiveTradesPanel() {
     </Card>
   );
 }
+

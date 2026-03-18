@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box, Typography, Card, CardContent, Chip, Button, TextField,
   Dialog, DialogTitle, DialogContent, DialogActions, IconButton,
@@ -13,12 +13,12 @@ import {
 import axios from 'axios';
 import { usePlan, startCheckout } from '../hooks/usePlan';
 
-const API = 'http://localhost:8000/api/v1';
+const API = 'https://riskguardian.onrender.com/api/v1';
 const RISKGUARDIAN_TEMPLATE = 'https://riskguardian.io/journal-template';
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Robust date parser
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const parseDateSafe = (raw: string | null | undefined): Date | null => {
   if (!raw) return null;
   const s = raw.trim();
@@ -59,7 +59,7 @@ const fmt = (raw: string | null | undefined): string => {
   if (!d) return 'Invalid Date';
   try {
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-  } catch { return '—'; }
+  } catch { return 'â€”'; }
 };
 
 const fmtFull = (raw: string | null | undefined): string => {
@@ -70,9 +70,9 @@ const fmtFull = (raw: string | null | undefined): string => {
   } catch { return ''; }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Symbol mapper
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface SymbolInfo {
   useDerivChart: boolean;
   derivSymbol:   string;
@@ -214,9 +214,9 @@ const buildChartUrls = (entry: JournalEntry): { embedUrl: string; fullUrl: strin
   };
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Types
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface JournalEntry {
   id: number;
   trade_id?: number;
@@ -275,9 +275,9 @@ interface BehaviorData {
 const EMOTION_OPTIONS  = ['Calm','Confident','Anxious','Fearful','Greedy','Disciplined','Frustrated','Excited','Neutral'];
 const STRATEGY_OPTIONS = ['Trend Following','Breakout','Scalping','Swing Trading','News Trading','Support/Resistance','Price Action','Other'];
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // AI Feedback (per-trade)
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const generateAIFeedback = (entry: JournalEntry): string => {
   const pnl   = entry.profit_loss ?? 0;
   const isWin = pnl > 0;
@@ -290,9 +290,9 @@ const generateAIFeedback = (entry: JournalEntry): string => {
   const hasNeg = neg.some(e => emotion.includes(e));
   const hasPos = pos.some(e => emotion.includes(e));
 
-  if (isWin && hasNeg)       fb += `⚠️ **Emotional Warning:** You made a profit but traded while feeling ${entry.emotional_state}. Wins under negative emotional states can reinforce bad habits.\n\n`;
-  else if (!isWin && hasNeg) fb += `🔴 **Emotional Risk:** Trading while ${entry.emotional_state} likely contributed to this loss. Consider a cooldown before your next trade.\n\n`;
-  else if (hasPos)           fb += `✅ **Emotional Discipline:** Trading with a ${entry.emotional_state} mindset is exactly what separates professionals from amateurs.\n\n`;
+  if (isWin && hasNeg)       fb += `âš ï¸ **Emotional Warning:** You made a profit but traded while feeling ${entry.emotional_state}. Wins under negative emotional states can reinforce bad habits.\n\n`;
+  else if (!isWin && hasNeg) fb += `ðŸ”´ **Emotional Risk:** Trading while ${entry.emotional_state} likely contributed to this loss. Consider a cooldown before your next trade.\n\n`;
+  else if (hasPos)           fb += `âœ… **Emotional Discipline:** Trading with a ${entry.emotional_state} mindset is exactly what separates professionals from amateurs.\n\n`;
 
   if (entry.entry_price && entry.stop_loss && entry.take_profit) {
     const risk   = Math.abs(entry.entry_price - entry.stop_loss);
@@ -300,21 +300,21 @@ const generateAIFeedback = (entry: JournalEntry): string => {
     const rr = risk > 0 ? (reward / risk).toFixed(2) : null;
     if (rr) {
       const n = parseFloat(rr);
-      if (n >= 2)      fb += `📐 **Risk/Reward: ${rr}:1** — Excellent. You're targeting more than 2× your risk.\n\n`;
-      else if (n >= 1) fb += `📐 **Risk/Reward: ${rr}:1** — Acceptable, but aim for at least 2:1 to build a sustainable edge.\n\n`;
-      else             fb += `📐 **Risk/Reward: ${rr}:1** — Poor. You're risking more than you could gain.\n\n`;
+      if (n >= 2)      fb += `ðŸ“ **Risk/Reward: ${rr}:1** â€” Excellent. You're targeting more than 2Ã— your risk.\n\n`;
+      else if (n >= 1) fb += `ðŸ“ **Risk/Reward: ${rr}:1** â€” Acceptable, but aim for at least 2:1 to build a sustainable edge.\n\n`;
+      else             fb += `ðŸ“ **Risk/Reward: ${rr}:1** â€” Poor. You're risking more than you could gain.\n\n`;
     }
   }
 
-  if (pnl > 100)       fb += `💰 **Strong Result:** +$${pnl.toFixed(2)} is a solid gain. ${entry.strategy_used ? `Your ${entry.strategy_used} strategy executed well.` : ''} Document exactly what you did right.\n\n`;
-  else if (pnl > 0)    fb += `📈 **Positive Trade:** +$${pnl.toFixed(2)} logged. Small consistent wins compound over time.\n\n`;
-  else if (pnl < -100) fb += `🔴 **Significant Loss:** -$${Math.abs(pnl).toFixed(2)} — Review your entry criteria. Was your stop loss respected?\n\n`;
-  else if (pnl < 0)    fb += `📉 **Managed Loss:** -$${Math.abs(pnl).toFixed(2)} — If within your risk parameters, this is acceptable.\n\n`;
+  if (pnl > 100)       fb += `ðŸ’° **Strong Result:** +$${pnl.toFixed(2)} is a solid gain. ${entry.strategy_used ? `Your ${entry.strategy_used} strategy executed well.` : ''} Document exactly what you did right.\n\n`;
+  else if (pnl > 0)    fb += `ðŸ“ˆ **Positive Trade:** +$${pnl.toFixed(2)} logged. Small consistent wins compound over time.\n\n`;
+  else if (pnl < -100) fb += `ðŸ”´ **Significant Loss:** -$${Math.abs(pnl).toFixed(2)} â€” Review your entry criteria. Was your stop loss respected?\n\n`;
+  else if (pnl < 0)    fb += `ðŸ“‰ **Managed Loss:** -$${Math.abs(pnl).toFixed(2)} â€” If within your risk parameters, this is acceptable.\n\n`;
 
-  if (lessons && lessons.length > 10) fb += `📚 **Learning Mindset:** Great job documenting lessons — reviewing these weekly will compound your growth.\n\n`;
-  else fb += `💡 **Improvement Tip:** Log your lessons — even winning trades have things to learn from.\n\n`;
+  if (lessons && lessons.length > 10) fb += `ðŸ“š **Learning Mindset:** Great job documenting lessons â€” reviewing these weekly will compound your growth.\n\n`;
+  else fb += `ðŸ’¡ **Improvement Tip:** Log your lessons â€” even winning trades have things to learn from.\n\n`;
 
-  if (!entry.strategy_used) fb += `🎯 **Strategy Tracking:** No strategy logged. If you can't name your strategy, you might be trading on impulse.\n\n`;
+  if (!entry.strategy_used) fb += `ðŸŽ¯ **Strategy Tracking:** No strategy logged. If you can't name your strategy, you might be trading on impulse.\n\n`;
 
   let score = 50;
   if (isWin) score += 20;
@@ -326,15 +326,15 @@ const generateAIFeedback = (entry: JournalEntry): string => {
   if (entry.entry_price && entry.stop_loss && entry.take_profit) score += 5;
   score = Math.min(100, Math.max(0, score));
 
-  const sc = score >= 70 ? '🟢' : score >= 50 ? '🟡' : '🔴';
+  const sc = score >= 70 ? 'ðŸŸ¢' : score >= 50 ? 'ðŸŸ¡' : 'ðŸ”´';
   fb += `${sc} **Trade Quality Score: ${score}/100**\n`;
-  fb += score >= 70 ? 'Excellent execution — keep this standard.' : score >= 50 ? 'Decent trade — small improvements will compound.' : 'Focus on discipline and process over profits.';
+  fb += score >= 70 ? 'Excellent execution â€” keep this standard.' : score >= 50 ? 'Decent trade â€” small improvements will compound.' : 'Focus on discipline and process over profits.';
   return fb;
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // FeedbackPanel
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const FeedbackPanel: React.FC<{ entry: JournalEntry }> = ({ entry }) => {
   const [feedback, setFeedback] = useState('');
   const [loading,  setLoading]  = useState(false);
@@ -349,7 +349,7 @@ const FeedbackPanel: React.FC<{ entry: JournalEntry }> = ({ entry }) => {
     <Button onClick={getFeedback} disabled={loading} size="small"
       startIcon={loading ? <CircularProgress size={14} /> : <AutoAwesome sx={{ fontSize: 14 }} />}
       sx={{ mt: 1.5, borderRadius: '8px', background: 'linear-gradient(135deg,rgba(168,85,247,0.15),rgba(236,72,153,0.15))', border: '1px solid rgba(168,85,247,0.3)', color: '#c084fc', fontSize: '13px', fontWeight: 600, textTransform: 'none', px: 2.5, py: 1, '&:hover': { background: 'linear-gradient(135deg,rgba(168,85,247,0.25),rgba(236,72,153,0.25))' } }}>
-      {loading ? 'Analyzing trade...' : '✨ Get AI Feedback'}
+      {loading ? 'Analyzing trade...' : 'âœ¨ Get AI Feedback'}
     </Button>
   );
 
@@ -369,9 +369,9 @@ const FeedbackPanel: React.FC<{ entry: JournalEntry }> = ({ entry }) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // LockEventCard
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const LockEventCard: React.FC<{ entry: JournalEntry }> = ({ entry }) => {
   let reason      = 'manual';
   let duration    = 60;
@@ -387,15 +387,15 @@ const LockEventCard: React.FC<{ entry: JournalEntry }> = ({ entry }) => {
   }
 
   const reasonConfig: Record<string, { label: string; color: string; icon: string }> = {
-    revenge_trade:    { label: 'Revenge Trade',  color: '#f97316', icon: '😤' },
-    revenge_detected: { label: 'Revenge Trade',  color: '#f97316', icon: '😤' },
-    loss_limit:       { label: 'Loss Limit',      color: '#ef4444', icon: '📉' },
-    auto_loss_limit:  { label: 'Auto Loss Limit', color: '#a855f7', icon: '🤖' },
-    manual:           { label: 'Manual Lock',     color: '#38bdf8', icon: '🧘' },
-    risk_lock:        { label: 'Risk Lock',       color: '#fbbf24', icon: '🔒' },
+    revenge_trade:    { label: 'Revenge Trade',  color: '#f97316', icon: 'ðŸ˜¤' },
+    revenge_detected: { label: 'Revenge Trade',  color: '#f97316', icon: 'ðŸ˜¤' },
+    loss_limit:       { label: 'Loss Limit',      color: '#ef4444', icon: 'ðŸ“‰' },
+    auto_loss_limit:  { label: 'Auto Loss Limit', color: '#a855f7', icon: 'ðŸ¤–' },
+    manual:           { label: 'Manual Lock',     color: '#38bdf8', icon: 'ðŸ§˜' },
+    risk_lock:        { label: 'Risk Lock',       color: '#fbbf24', icon: 'ðŸ”’' },
   };
 
-  const cfg      = reasonConfig[reason] ?? { label: reason.replace(/_/g, ' '), color: '#38bdf8', icon: '🔒' };
+  const cfg      = reasonConfig[reason] ?? { label: reason.replace(/_/g, ' '), color: '#38bdf8', icon: 'ðŸ”’' };
   const isAuto   = triggeredBy === 'auto';
   const pnl      = entry.profit_loss;
 
@@ -409,15 +409,15 @@ const LockEventCard: React.FC<{ entry: JournalEntry }> = ({ entry }) => {
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-              <Typography sx={{ fontSize: '16px', fontWeight: 800, color: 'white' }}>🔒 Risk Lock</Typography>
-              {isAuto && <Chip label="🤖 Auto" size="small" sx={{ height: 20, fontSize: '10px', fontWeight: 700, background: 'rgba(168,85,247,0.2)', color: '#a855f7', border: '1px solid rgba(168,85,247,0.4)' }} />}
+              <Typography sx={{ fontSize: '16px', fontWeight: 800, color: 'white' }}>ðŸ”’ Risk Lock</Typography>
+              {isAuto && <Chip label="ðŸ¤– Auto" size="small" sx={{ height: 20, fontSize: '10px', fontWeight: 700, background: 'rgba(168,85,247,0.2)', color: '#a855f7', border: '1px solid rgba(168,85,247,0.4)' }} />}
             </Box>
             <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{fmt(entry.entry_date)}</Typography>
           </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
           <Chip label={`${cfg.icon} ${cfg.label}`} size="small" sx={{ height: 26, fontSize: '12px', fontWeight: 700, background: `${cfg.color}20`, color: cfg.color, border: `1px solid ${cfg.color}40` }} />
-          <Chip label={`⏱ ${duration >= 60 ? `${Math.floor(duration / 60)}h${duration % 60 ? ` ${duration % 60}m` : ''}` : `${duration}m`}`} size="small" sx={{ height: 26, fontSize: '12px', fontWeight: 600, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)' }} />
+          <Chip label={`â± ${duration >= 60 ? `${Math.floor(duration / 60)}h${duration % 60 ? ` ${duration % 60}m` : ''}` : `${duration}m`}`} size="small" sx={{ height: 26, fontSize: '12px', fontWeight: 600, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)' }} />
           {pnl != null && <Chip label={`P&L: ${pnl >= 0 ? '+' : ''}$${Math.abs(pnl).toFixed(2)}`} size="small" sx={{ height: 26, fontSize: '12px', fontWeight: 700, background: pnl >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: pnl >= 0 ? '#22c55e' : '#ef4444', border: `1px solid ${pnl >= 0 ? 'rgba(34,197,94,0.35)' : 'rgba(239,68,68,0.35)'}` }} />}
         </Box>
         {entry.notes && (
@@ -436,9 +436,9 @@ const LockEventCard: React.FC<{ entry: JournalEntry }> = ({ entry }) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // PriceLevelsPanel
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PriceLevelsPanel: React.FC<{ entry: JournalEntry }> = ({ entry }) => {
   const rr = (() => {
     if (!entry.entry_price || !entry.stop_loss || !entry.take_profit) return null;
@@ -448,15 +448,15 @@ const PriceLevelsPanel: React.FC<{ entry: JournalEntry }> = ({ entry }) => {
   })();
   const rrColor = !rr ? '#fbbf24' : rr >= 2 ? '#22c55e' : rr >= 1 ? '#fbbf24' : '#ef4444';
   const levels = [
-    { key: 'entry', label: 'ENTRY',       price: entry.entry_price, color: '#38bdf8', icon: '→', bg: 'rgba(56,189,248,0.10)',  border: 'rgba(56,189,248,0.30)' },
-    { key: 'sl',    label: 'STOP LOSS',   price: entry.stop_loss,   color: '#ef4444', icon: '🛑', bg: 'rgba(239,68,68,0.10)',  border: 'rgba(239,68,68,0.30)'  },
-    { key: 'tp',    label: 'TAKE PROFIT', price: entry.take_profit, color: '#22c55e', icon: '🎯', bg: 'rgba(34,197,94,0.10)',  border: 'rgba(34,197,94,0.30)'  },
-    { key: 'exit',  label: 'EXIT',        price: entry.exit_price,  color: '#fbbf24', icon: '✕',  bg: 'rgba(251,191,36,0.10)', border: 'rgba(251,191,36,0.30)' },
+    { key: 'entry', label: 'ENTRY',       price: entry.entry_price, color: '#38bdf8', icon: 'â†’', bg: 'rgba(56,189,248,0.10)',  border: 'rgba(56,189,248,0.30)' },
+    { key: 'sl',    label: 'STOP LOSS',   price: entry.stop_loss,   color: '#ef4444', icon: 'ðŸ›‘', bg: 'rgba(239,68,68,0.10)',  border: 'rgba(239,68,68,0.30)'  },
+    { key: 'tp',    label: 'TAKE PROFIT', price: entry.take_profit, color: '#22c55e', icon: 'ðŸŽ¯', bg: 'rgba(34,197,94,0.10)',  border: 'rgba(34,197,94,0.30)'  },
+    { key: 'exit',  label: 'EXIT',        price: entry.exit_price,  color: '#fbbf24', icon: 'âœ•',  bg: 'rgba(251,191,36,0.10)', border: 'rgba(251,191,36,0.30)' },
   ].filter(l => l.price != null) as typeof levels;
   if (levels.length === 0) return null;
   return (
     <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 20, background: 'linear-gradient(0deg,rgba(10,14,26,0.97) 80%,transparent)', backdropFilter: 'blur(6px)', borderTop: '1px solid rgba(255,255,255,0.07)', p: 1.5, display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
-      <Typography sx={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', mr: 0.5 }}>📍 Levels</Typography>
+      <Typography sx={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', mr: 0.5 }}>ðŸ“ Levels</Typography>
       {levels.map(lvl => {
         const priceStr = lvl.price! > 99 ? lvl.price!.toFixed(2) : lvl.price!.toFixed(5);
         return (
@@ -479,9 +479,9 @@ const PriceLevelsPanel: React.FC<{ entry: JournalEntry }> = ({ entry }) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // TradingView Modal
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const TradingViewModal: React.FC<{ entry: JournalEntry; open: boolean; onClose: () => void }> = ({ entry, open, onClose }) => {
   const sym      = mapSymbol(entry.symbol || '');
   const interval = getBestInterval(entry.entry_date, entry.exit_date);
@@ -516,11 +516,11 @@ const TradingViewModal: React.FC<{ entry: JournalEntry; open: boolean; onClose: 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap', mb: 0.3 }}>
               <Typography sx={{ fontSize: '20px', fontWeight: 800, color: 'white' }}>{sym.label}</Typography>
               <Chip label={interval.label} size="small" sx={{ height: 22, fontSize: '11px', fontWeight: 700, background: 'rgba(56,189,248,0.15)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.3)' }} />
-              <Chip label={sym.useDerivChart ? '✓ Deriv Chart' : '✓ TradingView'} size="small" sx={{ height: 22, fontSize: '11px', fontWeight: 700, background: sym.useDerivChart ? 'rgba(168,85,247,0.15)' : 'rgba(34,197,94,0.12)', color: sym.useDerivChart ? '#a855f7' : '#22c55e', border: `1px solid ${sym.useDerivChart ? 'rgba(168,85,247,0.3)' : 'rgba(34,197,94,0.3)'}` }} />
-              {hasLevels && <Chip label="📍 Levels overlaid" size="small" sx={{ height: 22, fontSize: '11px', fontWeight: 600, background: 'rgba(251,191,36,0.1)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.3)' }} />}
+              <Chip label={sym.useDerivChart ? 'âœ“ Deriv Chart' : 'âœ“ TradingView'} size="small" sx={{ height: 22, fontSize: '11px', fontWeight: 700, background: sym.useDerivChart ? 'rgba(168,85,247,0.15)' : 'rgba(34,197,94,0.12)', color: sym.useDerivChart ? '#a855f7' : '#22c55e', border: `1px solid ${sym.useDerivChart ? 'rgba(168,85,247,0.3)' : 'rgba(34,197,94,0.3)'}` }} />
+              {hasLevels && <Chip label="ðŸ“ Levels overlaid" size="small" sx={{ height: 22, fontSize: '11px', fontWeight: 600, background: 'rgba(251,191,36,0.1)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.3)' }} />}
               {rr && <Chip label={`RR ${rr}:1`} size="small" sx={{ height: 22, fontSize: '11px', fontWeight: 800, background: 'rgba(168,85,247,0.15)', color: rrColor, border: `1px solid ${rrColor}55` }} />}
             </Box>
-            <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{fmtFull(entry.entry_date)}{entry.trade_direction && ` · ${entry.trade_direction}`}</Typography>
+            <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{fmtFull(entry.entry_date)}{entry.trade_direction && ` Â· ${entry.trade_direction}`}</Typography>
           </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
@@ -534,7 +534,7 @@ const TradingViewModal: React.FC<{ entry: JournalEntry; open: boolean; onClose: 
           {!chartLoaded && (
             <Box sx={{ position: 'absolute', inset: 0, background: 'rgba(10,14,26,0.92)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, zIndex: 20 }}>
               <CircularProgress sx={{ color: sym.useDerivChart ? '#a855f7' : '#38bdf8' }} size={40} />
-              <Typography sx={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>Loading {sym.label} chart…</Typography>
+              <Typography sx={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>Loading {sym.label} chartâ€¦</Typography>
             </Box>
           )}
           {chartLoaded && hasLevels && <PriceLevelsPanel entry={entry} />}
@@ -543,14 +543,14 @@ const TradingViewModal: React.FC<{ entry: JournalEntry; open: boolean; onClose: 
           <Typography sx={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.12em', mb: 0.5 }}>Trade Details</Typography>
           {entry.trade_direction && (
             <Box sx={{ p: 1.5, borderRadius: '12px', background: entry.trade_direction === 'BUY' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${entry.trade_direction === 'BUY' ? 'rgba(34,197,94,0.35)' : 'rgba(239,68,68,0.35)'}`, textAlign: 'center' }}>
-              <Typography sx={{ fontSize: '20px', fontWeight: 800, color: entry.trade_direction === 'BUY' ? '#22c55e' : '#ef4444' }}>{entry.trade_direction === 'BUY' ? '▲ BUY' : '▼ SELL'}</Typography>
+              <Typography sx={{ fontSize: '20px', fontWeight: 800, color: entry.trade_direction === 'BUY' ? '#22c55e' : '#ef4444' }}>{entry.trade_direction === 'BUY' ? 'â–² BUY' : 'â–¼ SELL'}</Typography>
             </Box>
           )}
           {[
-            { label: 'Entry Price', value: entry.entry_price, color: '#38bdf8', icon: '→', bg: 'rgba(56,189,248,0.08)', bdr: 'rgba(56,189,248,0.2)' },
-            { label: 'Stop Loss',   value: entry.stop_loss,   color: '#ef4444', icon: '🛑', bg: 'rgba(239,68,68,0.08)', bdr: 'rgba(239,68,68,0.2)' },
-            { label: 'Take Profit', value: entry.take_profit, color: '#22c55e', icon: '🎯', bg: 'rgba(34,197,94,0.08)',  bdr: 'rgba(34,197,94,0.2)' },
-            { label: 'Exit Price',  value: entry.exit_price,  color: '#fbbf24', icon: '✕',  bg: 'rgba(251,191,36,0.08)', bdr: 'rgba(251,191,36,0.2)' },
+            { label: 'Entry Price', value: entry.entry_price, color: '#38bdf8', icon: 'â†’', bg: 'rgba(56,189,248,0.08)', bdr: 'rgba(56,189,248,0.2)' },
+            { label: 'Stop Loss',   value: entry.stop_loss,   color: '#ef4444', icon: 'ðŸ›‘', bg: 'rgba(239,68,68,0.08)', bdr: 'rgba(239,68,68,0.2)' },
+            { label: 'Take Profit', value: entry.take_profit, color: '#22c55e', icon: 'ðŸŽ¯', bg: 'rgba(34,197,94,0.08)',  bdr: 'rgba(34,197,94,0.2)' },
+            { label: 'Exit Price',  value: entry.exit_price,  color: '#fbbf24', icon: 'âœ•',  bg: 'rgba(251,191,36,0.08)', bdr: 'rgba(251,191,36,0.2)' },
           ].map(item => (
             <Box key={item.label} sx={{ p: 1.5, borderRadius: '10px', background: item.value != null ? item.bg : 'rgba(255,255,255,0.02)', border: `1px solid ${item.value != null ? item.bdr : 'rgba(255,255,255,0.06)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: item.value != null ? 1 : 0.45 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -598,28 +598,28 @@ const TradingViewModal: React.FC<{ entry: JournalEntry; open: boolean; onClose: 
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // ChartUpgradePrompt
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const ChartUpgradePrompt: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <Dialog open onClose={onClose} maxWidth="xs" fullWidth PaperProps={{ sx: { background: '#0f172a', color: 'white', borderRadius: '20px', border: '1px solid rgba(56,189,248,0.2)' } }}>
     <DialogContent sx={{ textAlign: 'center', p: 4 }}>
-      <Typography sx={{ fontSize: '52px', mb: 2 }}>📈</Typography>
+      <Typography sx={{ fontSize: '52px', mb: 2 }}>ðŸ“ˆ</Typography>
       <Typography sx={{ fontSize: '22px', fontWeight: 800, color: 'white', mb: 1 }}>TradingView Charts</Typography>
       <Typography sx={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', mb: 3, lineHeight: 1.7 }}>
         View your trades on a live chart with entry, SL, and TP levels. Available on{' '}
         <span style={{ color: '#a855f7', fontWeight: 700 }}>Pro</span> and{' '}
         <span style={{ color: '#f59e0b', fontWeight: 700 }}>Enterprise</span> plans.
       </Typography>
-      <Button onClick={() => { startCheckout('pro'); onClose(); }} fullWidth sx={{ py: 1.8, borderRadius: '12px', background: 'linear-gradient(135deg,#a855f7,#ec4899)', color: 'white', fontWeight: 700, textTransform: 'none', fontSize: '15px', mb: 1.5 }}>Upgrade to Pro — $49/mo →</Button>
+      <Button onClick={() => { startCheckout('pro'); onClose(); }} fullWidth sx={{ py: 1.8, borderRadius: '12px', background: 'linear-gradient(135deg,#a855f7,#ec4899)', color: 'white', fontWeight: 700, textTransform: 'none', fontSize: '15px', mb: 1.5 }}>Upgrade to Pro â€” $49/mo â†’</Button>
       <Button onClick={onClose} fullWidth sx={{ color: 'rgba(255,255,255,0.4)', textTransform: 'none', fontSize: '13px' }}>Maybe later</Button>
     </DialogContent>
   </Dialog>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BehaviorReport — Phase 4 AI Behavioral Analysis card
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// BehaviorReport â€” Phase 4 AI Behavioral Analysis card
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const ScoreRing: React.FC<{ value: number; size?: number; label: string; color: string }> = ({ value, size = 80, label, color }) => {
   const r = (size - 10) / 2;
   const cx = size / 2;
@@ -695,7 +695,7 @@ const BehaviorReport: React.FC<{ days: number | null; refreshToken: number }> = 
           {!collapsed && data && (
             <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', mt: 0.2 }}>
               Based on {data.sample_size} trade{data.sample_size !== 1 ? 's' : ''}
-              {days ? <span style={{ color: '#38bdf8', marginLeft: 6 }}>· last {days} days</span> : <span style={{ color: 'rgba(255,255,255,0.25)', marginLeft: 6 }}>· all time</span>}
+              {days ? <span style={{ color: '#38bdf8', marginLeft: 6 }}>Â· last {days} days</span> : <span style={{ color: 'rgba(255,255,255,0.25)', marginLeft: 6 }}>Â· all time</span>}
             </Typography>
           )}
         </Box>
@@ -713,12 +713,12 @@ const BehaviorReport: React.FC<{ days: number | null; refreshToken: number }> = 
         {loading && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 3, py: 3 }}>
             <CircularProgress size={20} sx={{ color: '#a855f7' }} />
-            <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>Analysing your trading behaviour…</Typography>
+            <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>Analysing your trading behaviourâ€¦</Typography>
           </Box>
         )}
         {error && !loading && (
           <Box sx={{ px: 3, py: 3 }}>
-            <Typography sx={{ fontSize: '13px', color: '#ef4444' }}>⚠️ Could not load behavior report. Make sure the backend is running.</Typography>
+            <Typography sx={{ fontSize: '13px', color: '#ef4444' }}>âš ï¸ Could not load behavior report. Make sure the backend is running.</Typography>
           </Box>
         )}
         {data && !loading && (
@@ -751,10 +751,10 @@ const BehaviorReport: React.FC<{ days: number | null; refreshToken: number }> = 
 
             {/* Metric pills */}
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2.5 }}>
-              <MetricPill icon={<span style={{ fontSize: 17 }}>😤</span>} label="Revenge Trades" value={data.revenge_trading.flagged ? `${data.revenge_trading.count}` : '0'} sub={data.revenge_trading.flagged ? 'oversized lots after loss' : 'none detected'} flagged={data.revenge_trading.flagged} flagColor="#f97316" hasDetail={data.revenge_trading.flagged && (data.revenge_trading.instances ?? []).length > 0} expanded={showRevenge} onToggle={() => setShowRevenge(v => !v)} />
-              <MetricPill icon={<span style={{ fontSize: 17 }}>📊</span>} label="Overtrading Days" value={data.overtrading.flagged ? `${(data.overtrading.flagged_days ?? []).length}` : '0'} sub={data.overtrading.flagged ? `peak ${data.overtrading.peak_count} trades${data.overtrading.peak_day ? ` on ${data.overtrading.peak_day}` : ''}` : `avg ${data.overtrading.avg_daily}/day`} flagged={data.overtrading.flagged} flagColor="#f59e0b" hasDetail={data.overtrading.flagged && (data.overtrading.flagged_days ?? []).length > 0} expanded={showOvertrade} onToggle={() => setShowOvertrade(v => !v)} />
-              <MetricPill icon={<span style={{ fontSize: 17 }}>😟</span>} label="Emotional Losses" value={`${data.emotional_losses}`} sub={data.emotional_losses > 0 ? 'loss under negative emotion' : 'none detected'} flagged={data.emotional_losses > 0} flagColor="#a855f7" />
-              <MetricPill icon={<span style={{ fontSize: 17 }}>🎯</span>} label="Failure Probability" value={data.failure_probability} sub={failLabel(data.failure_probability_raw) + ' risk'} flagged={data.failure_probability_raw >= 35} flagColor={failColor(data.failure_probability_raw)} okColor="#22c55e" />
+              <MetricPill icon={<span style={{ fontSize: 17 }}>ðŸ˜¤</span>} label="Revenge Trades" value={data.revenge_trading.flagged ? `${data.revenge_trading.count}` : '0'} sub={data.revenge_trading.flagged ? 'oversized lots after loss' : 'none detected'} flagged={data.revenge_trading.flagged} flagColor="#f97316" hasDetail={data.revenge_trading.flagged && (data.revenge_trading.instances ?? []).length > 0} expanded={showRevenge} onToggle={() => setShowRevenge(v => !v)} />
+              <MetricPill icon={<span style={{ fontSize: 17 }}>ðŸ“Š</span>} label="Overtrading Days" value={data.overtrading.flagged ? `${(data.overtrading.flagged_days ?? []).length}` : '0'} sub={data.overtrading.flagged ? `peak ${data.overtrading.peak_count} trades${data.overtrading.peak_day ? ` on ${data.overtrading.peak_day}` : ''}` : `avg ${data.overtrading.avg_daily}/day`} flagged={data.overtrading.flagged} flagColor="#f59e0b" hasDetail={data.overtrading.flagged && (data.overtrading.flagged_days ?? []).length > 0} expanded={showOvertrade} onToggle={() => setShowOvertrade(v => !v)} />
+              <MetricPill icon={<span style={{ fontSize: 17 }}>ðŸ˜Ÿ</span>} label="Emotional Losses" value={`${data.emotional_losses}`} sub={data.emotional_losses > 0 ? 'loss under negative emotion' : 'none detected'} flagged={data.emotional_losses > 0} flagColor="#a855f7" />
+              <MetricPill icon={<span style={{ fontSize: 17 }}>ðŸŽ¯</span>} label="Failure Probability" value={data.failure_probability} sub={failLabel(data.failure_probability_raw) + ' risk'} flagged={data.failure_probability_raw >= 35} flagColor={failColor(data.failure_probability_raw)} okColor="#22c55e" />
             </Box>
 
             {/* Revenge drill-down */}
@@ -767,7 +767,7 @@ const BehaviorReport: React.FC<{ days: number | null; refreshToken: number }> = 
                     <Typography sx={{ fontSize: '12px', color: '#f97316', fontWeight: 700 }}>{ins.symbol}</Typography>
                     <Typography sx={{ fontSize: '12px', color: '#ef4444' }}>Loss: ${ins.loss_pnl}</Typography>
                     <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>Lot: <span style={{ color: '#f97316', fontWeight: 700 }}>{ins.revenge_lot}</span><span style={{ opacity: 0.5 }}> (normal: {ins.normal_lot})</span></Typography>
-                    <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>⏱ +{ins.gap_minutes}m later</Typography>
+                    <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>â± +{ins.gap_minutes}m later</Typography>
                   </Box>
                 ))}
               </Box>
@@ -787,7 +787,7 @@ const BehaviorReport: React.FC<{ days: number | null; refreshToken: number }> = 
 
             {/* Insight bullets */}
             <Box sx={{ borderRadius: '14px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', p: 2 }}>
-              <Typography sx={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', mb: 1.5 }}>💡 AI Insights</Typography>
+              <Typography sx={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', mb: 1.5 }}>ðŸ’¡ AI Insights</Typography>
               {(data.insight_bullets ?? []).map((bullet, i) => (
                 <Typography key={i} sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, mb: 0.5 }}>{bullet}</Typography>
               ))}
@@ -799,9 +799,9 @@ const BehaviorReport: React.FC<{ days: number | null; refreshToken: number }> = 
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helpers
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const filterByDays = (entries: JournalEntry[], days: number | null) => {
   if (!days) return entries;
   // "7 Days" = from start of (today - 6 days) onward, matching backend exactly.
@@ -815,9 +815,9 @@ const filterByDays = (entries: JournalEntry[], days: number | null) => {
   });
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Main Component
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const JournalView: React.FC = () => {
   const { features, plan } = usePlan();
   const canViewChart = plan === 'pro' || plan === 'enterprise';
@@ -835,7 +835,7 @@ const JournalView: React.FC = () => {
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean; title: string; message: string; sub?: string;
     icon: string; color: string; confirmLabel: string; onConfirm: () => void;
-  }>({ open: false, title: '', message: '', icon: '⚠️', color: '#f97316', confirmLabel: 'Confirm', onConfirm: () => {} });
+  }>({ open: false, title: '', message: '', icon: 'âš ï¸', color: '#f97316', confirmLabel: 'Confirm', onConfirm: () => {} });
 
   const showConfirm  = (opts: typeof confirmDialog) => setConfirmDialog({ ...opts, open: true });
   const closeConfirm = () => setConfirmDialog(d => ({ ...d, open: false }));
@@ -859,13 +859,13 @@ const JournalView: React.FC = () => {
     return (
       <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(circle at 50% 0%,rgba(168,85,247,0.15),transparent 60%),#0b1120', p: 4 }}>
         <Box sx={{ textAlign: 'center', maxWidth: 520 }}>
-          <Typography sx={{ fontSize: '64px', mb: 2 }}>🔒</Typography>
+          <Typography sx={{ fontSize: '64px', mb: 2 }}>ðŸ”’</Typography>
           <Typography sx={{ fontSize: '32px', fontWeight: 800, color: 'white', mb: 1 }}>AI Trading Journal</Typography>
           <Typography sx={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', mb: 4 }}>
             The AI Journal is a <span style={{ color: '#a855f7', fontWeight: 700 }}>Pro feature</span>. Track trades, emotions, and discipline with chart integration.
           </Typography>
           <Box sx={{ p: 3, borderRadius: '16px', background: 'rgba(168,85,247,0.08)', border: '1px solid rgba(168,85,247,0.2)', mb: 4, textAlign: 'left' }}>
-            {['AI emotion & discipline tracking','Automatic MT5 trade sync','Deriv/TradingView chart per trade — Pro/Enterprise','Entry, SL & TP visualization','90-day trade history','✨ AI feedback on every trade'].map(f => (
+            {['AI emotion & discipline tracking','Automatic MT5 trade sync','Deriv/TradingView chart per trade â€” Pro/Enterprise','Entry, SL & TP visualization','90-day trade history','âœ¨ AI feedback on every trade'].map(f => (
               <Box key={f} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
                 <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#a855f7', flexShrink: 0 }} />
                 <Typography sx={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>{f}</Typography>
@@ -873,7 +873,7 @@ const JournalView: React.FC = () => {
             ))}
           </Box>
           <Button onClick={() => startCheckout('pro')} sx={{ px: 5, py: 2, borderRadius: '14px', background: 'linear-gradient(135deg,#a855f7,#ec4899)', color: 'white', fontSize: '16px', fontWeight: 700, textTransform: 'none' }}>
-            Upgrade to Pro — $49/mo →
+            Upgrade to Pro â€” $49/mo â†’
           </Button>
           <Typography sx={{ mt: 2, fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>Cancel anytime.</Typography>
         </Box>
@@ -897,7 +897,7 @@ const JournalView: React.FC = () => {
       title: 'Fix & Re-sync MT5 Trades',
       message: 'This will delete all auto-imported MT5 trades and re-import them with corrected entry & exit prices.',
       sub: 'Manually created entries will be kept.',
-      icon: '🔄',
+      icon: 'ðŸ”„',
       color: '#f97316',
       confirmLabel: 'Yes, Re-sync Now',
       onConfirm: async () => {
@@ -959,7 +959,7 @@ const JournalView: React.FC = () => {
       open: true, title: 'Delete Journal Entry',
       message: 'This trade entry will be permanently removed from your journal.',
       sub: 'This action cannot be undone.',
-      icon: '🗑️', color: '#ef4444', confirmLabel: 'Delete Entry',
+      icon: 'ðŸ—‘ï¸', color: '#ef4444', confirmLabel: 'Delete Entry',
       onConfirm: async () => {
         closeConfirm();
         await axios.delete(`${API}/journal/${id}`);
@@ -999,14 +999,14 @@ const JournalView: React.FC = () => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 4, flexWrap: 'wrap', gap: 2 }}>
         <Box>
           <Typography sx={{ fontSize: '32px', fontWeight: 800, background: 'linear-gradient(90deg,#a855f7,#ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', mb: 0.5 }}>AI Trading Journal</Typography>
-          <Typography sx={{ fontSize: '15px', color: 'rgba(255,255,255,0.4)' }}>Track trades • Analyze emotions • View on TradingView</Typography>
+          <Typography sx={{ fontSize: '15px', color: 'rgba(255,255,255,0.4)' }}>Track trades â€¢ Analyze emotions â€¢ View on TradingView</Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
           <Button onClick={syncMT5} disabled={syncing || resyncing} startIcon={syncing ? <CircularProgress size={16} /> : <Refresh />} sx={{ borderRadius: '12px', background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.3)', color: '#38bdf8', fontWeight: 600, textTransform: 'none', px: 2.5 }}>
             {syncing ? 'Syncing...' : 'Sync MT5 Trades'}
           </Button>
           <Button onClick={resyncMT5} disabled={syncing || resyncing} startIcon={resyncing ? <CircularProgress size={16} sx={{ color: '#f97316' }} /> : <Refresh sx={{ fontSize: 16 }} />} sx={{ borderRadius: '12px', background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.3)', color: '#f97316', fontWeight: 600, textTransform: 'none', px: 2.5 }}>
-            {resyncing ? 'Re-syncing...' : '🔄 Fix & Re-sync'}
+            {resyncing ? 'Re-syncing...' : 'ðŸ”„ Fix & Re-sync'}
           </Button>
           <Button onClick={() => handleOpenDialog()} startIcon={<Add />} sx={{ borderRadius: '12px', background: 'linear-gradient(135deg,#a855f7,#ec4899)', color: 'white', fontWeight: 700, textTransform: 'none', px: 2.5, '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 6px 20px rgba(168,85,247,0.35)' } }}>
             New Entry
@@ -1017,10 +1017,10 @@ const JournalView: React.FC = () => {
       {/* Stats */}
       <Grid container spacing={2.5} sx={{ mb: 4 }}>
         {[
-          { label: 'Total Entries', display: tradedEntries.length.toString(), color: '#38bdf8', glow: 'rgba(56,189,248,0.18)', border: 'rgba(56,189,248,0.22)', bg: 'linear-gradient(135deg,rgba(56,189,248,0.10),rgba(56,189,248,0.03))', icon: '📓', sub: 'trades logged' },
-          { label: 'Win Rate', display: `${winRate}%`, color: '#22c55e', glow: 'rgba(34,197,94,0.18)', border: 'rgba(34,197,94,0.22)', bg: 'linear-gradient(135deg,rgba(34,197,94,0.10),rgba(34,197,94,0.03))', icon: '🏆', sub: `${wins.length} wins` },
-          { label: 'Total P&L', display: `${totalPnl >= 0 ? '+' : ''}$${Math.abs(totalPnl).toFixed(2)}`, color: totalPnl >= 0 ? '#22c55e' : '#ef4444', glow: totalPnl >= 0 ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)', border: totalPnl >= 0 ? 'rgba(34,197,94,0.22)' : 'rgba(239,68,68,0.22)', bg: totalPnl >= 0 ? 'linear-gradient(135deg,rgba(34,197,94,0.10),rgba(34,197,94,0.03))' : 'linear-gradient(135deg,rgba(239,68,68,0.10),rgba(239,68,68,0.03))', icon: totalPnl >= 0 ? '📈' : '📉', sub: 'net profit/loss' },
-          { label: 'Risk Locks', display: lockCount === 0 ? '—' : lockCount.toString(), color: lockCount === 0 ? '#4ade80' : '#f97316', glow: lockCount === 0 ? 'rgba(74,222,128,0.15)' : 'rgba(249,115,22,0.18)', border: lockCount === 0 ? 'rgba(74,222,128,0.2)' : 'rgba(249,115,22,0.22)', bg: lockCount === 0 ? 'linear-gradient(135deg,rgba(74,222,128,0.08),rgba(74,222,128,0.02))' : 'linear-gradient(135deg,rgba(249,115,22,0.10),rgba(249,115,22,0.03))', icon: lockCount === 0 ? '✅' : '🔒', sub: lockCount === 0 ? 'no locks today' : 'locks triggered' },
+          { label: 'Total Entries', display: tradedEntries.length.toString(), color: '#38bdf8', glow: 'rgba(56,189,248,0.18)', border: 'rgba(56,189,248,0.22)', bg: 'linear-gradient(135deg,rgba(56,189,248,0.10),rgba(56,189,248,0.03))', icon: 'ðŸ““', sub: 'trades logged' },
+          { label: 'Win Rate', display: `${winRate}%`, color: '#22c55e', glow: 'rgba(34,197,94,0.18)', border: 'rgba(34,197,94,0.22)', bg: 'linear-gradient(135deg,rgba(34,197,94,0.10),rgba(34,197,94,0.03))', icon: 'ðŸ†', sub: `${wins.length} wins` },
+          { label: 'Total P&L', display: `${totalPnl >= 0 ? '+' : ''}$${Math.abs(totalPnl).toFixed(2)}`, color: totalPnl >= 0 ? '#22c55e' : '#ef4444', glow: totalPnl >= 0 ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)', border: totalPnl >= 0 ? 'rgba(34,197,94,0.22)' : 'rgba(239,68,68,0.22)', bg: totalPnl >= 0 ? 'linear-gradient(135deg,rgba(34,197,94,0.10),rgba(34,197,94,0.03))' : 'linear-gradient(135deg,rgba(239,68,68,0.10),rgba(239,68,68,0.03))', icon: totalPnl >= 0 ? 'ðŸ“ˆ' : 'ðŸ“‰', sub: 'net profit/loss' },
+          { label: 'Risk Locks', display: lockCount === 0 ? 'â€”' : lockCount.toString(), color: lockCount === 0 ? '#4ade80' : '#f97316', glow: lockCount === 0 ? 'rgba(74,222,128,0.15)' : 'rgba(249,115,22,0.18)', border: lockCount === 0 ? 'rgba(74,222,128,0.2)' : 'rgba(249,115,22,0.22)', bg: lockCount === 0 ? 'linear-gradient(135deg,rgba(74,222,128,0.08),rgba(74,222,128,0.02))' : 'linear-gradient(135deg,rgba(249,115,22,0.10),rgba(249,115,22,0.03))', icon: lockCount === 0 ? 'âœ…' : 'ðŸ”’', sub: lockCount === 0 ? 'no locks today' : 'locks triggered' },
         ].map(stat => (
           <Grid item xs={6} md={3} key={stat.label}>
             <Box sx={{ p: 0, borderRadius: '20px', background: stat.bg, border: `1px solid ${stat.border}`, boxShadow: `0 4px 32px ${stat.glow},inset 0 1px 0 rgba(255,255,255,0.06)`, overflow: 'hidden', position: 'relative', transition: 'all 0.3s cubic-bezier(0.34,1.56,0.64,1)', '&:hover': { transform: 'translateY(-6px) scale(1.02)', boxShadow: `0 16px 48px ${stat.glow},inset 0 1px 0 rgba(255,255,255,0.08)` }, '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: `linear-gradient(90deg,transparent,${stat.color},transparent)` } }}>
@@ -1046,16 +1046,16 @@ const JournalView: React.FC = () => {
         ))}
       </Grid>
 
-      {/* ── Phase 4: AI Behavioral Analysis card — synced with time filter + auto-refresh ── */}
+      {/* â”€â”€ Phase 4: AI Behavioral Analysis card â€” synced with time filter + auto-refresh â”€â”€ */}
       <BehaviorReport days={historyDays} refreshToken={behaviorRefreshToken} />
 
       {/* Filters */}
       <Box sx={{ display: 'flex', gap: 1.5, mb: 3, flexWrap: 'wrap', alignItems: 'center' }}>
         {[
           { v: 'all',    l: 'All' },
-          { v: 'wins',   l: '✅ Wins' },
-          { v: 'losses', l: '❌ Losses' },
-          { v: 'locks',  l: '🔒 Locks' },
+          { v: 'wins',   l: 'âœ… Wins' },
+          { v: 'losses', l: 'âŒ Losses' },
+          { v: 'locks',  l: 'ðŸ”’ Locks' },
         ].map(f => (
           <Chip key={f.v} label={f.l} onClick={() => setFilter(f.v as any)}
             sx={{ height: 38, fontSize: '14px', fontWeight: 600, cursor: 'pointer', background: filter === f.v ? 'linear-gradient(135deg,#a855f7,#ec4899)' : 'rgba(255,255,255,0.06)', color: filter === f.v ? 'white' : 'rgba(255,255,255,0.6)', border: filter === f.v ? 'none' : '1px solid rgba(255,255,255,0.1)' }} />
@@ -1073,7 +1073,7 @@ const JournalView: React.FC = () => {
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}><CircularProgress sx={{ color: '#a855f7' }} /></Box>
       ) : displayed.length === 0 ? (
         <Box sx={{ textAlign: 'center', py: 12 }}>
-          <Typography sx={{ fontSize: '56px', opacity: 0.15, mb: 2 }}>📓</Typography>
+          <Typography sx={{ fontSize: '56px', opacity: 0.15, mb: 2 }}>ðŸ““</Typography>
           <Typography sx={{ fontSize: '18px', color: 'rgba(255,255,255,0.3)', mb: 1 }}>No journal entries</Typography>
           <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.2)' }}>Add your first entry or sync MT5 trades above</Typography>
         </Box>
@@ -1106,7 +1106,7 @@ const JournalView: React.FC = () => {
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                         <Avatar sx={{ width: 44, height: 44, background: hasPnl ? (isWin ? 'linear-gradient(135deg,#22c55e,#16a34a)' : 'linear-gradient(135deg,#ef4444,#dc2626)') : 'linear-gradient(135deg,#a855f7,#ec4899)', fontSize: '18px' }}>
-                          {hasPnl ? (isWin ? '🏆' : '📉') : '📓'}
+                          {hasPnl ? (isWin ? 'ðŸ†' : 'ðŸ“‰') : 'ðŸ““'}
                         </Avatar>
                         <Box>
                           <Typography sx={{ fontSize: '17px', fontWeight: 700, color: 'white' }}>{mapSymbol(entry.symbol || '').label || entry.symbol || 'General Entry'}</Typography>
@@ -1120,7 +1120,7 @@ const JournalView: React.FC = () => {
                     </Box>
 
                     <Box sx={{ display: 'flex', gap: 1, mb: 1.5, flexWrap: 'wrap' }}>
-                      {entry.trade_direction && <Chip label={entry.trade_direction === 'BUY' ? '▲ BUY' : '▼ SELL'} size="small" sx={{ height: 26, fontSize: '12px', fontWeight: 700, background: entry.trade_direction === 'BUY' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: entry.trade_direction === 'BUY' ? '#22c55e' : '#ef4444', border: `1px solid ${entry.trade_direction === 'BUY' ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)'}` }} />}
+                      {entry.trade_direction && <Chip label={entry.trade_direction === 'BUY' ? 'â–² BUY' : 'â–¼ SELL'} size="small" sx={{ height: 26, fontSize: '12px', fontWeight: 700, background: entry.trade_direction === 'BUY' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: entry.trade_direction === 'BUY' ? '#22c55e' : '#ef4444', border: `1px solid ${entry.trade_direction === 'BUY' ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)'}` }} />}
                       {hasPnl && <Chip label={`${isWin ? '+' : ''}$${pnl.toFixed(2)}`} size="small" sx={{ height: 26, fontSize: '13px', fontWeight: 700, background: isWin ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)', color: isWin ? '#22c55e' : '#ef4444', border: `1px solid ${isWin ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)'}` }} />}
                       {entry.lot_size && <Chip label={`${entry.lot_size} lot`} size="small" sx={{ height: 26, fontSize: '12px', fontWeight: 600, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)' }} />}
                       {rr && <Chip label={`RR ${rr}:1`} size="small" sx={{ height: 26, fontSize: '11px', fontWeight: 700, background: 'rgba(168,85,247,0.15)', color: '#a855f7', border: '1px solid rgba(168,85,247,0.3)' }} />}
@@ -1146,20 +1146,20 @@ const JournalView: React.FC = () => {
 
                     {entry.lessons_learned && (
                       <Box sx={{ p: 1.5, borderRadius: '8px', background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', mb: 1.5 }}>
-                        <Typography sx={{ fontSize: '12px', color: '#fbbf24', fontWeight: 600, mb: 0.5 }}>💡 LESSONS LEARNED</Typography>
+                        <Typography sx={{ fontSize: '12px', color: '#fbbf24', fontWeight: 600, mb: 0.5 }}>ðŸ’¡ LESSONS LEARNED</Typography>
                         <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>{entry.lessons_learned}</Typography>
                       </Box>
                     )}
 
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1.5 }}>
-                      {entry.strategy_used && <Chip label={`📊 ${entry.strategy_used}`} size="small" sx={{ height: 26, fontSize: '12px', background: 'rgba(59,130,246,0.1)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.25)' }} />}
-                      {entry.emotional_state && <Chip label={`😶 ${entry.emotional_state}`} size="small" sx={{ height: 26, fontSize: '12px', background: 'rgba(168,85,247,0.1)', color: '#c084fc', border: '1px solid rgba(168,85,247,0.25)' }} />}
+                      {entry.strategy_used && <Chip label={`ðŸ“Š ${entry.strategy_used}`} size="small" sx={{ height: 26, fontSize: '12px', background: 'rgba(59,130,246,0.1)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.25)' }} />}
+                      {entry.emotional_state && <Chip label={`ðŸ˜¶ ${entry.emotional_state}`} size="small" sx={{ height: 26, fontSize: '12px', background: 'rgba(168,85,247,0.1)', color: '#c084fc', border: '1px solid rgba(168,85,247,0.25)' }} />}
                       {entry.notion_link && <Chip icon={<OpenInNew sx={{ fontSize: '11px !important' }} />} label="Notion" size="small" onClick={() => window.open(entry.notion_link, '_blank')} sx={{ height: 26, fontSize: '12px', background: 'rgba(168,85,247,0.1)', color: '#a855f7', border: '1px solid rgba(168,85,247,0.25)', cursor: 'pointer' }} />}
                     </Box>
 
                     <Button onClick={() => canViewChart ? setChartEntry(entry) : setShowUpgrade(true)} fullWidth startIcon={<ShowChart />}
                       sx={{ mb: 1, borderRadius: '10px', py: 1.2, background: canViewChart ? 'linear-gradient(135deg,rgba(56,189,248,0.15),rgba(34,197,94,0.1))' : 'rgba(255,255,255,0.04)', border: canViewChart ? '1px solid rgba(56,189,248,0.35)' : '1px solid rgba(255,255,255,0.1)', color: canViewChart ? '#38bdf8' : 'rgba(255,255,255,0.3)', fontWeight: 700, textTransform: 'none', fontSize: '13px', '&:hover': { transform: 'translateY(-1px)' } }}>
-                      {canViewChart ? '📈 View on TradingView' : '🔒 View Chart — Pro / Enterprise'}
+                      {canViewChart ? 'ðŸ“ˆ View on TradingView' : 'ðŸ”’ View Chart â€” Pro / Enterprise'}
                     </Button>
 
                     <FeedbackPanel entry={entry} />
@@ -1189,7 +1189,7 @@ const JournalView: React.FC = () => {
             </Box>
             <Box sx={{ p: 2.5, borderRadius: '14px', background: `${confirmDialog.color}08`, border: `1px solid ${confirmDialog.color}18`, mb: 2 }}>
               <Typography sx={{ fontSize: '15px', color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>{confirmDialog.message}</Typography>
-              {confirmDialog.sub && <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', mt: 1, display: 'flex', alignItems: 'center', gap: 0.8 }}>⚠️ {confirmDialog.sub}</Typography>}
+              {confirmDialog.sub && <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', mt: 1, display: 'flex', alignItems: 'center', gap: 0.8 }}>âš ï¸ {confirmDialog.sub}</Typography>}
             </Box>
             <Box sx={{ display: 'flex', gap: 1.5 }}>
               <Button onClick={closeConfirm} fullWidth sx={{ py: 1.4, borderRadius: '14px', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 600, fontSize: '14px', textTransform: 'none', '&:hover': { background: 'rgba(255,255,255,0.05)', color: 'white' } }}>Cancel</Button>
@@ -1202,7 +1202,7 @@ const JournalView: React.FC = () => {
       {/* Add / Edit Dialog */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth PaperProps={{ sx: { background: '#0f172a', color: 'white', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)' } }}>
         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
-          <Typography sx={{ fontSize: '22px', fontWeight: 700 }}>{editingEntry ? '✏️ Edit Entry' : '📓 New Entry'}</Typography>
+          <Typography sx={{ fontSize: '22px', fontWeight: 700 }}>{editingEntry ? 'âœï¸ Edit Entry' : 'ðŸ““ New Entry'}</Typography>
           <IconButton onClick={() => setDialogOpen(false)} sx={{ color: 'rgba(255,255,255,0.5)' }}><Close /></IconButton>
         </DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
@@ -1214,8 +1214,8 @@ const JournalView: React.FC = () => {
               <FormControl fullWidth sx={inputSx}>
                 <InputLabel>Direction</InputLabel>
                 <Select value={formData.trade_direction} label="Direction" onChange={e => fd('trade_direction', e.target.value)} sx={{ color: 'white' }}>
-                  <MenuItem value="BUY"  sx={{ background: '#0f172a', color: '#22c55e', fontWeight: 700 }}>▲ BUY</MenuItem>
-                  <MenuItem value="SELL" sx={{ background: '#0f172a', color: '#ef4444', fontWeight: 700 }}>▼ SELL</MenuItem>
+                  <MenuItem value="BUY"  sx={{ background: '#0f172a', color: '#22c55e', fontWeight: 700 }}>â–² BUY</MenuItem>
+                  <MenuItem value="SELL" sx={{ background: '#0f172a', color: '#ef4444', fontWeight: 700 }}>â–¼ SELL</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -1260,12 +1260,12 @@ const JournalView: React.FC = () => {
           <TextField label="Trade Notes" value={formData.notes} onChange={e => fd('notes', e.target.value)} multiline rows={3} fullWidth sx={inputSx} />
           <TextField label="Lessons Learned" value={formData.lessons_learned} onChange={e => fd('lessons_learned', e.target.value)} multiline rows={2} fullWidth sx={inputSx} />
           <Box>
-            <Typography sx={{ fontSize: '14px', fontWeight: 600, color: 'rgba(255,255,255,0.5)', mb: 1.5 }}>📓 RiskGuardian Notion Template (Optional)</Typography>
+            <Typography sx={{ fontSize: '14px', fontWeight: 600, color: 'rgba(255,255,255,0.5)', mb: 1.5 }}>ðŸ““ RiskGuardian Notion Template (Optional)</Typography>
             <Box sx={{ display: 'flex', gap: 1, mb: 1.5 }}>
               {['template','custom'].map(m => (
                 <Button key={m} onClick={() => setNotionMode(m as any)} size="small"
                   sx={{ flex: 1, borderRadius: '10px', textTransform: 'none', fontSize: '13px', fontWeight: 600, ...(notionMode === m ? { background: 'linear-gradient(135deg,#a855f7,#ec4899)', color: 'white' } : { border: '1px solid rgba(168,85,247,0.3)', color: '#a855f7' }) }}>
-                  {m === 'template' ? '📋 RiskGuardian Template' : '🔗 Custom Link'}
+                  {m === 'template' ? 'ðŸ“‹ RiskGuardian Template' : 'ðŸ”— Custom Link'}
                 </Button>
               ))}
             </Box>
@@ -1290,3 +1290,4 @@ const JournalView: React.FC = () => {
 };
 
 export default JournalView;
+

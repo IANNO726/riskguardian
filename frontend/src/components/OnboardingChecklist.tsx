@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, LinearProgress, Collapse, CircularProgress } from '@mui/material';
 import { startCheckout } from '../hooks/usePlan';
 import { usePlan } from '../hooks/usePlan';
 
-const API = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API = process.env.REACT_APP_API_URL || 'https://riskguardian.onrender.com';
 
 interface ChecklistItem {
   id:          string;
@@ -21,7 +21,7 @@ interface OnboardingChecklistProps {
 }
 
 const STORAGE_KEY          = 'rg_onboarding_dismissed';
-const COMPLETION_FIRED_KEY = 'rg_onboarding_completion_fired';  // ✅ prevent duplicate API calls
+const COMPLETION_FIRED_KEY = 'rg_onboarding_completion_fired';  // âœ… prevent duplicate API calls
 
 const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ connected, settings }) => {
   const { plan } = usePlan();
@@ -95,7 +95,7 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ connected, se
   const items: ChecklistItem[] = [
     {
       id:          'mt5',
-      emoji:       '🖥️',
+      emoji:       'ðŸ–¥ï¸',
       label:       'Connect MetaTrader 5',
       description: 'Link your MT5 account so RiskGuardian can monitor your trades in real time.',
       done:        connected,
@@ -104,7 +104,7 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ connected, se
     },
     {
       id:          'risk',
-      emoji:       '🛡️',
+      emoji:       'ðŸ›¡ï¸',
       label:       'Set your risk limits',
       description: 'Define your daily loss, max drawdown, and risk per trade thresholds.',
       done:        riskLimitsDone,
@@ -113,7 +113,7 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ connected, se
     },
     {
       id:          'lock',
-      emoji:       '🔒',
+      emoji:       'ðŸ”’',
       label:       'Activate your first Risk Lock',
       description: 'Use the Risk Lock button on the dashboard to block impulsive trading for a period.',
       done:        lockDone,
@@ -124,7 +124,7 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ connected, se
     },
     {
       id:          'journal',
-      emoji:       '📔',
+      emoji:       'ðŸ“”',
       label:       'Make your first journal entry',
       description: 'Log your first trade reflection. Journalling is proven to improve trading discipline.',
       done:        journalDone,
@@ -133,14 +133,14 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ connected, se
     },
     {
       id:          'telegram',
-      emoji:       '📱',
+      emoji:       'ðŸ“±',
       label:       'Set up Telegram alerts',
       description: 'Get instant risk alerts on your phone even when the app is closed.',
       done:        telegramDone,
       loading:     false,
       action:      !telegramDone
         ? (plan === 'free' || plan === 'starter')
-          ? { label: '⚡ Upgrade to Pro', onClick: () => startCheckout('pro', setUpgradeLoading) }
+          ? { label: 'âš¡ Upgrade to Pro', onClick: () => startCheckout('pro', setUpgradeLoading) }
           : { label: 'Set up Telegram', href: '/app/settings' }
         : undefined,
     },
@@ -151,7 +151,7 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ connected, se
   const allDone        = completedCount === totalCount;
   const pct            = Math.round((completedCount / totalCount) * 100);
 
-  // ✅ Track completion in admin dashboard — fires once per user, ever
+  // âœ… Track completion in admin dashboard â€” fires once per user, ever
   useEffect(() => {
     if (!allDone) return;
     if (localStorage.getItem(COMPLETION_FIRED_KEY) === 'true') return;
@@ -167,7 +167,7 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ connected, se
         localStorage.setItem(COMPLETION_FIRED_KEY, 'true');
       })
       .catch(() => {
-        // Silent fail — not critical, will retry next session
+        // Silent fail â€” not critical, will retry next session
       });
   }, [allDone]);
 
@@ -219,7 +219,7 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ connected, se
         <Box sx={{ flex: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.4 }}>
             <Typography sx={{ fontSize: '14px', fontWeight: 700, color: 'white' }}>
-              {allDone ? '🎉 Setup Complete!' : 'Getting Started'}
+              {allDone ? 'ðŸŽ‰ Setup Complete!' : 'Getting Started'}
             </Typography>
             {allDone && (
               <Box sx={{ fontSize: '10px', fontWeight: 800, px: 1, py: 0.2, borderRadius: '6px', color: '#22c55e', background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)' }}>
@@ -229,17 +229,17 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ connected, se
           </Box>
           <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.38)' }}>
             {allDone
-              ? "You're all set — RiskGuardian is fully configured."
+              ? "You're all set â€” RiskGuardian is fully configured."
               : `${totalCount - completedCount} step${totalCount - completedCount !== 1 ? 's' : ''} remaining to get the most out of RiskGuardian`}
           </Typography>
         </Box>
 
-        <Box sx={{ fontSize: '18px', color: 'rgba(255,255,255,0.3)', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s', userSelect: 'none' }}>▾</Box>
+        <Box sx={{ fontSize: '18px', color: 'rgba(255,255,255,0.3)', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s', userSelect: 'none' }}>â–¾</Box>
 
         <Box
           onClick={e => { e.stopPropagation(); setDismissed(true); localStorage.setItem(STORAGE_KEY, 'true'); }}
           sx={{ fontSize: '16px', color: 'rgba(255,255,255,0.2)', cursor: 'pointer', px: 0.5, '&:hover': { color: 'rgba(255,255,255,0.5)' } }}
-        >✕</Box>
+        >âœ•</Box>
       </Box>
 
       {/* Progress bar */}
@@ -271,7 +271,7 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ connected, se
                 border: item.done ? '1.5px solid rgba(34,197,94,0.5)' : '1.5px solid rgba(255,255,255,0.1)',
                 fontSize: item.done ? '16px' : '14px', transition: 'all 0.3s',
               }}>
-                {item.loading ? <CircularProgress size={14} sx={{ color: '#38bdf8' }} /> : item.done ? '✓' : item.emoji}
+                {item.loading ? <CircularProgress size={14} sx={{ color: '#38bdf8' }} /> : item.done ? 'âœ“' : item.emoji}
               </Box>
 
               <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -315,3 +315,4 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({ connected, se
 };
 
 export default OnboardingChecklist;
+

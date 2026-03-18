@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 
-// ─── Deriv server patterns (mirrors accounts_multi.py) ───────
+// â”€â”€â”€ Deriv server patterns (mirrors accounts_multi.py) â”€â”€â”€â”€â”€â”€â”€
 const DERIV_SERVERS = [
   "deriv-demo","deriv-server","deriv-real",
   "derivsvg-server","derivsvg-demo",
@@ -10,26 +10,26 @@ const isDerivServer = (s) => DERIV_SERVERS.some(p => s.toLowerCase().includes(p)
 const isDerivBroker = (b) => b.toLowerCase().includes("deriv");
 const isDerivAccount = (broker, server) => isDerivBroker(broker) || isDerivServer(server);
 
-// ─── Steps for Deriv token guide ─────────────────────────────
+// â”€â”€â”€ Steps for Deriv token guide â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const DERIV_STEPS = [
   {
-    icon: "🌐",
+    icon: "ðŸŒ",
     title: "Open Deriv",
     desc: "Go to app.deriv.com and make sure you're logged in",
-    action: { label: "Open Deriv →", url: "https://app.deriv.com/account/api-token" },
+    action: { label: "Open Deriv â†’", url: "https://app.deriv.com/account/api-token" },
   },
   {
-    icon: "👤",
+    icon: "ðŸ‘¤",
     title: "Go to API Token",
-    desc: 'Click your profile icon → Settings → "Security & privacy" → API Token',
+    desc: 'Click your profile icon â†’ Settings â†’ "Security & privacy" â†’ API Token',
   },
   {
-    icon: "✏️",
+    icon: "âœï¸",
     title: "Create a token",
     desc: 'Name it "RiskGuardian", enable Read + Trading information scopes, click Create',
   },
   {
-    icon: "📋",
+    icon: "ðŸ“‹",
     title: "Copy & paste here",
     desc: "Copy the token and paste it in the Password field below",
   },
@@ -410,10 +410,10 @@ export default function AddAccountModal({ onClose, onSuccess }) {
               <p className="aam-subtitle">
                 {isDerivMode
                   ? "We'll connect via Deriv's secure WebSocket API"
-                  : "Live verified before saving — your data stays encrypted"}
+                  : "Live verified before saving â€” your data stays encrypted"}
               </p>
             </div>
-            <button className="aam-close" onClick={onClose}>✕</button>
+            <button className="aam-close" onClick={onClose}>âœ•</button>
           </div>
 
           {/* Platform tabs */}
@@ -424,14 +424,14 @@ export default function AddAccountModal({ onClose, onSuccess }) {
                 className={`aam-tab${platform === p ? " active" : ""}`}
                 onClick={() => setPlatform(p)}
               >
-                {p === "MT5" ? "⑤ MT5" : "④ MT4"}
+                {p === "MT5" ? "â‘¤ MT5" : "â‘£ MT4"}
               </button>
             ))}
           </div>
 
           <div className="aam-body">
 
-            {/* ── Deriv guide ─────────────────────────────── */}
+            {/* â”€â”€ Deriv guide â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             {guideVisible && (
               <div className={`aam-guide${pulsing ? " pulsing" : ""}`}>
                 <div className="aam-guide-header">
@@ -520,7 +520,7 @@ export default function AddAccountModal({ onClose, onSuccess }) {
                 {isDerivMode ? (
                   <>
                     Deriv API Token
-                    <span className="aam-label-badge deriv">⚡ Required for Deriv</span>
+                    <span className="aam-label-badge deriv">âš¡ Required for Deriv</span>
                   </>
                 ) : (
                   <>Password <span className="aam-label-badge">MT5 main or investor</span></>
@@ -539,19 +539,19 @@ export default function AddAccountModal({ onClose, onSuccess }) {
                   onChange={e => setPassword(e.target.value)}
                 />
                 <button className="aam-input-right" onClick={() => setShowPass(v => !v)}>
-                  {showPass ? "🙈" : "👁"}
+                  {showPass ? "ðŸ™ˆ" : "ðŸ‘"}
                 </button>
               </div>
 
               {isDerivMode && (
                 <div className="aam-token-hint">
-                  <span>🔑</span>
+                  <span>ðŸ”‘</span>
                   <span>
                     Get your token at{" "}
                     <a href="https://app.deriv.com/account/api-token" target="_blank" rel="noreferrer">
-                      app.deriv.com → API Token
+                      app.deriv.com â†’ API Token
                     </a>
-                    {" "}— enable <strong>Read</strong> + <strong>Trading information</strong> scopes
+                    {" "}â€” enable <strong>Read</strong> + <strong>Trading information</strong> scopes
                   </span>
                 </div>
               )}
@@ -560,7 +560,7 @@ export default function AddAccountModal({ onClose, onSuccess }) {
             {/* Error */}
             {error && (
               <div className="aam-error">
-                <span>⚠️</span> {error}
+                <span>âš ï¸</span> {error}
               </div>
             )}
 
@@ -578,14 +578,14 @@ export default function AddAccountModal({ onClose, onSuccess }) {
                   </>
                 ) : (
                   <>
-                    {isDerivMode ? "⚡ Connect Deriv Account →" : "🔒 Connect & Verify →"}
+                    {isDerivMode ? "âš¡ Connect Deriv Account â†’" : "ðŸ”’ Connect & Verify â†’"}
                   </>
                 )}
               </div>
             </button>
 
             <div className="aam-security">
-              🔐 Encrypted end-to-end · Never stored in plain text · Read-only access
+              ðŸ” Encrypted end-to-end Â· Never stored in plain text Â· Read-only access
             </div>
           </div>
         </div>
@@ -593,3 +593,4 @@ export default function AddAccountModal({ onClose, onSuccess }) {
     </>
   );
 }
+

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import RiskDashboardClean from '../components/RiskDashboardClean';
 
 const Dashboard: React.FC = () => {
@@ -6,6 +6,7 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+
 
 
 

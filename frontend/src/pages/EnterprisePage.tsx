@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   Box, Typography, Grid, Card, CardContent, Button, Chip,
@@ -16,9 +16,9 @@ import {
 import { usePlan, startCheckout } from '../hooks/usePlan';
 import { useBranding } from '../hooks/useBranding';
 
-const API = 'http://localhost:8000/api/v1';
+const API = 'https://riskguardian.onrender.com/api/v1';
 
-// ── Lock overlay for non-Enterprise ──────────────────────────
+// â”€â”€ Lock overlay for non-Enterprise â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const EnterpriseLock: React.FC<{ feature: string }> = ({ feature }) => (
   <Box sx={{ position: 'absolute', inset: 0, borderRadius: 'inherit', background: 'rgba(10,14,26,0.85)', backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 10, gap: 1.5 }}>
     <Box sx={{ width: 48, height: 48, borderRadius: '14px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -28,12 +28,12 @@ const EnterpriseLock: React.FC<{ feature: string }> = ({ feature }) => (
     <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textAlign: 'center', px: 3 }}>Enterprise plan required</Typography>
     <Button onClick={() => startCheckout('enterprise')} size="small"
       sx={{ mt: 0.5, borderRadius: '10px', background: 'linear-gradient(135deg, #f59e0b, #ef4444)', color: 'white', fontWeight: 700, textTransform: 'none', fontSize: '12px', px: 2.5, '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 6px 20px rgba(245,158,11,0.35)' } }}>
-      Upgrade to Enterprise →
+      Upgrade to Enterprise â†’
     </Button>
   </Box>
 );
 
-// ── Section card wrapper ──────────────────────────────────────
+// â”€â”€ Section card wrapper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SectionCard: React.FC<{ icon: React.ReactNode; title: string; subtitle: string; color: string; locked?: boolean; lockLabel?: string; children: React.ReactNode }> = ({ icon, title, subtitle, color, locked, lockLabel, children }) => (
   <Card sx={{ background: 'rgba(255,255,255,0.03)', border: `1px solid rgba(255,255,255,0.08)`, borderRadius: '20px', overflow: 'hidden', position: 'relative',
     '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: `linear-gradient(90deg, transparent, ${color}, transparent)` }
@@ -54,9 +54,9 @@ const SectionCard: React.FC<{ icon: React.ReactNode; title: string; subtitle: st
   </Card>
 );
 
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // SECTION: White Label
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const WhiteLabelSection: React.FC<{ locked: boolean }> = ({ locked }) => {
   const { branding, save: saveBranding } = useBranding();
   const [brandName,    setBrandName]    = useState(branding.brand_name);
@@ -112,15 +112,15 @@ const WhiteLabelSection: React.FC<{ locked: boolean }> = ({ locked }) => {
         </Box>
       </Box>
       <Button onClick={save} disabled={saving} sx={{ mt: 2, borderRadius: '10px', background: saved ? 'rgba(34,197,94,0.2)' : 'linear-gradient(135deg, #f59e0b, #ef4444)', color: saved ? '#22c55e' : 'white', fontWeight: 700, textTransform: 'none', border: saved ? '1px solid rgba(34,197,94,0.4)' : 'none' }}>
-        {saving ? '⏳ Saving...' : saved ? '✅ Saved!' : 'Save Branding'}
+        {saving ? 'â³ Saving...' : saved ? 'âœ… Saved!' : 'Save Branding'}
       </Button>
     </SectionCard>
   );
 };
 
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // SECTION: API Access & Webhooks
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const APISection: React.FC<{ locked: boolean }> = ({ locked }) => {
   const [apiKey,      setApiKey]      = useState('');
   const [fullKey,     setFullKey]     = useState('');  // shown once on generate
@@ -142,7 +142,7 @@ const APISection: React.FC<{ locked: boolean }> = ({ locked }) => {
   const fetchKey = async () => {
     setKeyLoading(true);
     try {
-      const res = await axios.get('http://localhost:8000/api/v1/api-access/key', { headers });
+      const res = await axios.get('https://riskguardian.onrender.com/api/v1/api-access/key', { headers });
       if (res.data.full_key) { setFullKey(res.data.full_key); setApiKey(res.data.full_key); }
       else { setApiKey(res.data.masked || res.data.key_prefix); setFullKey(''); }
     } catch {} finally { setKeyLoading(false); }
@@ -150,7 +150,7 @@ const APISection: React.FC<{ locked: boolean }> = ({ locked }) => {
 
   const fetchWebhooks = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/v1/api-access/webhooks', { headers });
+      const res = await axios.get('https://riskguardian.onrender.com/api/v1/api-access/webhooks', { headers });
       setWebhooks(res.data.webhooks || []);
     } catch {}
   };
@@ -166,7 +166,7 @@ const APISection: React.FC<{ locked: boolean }> = ({ locked }) => {
     if (!window.confirm('Regenerate API key? Your old key will stop working immediately.')) return;
     setRegen(true);
     try {
-      const res = await axios.post('http://localhost:8000/api/v1/api-access/key/regenerate', {}, { headers });
+      const res = await axios.post('https://riskguardian.onrender.com/api/v1/api-access/key/regenerate', {}, { headers });
       setFullKey(res.data.full_key); setApiKey(res.data.full_key);
     } catch {} finally { setRegen(false); }
   };
@@ -175,7 +175,7 @@ const APISection: React.FC<{ locked: boolean }> = ({ locked }) => {
     if (!webhookUrl) return;
     setAddingHook(true);
     try {
-      await axios.post('http://localhost:8000/api/v1/api-access/webhooks',
+      await axios.post('https://riskguardian.onrender.com/api/v1/api-access/webhooks',
         { url: webhookUrl, event: webhookEvt }, { headers });
       await fetchWebhooks();
       setWebhookUrl('');
@@ -186,14 +186,14 @@ const APISection: React.FC<{ locked: boolean }> = ({ locked }) => {
 
   const deleteWebhook = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:8000/api/v1/api-access/webhooks/${id}`, { headers });
+      await axios.delete(`https://riskguardian.onrender.com/api/v1/api-access/webhooks/${id}`, { headers });
       setWebhooks(prev => prev.filter(w => w.id !== id));
     } catch {}
   };
 
   const toggleWebhook = async (id: number) => {
     try {
-      await axios.post(`http://localhost:8000/api/v1/api-access/webhooks/${id}/toggle`, {}, { headers });
+      await axios.post(`https://riskguardian.onrender.com/api/v1/api-access/webhooks/${id}/toggle`, {}, { headers });
       setWebhooks(prev => prev.map(w => w.id === id ? { ...w, is_active: !w.is_active } : w));
     } catch {}
   };
@@ -201,9 +201,9 @@ const APISection: React.FC<{ locked: boolean }> = ({ locked }) => {
   const testWebhook = async (id: number) => {
     setTestResult(prev => ({ ...prev, [id]: 'testing...' }));
     try {
-      const res = await axios.post(`http://localhost:8000/api/v1/api-access/webhooks/test/${id}`, {}, { headers });
-      setTestResult(prev => ({ ...prev, [id]: res.data.success ? `✅ ${res.data.status_code}` : `❌ ${res.data.error || 'Failed'}` }));
-    } catch { setTestResult(prev => ({ ...prev, [id]: '❌ Error' })); }
+      const res = await axios.post(`https://riskguardian.onrender.com/api/v1/api-access/webhooks/test/${id}`, {}, { headers });
+      setTestResult(prev => ({ ...prev, [id]: res.data.success ? `âœ… ${res.data.status_code}` : `âŒ ${res.data.error || 'Failed'}` }));
+    } catch { setTestResult(prev => ({ ...prev, [id]: 'âŒ Error' })); }
     setTimeout(() => setTestResult(prev => { const n = {...prev}; delete n[id]; return n; }), 4000);
   };
 
@@ -216,15 +216,15 @@ const APISection: React.FC<{ locked: boolean }> = ({ locked }) => {
       <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', mb: 1, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Your API Key</Typography>
       {fullKey && (
         <Box sx={{ mb: 1.5, p: 1.5, borderRadius: '10px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.3)' }}>
-          <Typography sx={{ fontSize: '11px', color: '#f59e0b', fontWeight: 700, mb: 0.5 }}>⚠️ Save this key now — it won't be shown again!</Typography>
+          <Typography sx={{ fontSize: '11px', color: '#f59e0b', fontWeight: 700, mb: 0.5 }}>âš ï¸ Save this key now â€” it won't be shown again!</Typography>
         </Box>
       )}
       <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
         <Box sx={{ flex: 1, p: 1.5, borderRadius: '10px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)', fontFamily: 'monospace', fontSize: '13px', color: '#38bdf8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {keyLoading ? '...' : (apiKey || 'No key — click Generate')}
+          {keyLoading ? '...' : (apiKey || 'No key â€” click Generate')}
         </Box>
         <Button onClick={copyKey} disabled={!apiKey} sx={{ borderRadius: '10px', background: copied ? 'rgba(34,197,94,0.2)' : 'rgba(56,189,248,0.15)', border: `1px solid ${copied ? 'rgba(34,197,94,0.4)' : 'rgba(56,189,248,0.3)'}`, color: copied ? '#22c55e' : '#38bdf8', fontWeight: 600, textTransform: 'none', minWidth: 80, fontSize: '12px' }}>
-          {copied ? '✅ Copied' : <><ContentCopy sx={{ fontSize: 14, mr: 0.5 }} />Copy</>}
+          {copied ? 'âœ… Copied' : <><ContentCopy sx={{ fontSize: 14, mr: 0.5 }} />Copy</>}
         </Button>
       </Box>
       <Button onClick={regenerate} disabled={regen} startIcon={<Refresh sx={{ fontSize: 14 }} />}
@@ -234,11 +234,11 @@ const APISection: React.FC<{ locked: boolean }> = ({ locked }) => {
 
       {/* Quick Start */}
       <Box sx={{ p: 2, borderRadius: '12px', background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.15)', mb: 3 }}>
-        <Typography sx={{ fontSize: '12px', color: '#38bdf8', fontWeight: 600, mb: 1 }}>📖 Quick Start</Typography>
+        <Typography sx={{ fontSize: '12px', color: '#38bdf8', fontWeight: 600, mb: 1 }}>ðŸ“– Quick Start</Typography>
         <Box sx={{ fontFamily: 'monospace', fontSize: '11px', color: 'rgba(255,255,255,0.55)', lineHeight: 2 }}>
           {['GET  /api/v1/positions', 'GET  /api/v1/accounts', 'POST /api/v1/cooldown/start', 'GET  /api/v1/journal/'].map(e => (
             <Box key={e} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Box component="span" sx={{ color: '#38bdf8' }}>{'→'}</Box> {e}
+              <Box component="span" sx={{ color: '#38bdf8' }}>{'â†’'}</Box> {e}
             </Box>
           ))}
         </Box>
@@ -248,7 +248,7 @@ const APISection: React.FC<{ locked: boolean }> = ({ locked }) => {
       {/* Webhooks */}
       <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', mb: 1.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Webhook Endpoints</Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
-        {webhooks.length === 0 && <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', py: 1 }}>No webhooks yet — add one below</Typography>}
+        {webhooks.length === 0 && <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', py: 1 }}>No webhooks yet â€” add one below</Typography>}
         {webhooks.map(wh => (
           <Box key={wh.id} sx={{ p: 1.5, borderRadius: '10px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${wh.is_active ? 'rgba(56,189,248,0.15)' : 'rgba(255,255,255,0.06)'}` }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.8 }}>
@@ -290,18 +290,18 @@ const APISection: React.FC<{ locked: boolean }> = ({ locked }) => {
         </Button>
       </Box>
       <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', mt: 1.5 }}>
-        Events: {EVENTS.join(' · ')}
+        Events: {EVENTS.join(' Â· ')}
       </Typography>
     </SectionCard>
   );
 };
 
 
-// ═══════════════════════════════════════════════════════════
-// SECTION: Custom Risk Rule Engine — FULLY WIRED
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// SECTION: Custom Risk Rule Engine â€” FULLY WIRED
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const CONDITION_OPTIONS = [
-  { value: 'consecutive_losses',   label: 'Consecutive Losses ≥ X trades',      unit: 'trades',  placeholder: '3' },
+  { value: 'consecutive_losses',   label: 'Consecutive Losses â‰¥ X trades',      unit: 'trades',  placeholder: '3' },
   { value: 'daily_drawdown_pct',   label: 'Daily Drawdown > X%',                unit: '%',       placeholder: '5' },
   { value: 'daily_loss_usd',       label: 'Daily Loss > $X',                    unit: '$',       placeholder: '100' },
   { value: 'loss_per_trade_pct',   label: 'Single Trade Loss > X% of balance',  unit: '%',       placeholder: '2' },
@@ -339,14 +339,14 @@ const RiskRuleEngine: React.FC<{ locked: boolean }> = ({ locked }) => {
 
   const fetchRules = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/v1/risk-rules/`, { headers });
+      const res = await axios.get(`https://riskguardian.onrender.com/api/v1/risk-rules/`, { headers });
       setRules(res.data.rules || []);
     } catch {} finally { setLoading(false); }
   };
 
   const fetchStatus = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/v1/risk-rules/status`, { headers });
+      const res = await axios.get(`https://riskguardian.onrender.com/api/v1/risk-rules/status`, { headers });
       setBlockStatus(res.data);
     } catch {}
   };
@@ -357,7 +357,7 @@ const RiskRuleEngine: React.FC<{ locked: boolean }> = ({ locked }) => {
     if (!newRule.name || !newRule.condition_type || !newRule.action_type || !newRule.condition_value) return;
     setSaving(true);
     try {
-      await axios.post(`http://localhost:8000/api/v1/risk-rules/`, {
+      await axios.post(`https://riskguardian.onrender.com/api/v1/risk-rules/`, {
         name: newRule.name,
         condition_type: newRule.condition_type,
         condition_value: parseFloat(newRule.condition_value),
@@ -375,7 +375,7 @@ const RiskRuleEngine: React.FC<{ locked: boolean }> = ({ locked }) => {
 
   const toggleRule = async (id: number) => {
     try {
-      await axios.post(`http://localhost:8000/api/v1/risk-rules/${id}/toggle`, {}, { headers });
+      await axios.post(`https://riskguardian.onrender.com/api/v1/risk-rules/${id}/toggle`, {}, { headers });
       setRules(prev => prev.map(r => r.id === id ? { ...r, is_active: !r.is_active } : r));
     } catch {}
   };
@@ -383,14 +383,14 @@ const RiskRuleEngine: React.FC<{ locked: boolean }> = ({ locked }) => {
   const deleteRule = async (id: number) => {
     if (!window.confirm('Delete this rule?')) return;
     try {
-      await axios.delete(`http://localhost:8000/api/v1/risk-rules/${id}`, { headers });
+      await axios.delete(`https://riskguardian.onrender.com/api/v1/risk-rules/${id}`, { headers });
       setRules(prev => prev.filter(r => r.id !== id));
     } catch {}
   };
 
   const unblock = async () => {
     try {
-      await axios.post(`http://localhost:8000/api/v1/risk-rules/unblock`, {}, { headers });
+      await axios.post(`https://riskguardian.onrender.com/api/v1/risk-rules/unblock`, {}, { headers });
       setBlockStatus(prev => prev ? { ...prev, is_blocked: false, reason: '' } : null);
     } catch {}
   };
@@ -409,7 +409,7 @@ const RiskRuleEngine: React.FC<{ locked: boolean }> = ({ locked }) => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box sx={{ width: 10, height: 10, borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 8px #ef4444', flexShrink: 0 }} />
             <Box>
-              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#ef4444' }}>🚫 NEW TRADES BLOCKED</Typography>
+              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#ef4444' }}>ðŸš« NEW TRADES BLOCKED</Typography>
               <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>{blockStatus.reason}</Typography>
             </Box>
           </Box>
@@ -424,8 +424,8 @@ const RiskRuleEngine: React.FC<{ locked: boolean }> = ({ locked }) => {
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}><CircularProgress size={28} sx={{ color: '#a855f7' }} /></Box>
       ) : rules.length === 0 ? (
         <Box sx={{ py: 4, textAlign: 'center', opacity: 0.4 }}>
-          <Typography sx={{ fontSize: '32px', mb: 1 }}>⚙️</Typography>
-          <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>No rules yet — add your first guardrail below</Typography>
+          <Typography sx={{ fontSize: '32px', mb: 1 }}>âš™ï¸</Typography>
+          <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>No rules yet â€” add your first guardrail below</Typography>
         </Box>
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mb: 2 }}>
@@ -436,7 +436,7 @@ const RiskRuleEngine: React.FC<{ locked: boolean }> = ({ locked }) => {
                   <Box sx={{ width: 8, height: 8, borderRadius: '50%', background: rule.is_active ? '#a855f7' : '#4b5563', boxShadow: rule.is_active ? '0 0 8px #a855f7' : 'none', flexShrink: 0 }} />
                   <Typography sx={{ fontSize: '14px', fontWeight: 700, color: rule.is_active ? 'white' : 'rgba(255,255,255,0.4)' }}>{rule.name}</Typography>
                   {rule.trigger_count > 0 && (
-                    <Chip label={`${rule.trigger_count}× triggered`} size="small" sx={{ height: 20, fontSize: '10px', background: 'rgba(245,158,11,0.15)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.3)' }} />
+                    <Chip label={`${rule.trigger_count}Ã— triggered`} size="small" sx={{ height: 20, fontSize: '10px', background: 'rgba(245,158,11,0.15)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.3)' }} />
                   )}
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -447,7 +447,7 @@ const RiskRuleEngine: React.FC<{ locked: boolean }> = ({ locked }) => {
               </Box>
               <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
                 <Chip label={`IF: ${rule.condition_label} (${rule.condition_value})`} size="small" sx={{ height: 22, fontSize: '11px', fontFamily: 'monospace', background: 'rgba(56,189,248,0.1)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.2)', maxWidth: 300 }} />
-                <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>→</Typography>
+                <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>â†’</Typography>
                 <Chip label={`THEN: ${rule.action_label}${rule.action_value ? ` (${rule.action_value})` : ''}`} size="small" sx={{ height: 22, fontSize: '11px', fontFamily: 'monospace', background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.2)', maxWidth: 300 }} />
               </Box>
               {rule.last_triggered && (
@@ -468,7 +468,7 @@ const RiskRuleEngine: React.FC<{ locked: boolean }> = ({ locked }) => {
       {/* Add Rule Dialog */}
       <Dialog open={addOpen} onClose={() => setAddOpen(false)} maxWidth="sm" fullWidth
         PaperProps={{ sx: { background: '#0f172a', color: 'white', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)' } }}>
-        <DialogTitle sx={{ fontSize: '18px', fontWeight: 700, pb: 1 }}>⚙️ New Risk Rule</DialogTitle>
+        <DialogTitle sx={{ fontSize: '18px', fontWeight: 700, pb: 1 }}>âš™ï¸ New Risk Rule</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 2 }}>
 
           {/* Rule Name */}
@@ -523,9 +523,9 @@ const RiskRuleEngine: React.FC<{ locked: boolean }> = ({ locked }) => {
   );
 };
 
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // SECTION: Team Management
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const ROLE_COLORS: Record<string,string> = {
   owner: '#f59e0b', risk_manager: '#a855f7', analyst: '#38bdf8', trader: '#22c55e', viewer: '#6b7280'
 };
@@ -557,8 +557,8 @@ const TeamSection: React.FC<{ locked: boolean }> = ({ locked }) => {
   const fetchMembers = async () => {
     try {
       const [mRes, iRes] = await Promise.all([
-        axios.get('http://localhost:8000/api/v1/team/members', { headers }),
-        axios.get('http://localhost:8000/api/v1/team/invites', { headers }),
+        axios.get('https://riskguardian.onrender.com/api/v1/team/members', { headers }),
+        axios.get('https://riskguardian.onrender.com/api/v1/team/invites', { headers }),
       ]);
       setMembers(mRes.data.members || []);
       setInvites(iRes.data.invites || []);
@@ -571,7 +571,7 @@ const TeamSection: React.FC<{ locked: boolean }> = ({ locked }) => {
     if (!inviteEmail) return;
     setInviting(true);
     try {
-      const res = await axios.post('http://localhost:8000/api/v1/team/invite',
+      const res = await axios.post('https://riskguardian.onrender.com/api/v1/team/invite',
         { email: inviteEmail, role: inviteRole }, { headers });
       setInviteLink(res.data.accept_url);
       setInviteEmail('');
@@ -583,7 +583,7 @@ const TeamSection: React.FC<{ locked: boolean }> = ({ locked }) => {
 
   const cancelInvite = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:8000/api/v1/team/invites/${id}`, { headers });
+      await axios.delete(`https://riskguardian.onrender.com/api/v1/team/invites/${id}`, { headers });
       setInvites(prev => prev.filter(i => i.id !== id));
     } catch {}
   };
@@ -591,7 +591,7 @@ const TeamSection: React.FC<{ locked: boolean }> = ({ locked }) => {
   const removeMember = async (memberId: number) => {
     if (!window.confirm('Remove this team member?')) return;
     try {
-      await axios.delete(`http://localhost:8000/api/v1/team/members/${memberId}`, { headers });
+      await axios.delete(`https://riskguardian.onrender.com/api/v1/team/members/${memberId}`, { headers });
       await fetchMembers();
     } catch {}
   };
@@ -599,7 +599,7 @@ const TeamSection: React.FC<{ locked: boolean }> = ({ locked }) => {
   const changeRole = async (memberId: number, newRole: string) => {
     setChangingRole(memberId);
     try {
-      await axios.put(`http://localhost:8000/api/v1/team/members/${memberId}/role`,
+      await axios.put(`https://riskguardian.onrender.com/api/v1/team/members/${memberId}/role`,
         { role: newRole }, { headers });
       setMembers(prev => prev.map(m =>
         m.member_id === memberId ? { ...m, role: newRole, role_color: ROLE_COLORS[newRole] || '#6b7280' } : m
@@ -685,11 +685,11 @@ const TeamSection: React.FC<{ locked: boolean }> = ({ locked }) => {
       {/* Invite Link (shown after invite sent) */}
       {inviteLink && (
         <Box sx={{ mb: 2.5, p: 2, borderRadius: '12px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)' }}>
-          <Typography sx={{ fontSize: '12px', color: '#22c55e', fontWeight: 700, mb: 1 }}>✅ Invite created! Share this link:</Typography>
+          <Typography sx={{ fontSize: '12px', color: '#22c55e', fontWeight: 700, mb: 1 }}>âœ… Invite created! Share this link:</Typography>
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Box sx={{ flex: 1, p: 1, borderRadius: '8px', background: 'rgba(0,0,0,0.3)', fontFamily: 'monospace', fontSize: '11px', color: 'rgba(255,255,255,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{inviteLink}</Box>
             <Button onClick={copyLink} size="small" sx={{ borderRadius: '8px', background: linkCopied ? 'rgba(34,197,94,0.2)' : 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', color: '#22c55e', fontWeight: 700, textTransform: 'none', fontSize: '12px', minWidth: 70 }}>
-              {linkCopied ? '✅ Copied' : <><ContentCopy sx={{ fontSize: 13, mr: 0.5 }} />Copy</>}
+              {linkCopied ? 'âœ… Copied' : <><ContentCopy sx={{ fontSize: 13, mr: 0.5 }} />Copy</>}
             </Button>
           </Box>
           <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', mt: 0.8 }}>Link expires in 7 days. Invitee must register/login with the invited email to accept.</Typography>
@@ -714,25 +714,25 @@ const TeamSection: React.FC<{ locked: boolean }> = ({ locked }) => {
       </Box>
       <Button onClick={sendInvite} disabled={inviting || !inviteEmail} fullWidth
         sx={{ borderRadius: '10px', background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: 'white', fontWeight: 700, textTransform: 'none', py: 1.2, opacity: (!inviteEmail) ? 0.5 : 1 }}>
-        {inviting ? <CircularProgress size={16} sx={{ color: 'white' }} /> : '📨 Send Invite'}
+        {inviting ? <CircularProgress size={16} sx={{ color: 'white' }} /> : 'ðŸ“¨ Send Invite'}
       </Button>
     </SectionCard>
   );
 };
 
 
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // SECTION: Dedicated Account Manager
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const AccountManagerSection: React.FC<{ locked: boolean }> = ({ locked }) => {
   const [scheduled, setScheduled] = useState(false);
   const [scheduling, setScheduling] = useState(false);
   const [activeContact, setActiveContact] = useState<string | null>(null);
 
   const contacts = [
-    { label: '📧 Email', value: 'alex@riskguardian.io', action: 'mailto:alex@riskguardian.io', key: 'email' },
-    { label: '💬 Slack', value: '@alex-rg', action: null, key: 'slack' },
-    { label: '📞 Direct', value: '+1 (555) 0147', action: 'tel:+15550147', key: 'phone' },
+    { label: 'ðŸ“§ Email', value: 'alex@riskguardian.io', action: 'mailto:alex@riskguardian.io', key: 'email' },
+    { label: 'ðŸ’¬ Slack', value: '@alex-rg', action: null, key: 'slack' },
+    { label: 'ðŸ“ž Direct', value: '+1 (555) 0147', action: 'tel:+15550147', key: 'phone' },
   ];
 
   const scheduleCall = () => {
@@ -758,13 +758,13 @@ const AccountManagerSection: React.FC<{ locked: boolean }> = ({ locked }) => {
       {/* Manager card */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3, p: 2, borderRadius: '14px', background: 'rgba(236,72,153,0.06)', border: '1px solid rgba(236,72,153,0.18)' }}>
         <Box sx={{ position: 'relative', flexShrink: 0 }}>
-          <Avatar sx={{ width: 56, height: 56, background: 'linear-gradient(135deg, #ec4899, #a855f7)', fontSize: '22px' }}>👨‍💼</Avatar>
+          <Avatar sx={{ width: 56, height: 56, background: 'linear-gradient(135deg, #ec4899, #a855f7)', fontSize: '22px' }}>ðŸ‘¨â€ðŸ’¼</Avatar>
           <Box sx={{ position: 'absolute', bottom: 2, right: 2, width: 12, height: 12, borderRadius: '50%', background: '#22c55e', border: '2px solid #0b1120', boxShadow: '0 0 6px #22c55e' }} />
         </Box>
         <Box>
           <Typography sx={{ fontSize: '16px', fontWeight: 700, color: 'white' }}>Alex Chen</Typography>
           <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>Enterprise Account Manager</Typography>
-          <Typography sx={{ fontSize: '11px', color: '#22c55e', mt: 0.5 }}>🟢 Available Mon–Fri 9AM–6PM EST</Typography>
+          <Typography sx={{ fontSize: '11px', color: '#22c55e', mt: 0.5 }}>ðŸŸ¢ Available Monâ€“Fri 9AMâ€“6PM EST</Typography>
           <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', mt: 0.3 }}>Avg. response: &lt; 2 hours</Typography>
         </Box>
       </Box>
@@ -777,7 +777,7 @@ const AccountManagerSection: React.FC<{ locked: boolean }> = ({ locked }) => {
             sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1.5, borderRadius: '10px', background: activeContact === c.key ? 'rgba(236,72,153,0.12)' : 'rgba(255,255,255,0.03)', border: `1px solid ${activeContact === c.key ? 'rgba(236,72,153,0.35)' : 'rgba(255,255,255,0.07)'}`, cursor: 'pointer', transition: 'all 0.15s', '&:hover': { background: 'rgba(236,72,153,0.08)', borderColor: 'rgba(236,72,153,0.25)' } }}>
             <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>{c.label}</Typography>
             <Typography sx={{ fontSize: '13px', fontWeight: 600, color: activeContact === c.key ? '#ec4899' : 'white', fontFamily: c.key === 'email' || c.key === 'slack' ? 'monospace' : 'inherit' }}>
-              {activeContact === c.key ? (c.action ? '↗ Opening...' : '✅ Copied!') : c.value}
+              {activeContact === c.key ? (c.action ? 'â†— Opening...' : 'âœ… Copied!') : c.value}
             </Typography>
           </Box>
         ))}
@@ -786,18 +786,18 @@ const AccountManagerSection: React.FC<{ locked: boolean }> = ({ locked }) => {
       {/* Schedule call */}
       <Button onClick={scheduleCall} disabled={scheduling} fullWidth
         sx={{ borderRadius: '12px', background: scheduled ? 'rgba(34,197,94,0.15)' : 'linear-gradient(135deg, #ec4899, #a855f7)', color: scheduled ? '#22c55e' : 'white', fontWeight: 700, textTransform: 'none', py: 1.3, border: scheduled ? '1px solid rgba(34,197,94,0.3)' : 'none', fontSize: '14px' }}>
-        {scheduling ? <CircularProgress size={16} sx={{ color: 'white' }} /> : scheduled ? '✅ Calendar opened!' : '📅 Schedule Onboarding Call'}
+        {scheduling ? <CircularProgress size={16} sx={{ color: 'white' }} /> : scheduled ? 'âœ… Calendar opened!' : 'ðŸ“… Schedule Onboarding Call'}
       </Button>
       <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', textAlign: 'center', mt: 1 }}>
-        Free 30-min onboarding call · No obligation
+        Free 30-min onboarding call Â· No obligation
       </Typography>
     </SectionCard>
   );
 };
 
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // SECTION: SLA Uptime
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const SLASection: React.FC<{ locked: boolean }> = ({ locked }) => {
   const [uptime, setUptime] = useState(99.94);
   const [animated, setAnimated] = useState(0);
@@ -828,10 +828,10 @@ const SLASection: React.FC<{ locked: boolean }> = ({ locked }) => {
   }));
 
   const slaTerms = [
-    { label: 'Guaranteed', value: '99.9%', icon: '🎯' },
-    { label: 'Response', value: '< 1hr', icon: '⚡' },
-    { label: 'Resolution', value: '< 4hrs', icon: '🔧' },
-    { label: 'Credit', value: '10×', icon: '💰' },
+    { label: 'Guaranteed', value: '99.9%', icon: 'ðŸŽ¯' },
+    { label: 'Response', value: '< 1hr', icon: 'âš¡' },
+    { label: 'Resolution', value: '< 4hrs', icon: 'ðŸ”§' },
+    { label: 'Credit', value: '10Ã—', icon: 'ðŸ’°' },
   ];
 
   return (
@@ -883,9 +883,9 @@ const SLASection: React.FC<{ locked: boolean }> = ({ locked }) => {
   );
 };
 
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // SECTION: Custom Integrations
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const IntegrationsSection: React.FC<{ locked: boolean }> = ({ locked }) => {
   const [status,      setStatus]      = useState<any>({});
   const [loading,     setLoading]     = useState(true);
@@ -919,9 +919,9 @@ const IntegrationsSection: React.FC<{ locked: boolean }> = ({ locked }) => {
   const fetchStatus = async () => {
     try {
       const [s, ss, ta] = await Promise.all([
-        axios.get('http://localhost:8000/api/v1/integrations/', { headers }),
-        axios.get('http://localhost:8000/api/v1/integrations/sheets/status', { headers }),
-        axios.get('http://localhost:8000/api/v1/integrations/tradingview/alerts', { headers }),
+        axios.get('https://riskguardian.onrender.com/api/v1/integrations/', { headers }),
+        axios.get('https://riskguardian.onrender.com/api/v1/integrations/sheets/status', { headers }),
+        axios.get('https://riskguardian.onrender.com/api/v1/integrations/tradingview/alerts', { headers }),
       ]);
       setStatus(s.data);
       setSheetsStatus(ss.data);
@@ -936,7 +936,7 @@ const IntegrationsSection: React.FC<{ locked: boolean }> = ({ locked }) => {
     if (!discordUrl) return;
     setDiscordSaving(true);
     try {
-      await axios.post('http://localhost:8000/api/v1/integrations/discord/setup',
+      await axios.post('https://riskguardian.onrender.com/api/v1/integrations/discord/setup',
         { webhook_url: discordUrl, username: discordName }, { headers });
       await fetchStatus();
       setDiscordUrl('');
@@ -947,15 +947,15 @@ const IntegrationsSection: React.FC<{ locked: boolean }> = ({ locked }) => {
   const testDiscord = async () => {
     setDiscordTest('testing...');
     try {
-      const res = await axios.post('http://localhost:8000/api/v1/integrations/discord/test', {}, { headers });
-      setDiscordTest(res.data.success ? '✅ Sent!' : '❌ Failed');
-    } catch { setDiscordTest('❌ Error'); }
+      const res = await axios.post('https://riskguardian.onrender.com/api/v1/integrations/discord/test', {}, { headers });
+      setDiscordTest(res.data.success ? 'âœ… Sent!' : 'âŒ Failed');
+    } catch { setDiscordTest('âŒ Error'); }
     setTimeout(() => setDiscordTest(''), 3000);
   };
 
   const disconnectDiscord = async () => {
     if (!window.confirm('Disconnect Discord?')) return;
-    await axios.delete('http://localhost:8000/api/v1/integrations/discord', { headers });
+    await axios.delete('https://riskguardian.onrender.com/api/v1/integrations/discord', { headers });
     await fetchStatus();
   };
 
@@ -965,7 +965,7 @@ const IntegrationsSection: React.FC<{ locked: boolean }> = ({ locked }) => {
     setSheetsSaving(true);
     try {
       const sa = JSON.parse(sheetsJson);
-      const res = await axios.post('http://localhost:8000/api/v1/integrations/sheets/setup',
+      const res = await axios.post('https://riskguardian.onrender.com/api/v1/integrations/sheets/setup',
         { spreadsheet_url: sheetsUrl, sheet_name: sheetName, service_account: sa }, { headers });
       alert(res.data.message + `
 
@@ -978,8 +978,8 @@ Share your sheet with: ${res.data.share_with}`);
   const exportSheets = async () => {
     setSheetsExporting(true);
     try {
-      const res = await axios.post('http://localhost:8000/api/v1/integrations/sheets/export', {}, { headers });
-      alert(`✅ ${res.data.message}`);
+      const res = await axios.post('https://riskguardian.onrender.com/api/v1/integrations/sheets/export', {}, { headers });
+      alert(`âœ… ${res.data.message}`);
       await fetchStatus();
     } catch (e: any) { alert(e?.response?.data?.detail || 'Export failed'); }
     finally { setSheetsExporting(false); }
@@ -987,7 +987,7 @@ Share your sheet with: ${res.data.share_with}`);
 
   const disconnectSheets = async () => {
     if (!window.confirm('Disconnect Google Sheets?')) return;
-    await axios.delete('http://localhost:8000/api/v1/integrations/sheets', { headers });
+    await axios.delete('https://riskguardian.onrender.com/api/v1/integrations/sheets', { headers });
     await fetchStatus();
   };
 
@@ -996,7 +996,7 @@ Share your sheet with: ${res.data.share_with}`);
     if (!tvToken) return;
     setTvSaving(true);
     try {
-      const res = await axios.post('http://localhost:8000/api/v1/integrations/tradingview/setup',
+      const res = await axios.post('https://riskguardian.onrender.com/api/v1/integrations/tradingview/setup',
         { secret_token: tvToken }, { headers });
       setTvWebhook(res.data.webhook_url);
       await fetchStatus();
@@ -1006,7 +1006,7 @@ Share your sheet with: ${res.data.share_with}`);
 
   const disconnectTV = async () => {
     if (!window.confirm('Disconnect TradingView?')) return;
-    await axios.delete('http://localhost:8000/api/v1/integrations/tradingview', { headers });
+    await axios.delete('https://riskguardian.onrender.com/api/v1/integrations/tradingview', { headers });
     setTvWebhook(''); await fetchStatus();
   };
 
@@ -1026,7 +1026,7 @@ Share your sheet with: ${res.data.share_with}`);
       <Box sx={{ display: 'flex', gap: 2, mb: 3, p: 1.5, borderRadius: '12px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)' }}>
         {[
           { label: 'Connected', value: connectedCount, color: '#f59e0b' },
-          { label: 'Telegram', value: '✅', color: '#22c55e' },
+          { label: 'Telegram', value: 'âœ…', color: '#22c55e' },
           { label: 'Available', value: 3, color: 'rgba(255,255,255,0.3)' },
         ].map((s, i) => (
           <Box key={i} sx={{ textAlign: 'center', flex: 1 }}>
@@ -1039,9 +1039,9 @@ Share your sheet with: ${res.data.share_with}`);
       {/* Tabs */}
       <Box sx={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.08)', mb: 3 }}>
         {[
-          { label: '💬 Discord', color: '#5865f2', connected: status.discord?.connected },
-          { label: '📊 Sheets', color: '#34a853', connected: status.sheets?.connected },
-          { label: '📈 TradingView', color: '#2196f3', connected: status.tradingview?.connected },
+          { label: 'ðŸ’¬ Discord', color: '#5865f2', connected: status.discord?.connected },
+          { label: 'ðŸ“Š Sheets', color: '#34a853', connected: status.sheets?.connected },
+          { label: 'ðŸ“ˆ TradingView', color: '#2196f3', connected: status.tradingview?.connected },
         ].map((tab, i) => (
           <Button key={i} onClick={() => setActiveTab(i)} sx={tabSx(activeTab === i, tab.color)}>
             {tab.label}
@@ -1050,13 +1050,13 @@ Share your sheet with: ${res.data.share_with}`);
         ))}
       </Box>
 
-      {/* ── DISCORD TAB ── */}
+      {/* â”€â”€ DISCORD TAB â”€â”€ */}
       {activeTab === 0 && (
         <Box>
           {status.discord?.connected ? (
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 2, borderRadius: '12px', background: 'rgba(88,101,242,0.08)', border: '1px solid rgba(88,101,242,0.2)', mb: 2 }}>
-                <Typography sx={{ fontSize: '24px' }}>💬</Typography>
+                <Typography sx={{ fontSize: '24px' }}>ðŸ’¬</Typography>
                 <Box sx={{ flex: 1 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box sx={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 5px #22c55e' }} />
@@ -1067,7 +1067,7 @@ Share your sheet with: ${res.data.share_with}`);
               </Box>
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button onClick={testDiscord} sx={{ flex: 1, borderRadius: '10px', background: 'rgba(88,101,242,0.15)', border: '1px solid rgba(88,101,242,0.3)', color: '#7289da', fontWeight: 700, textTransform: 'none' }}>
-                  {discordTest || '🔔 Send Test'}
+                  {discordTest || 'ðŸ”” Send Test'}
                 </Button>
                 <Button onClick={disconnectDiscord} sx={{ borderRadius: '10px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#ef4444', fontWeight: 700, textTransform: 'none' }}>
                   Disconnect
@@ -1077,10 +1077,10 @@ Share your sheet with: ${res.data.share_with}`);
           ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box sx={{ p: 2, borderRadius: '12px', background: 'rgba(88,101,242,0.06)', border: '1px solid rgba(88,101,242,0.15)' }}>
-                <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#7289da', mb: 1 }}>📖 How to get a Discord Webhook URL:</Typography>
+                <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#7289da', mb: 1 }}>ðŸ“– How to get a Discord Webhook URL:</Typography>
                 <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.8 }}>
-                  1. Open Discord → Right-click a channel → Edit Channel<br/>
-                  2. Click Integrations → Webhooks → New Webhook<br/>
+                  1. Open Discord â†’ Right-click a channel â†’ Edit Channel<br/>
+                  2. Click Integrations â†’ Webhooks â†’ New Webhook<br/>
                   3. Copy the Webhook URL and paste below
                 </Typography>
               </Box>
@@ -1090,14 +1090,14 @@ Share your sheet with: ${res.data.share_with}`);
                 label="Bot Display Name" placeholder="RiskGuardian" sx={inputSx} />
               <Button onClick={saveDiscord} disabled={discordSaving || !discordUrl} fullWidth
                 sx={{ borderRadius: '10px', background: 'linear-gradient(135deg, #5865f2, #7289da)', color: 'white', fontWeight: 700, textTransform: 'none', py: 1.2 }}>
-                {discordSaving ? <CircularProgress size={16} sx={{ color: 'white' }} /> : '💬 Connect Discord'}
+                {discordSaving ? <CircularProgress size={16} sx={{ color: 'white' }} /> : 'ðŸ’¬ Connect Discord'}
               </Button>
             </Box>
           )}
         </Box>
       )}
 
-      {/* ── SHEETS TAB ── */}
+      {/* â”€â”€ SHEETS TAB â”€â”€ */}
       {activeTab === 1 && (
         <Box>
           {status.sheets?.connected ? (
@@ -1109,19 +1109,19 @@ Share your sheet with: ${res.data.share_with}`);
                 </Box>
                 {sheetsStatus?.last_export && (
                   <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>
-                    Last export: {new Date(sheetsStatus.last_export).toLocaleString()} · {sheetsStatus.last_rows} rows
+                    Last export: {new Date(sheetsStatus.last_export).toLocaleString()} Â· {sheetsStatus.last_rows} rows
                   </Typography>
                 )}
                 {sheetsStatus?.sheet_url && (
                   <Button onClick={() => window.open(sheetsStatus.sheet_url, '_blank')} size="small"
                     sx={{ mt: 1, fontSize: '11px', textTransform: 'none', color: '#34a853', borderRadius: '6px', background: 'rgba(52,168,83,0.1)', border: '1px solid rgba(52,168,83,0.2)', px: 1.5, py: 0.4 }}>
-                    ↗ Open Sheet
+                    â†— Open Sheet
                   </Button>
                 )}
               </Box>
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button onClick={exportSheets} disabled={sheetsExporting} sx={{ flex: 1, borderRadius: '10px', background: 'rgba(52,168,83,0.15)', border: '1px solid rgba(52,168,83,0.3)', color: '#34a853', fontWeight: 700, textTransform: 'none' }}>
-                  {sheetsExporting ? <CircularProgress size={16} sx={{ color: '#34a853' }} /> : '📊 Export Now'}
+                  {sheetsExporting ? <CircularProgress size={16} sx={{ color: '#34a853' }} /> : 'ðŸ“Š Export Now'}
                 </Button>
                 <Button onClick={disconnectSheets} sx={{ borderRadius: '10px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#ef4444', fontWeight: 700, textTransform: 'none' }}>
                   Disconnect
@@ -1131,9 +1131,9 @@ Share your sheet with: ${res.data.share_with}`);
           ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box sx={{ p: 2, borderRadius: '12px', background: 'rgba(52,168,83,0.06)', border: '1px solid rgba(52,168,83,0.15)' }}>
-                <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#34a853', mb: 1 }}>📖 Setup Instructions:</Typography>
+                <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#34a853', mb: 1 }}>ðŸ“– Setup Instructions:</Typography>
                 <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.8 }}>
-                  1. Go to Google Cloud Console → Create a Service Account<br/>
+                  1. Go to Google Cloud Console â†’ Create a Service Account<br/>
                   2. Download the JSON key file<br/>
                   3. Create a Google Sheet and share it with the service account email<br/>
                   4. Paste the Sheet URL and JSON key below
@@ -1147,14 +1147,14 @@ Share your sheet with: ${res.data.share_with}`);
                 label="Service Account JSON" placeholder='{"type":"service_account","client_email":"..."}' multiline rows={3} sx={inputSx} />
               <Button onClick={saveSheets} disabled={sheetsSaving || !sheetsUrl || !sheetsJson} fullWidth
                 sx={{ borderRadius: '10px', background: 'linear-gradient(135deg, #34a853, #0f9d58)', color: 'white', fontWeight: 700, textTransform: 'none', py: 1.2 }}>
-                {sheetsSaving ? <CircularProgress size={16} sx={{ color: 'white' }} /> : '📊 Connect Google Sheets'}
+                {sheetsSaving ? <CircularProgress size={16} sx={{ color: 'white' }} /> : 'ðŸ“Š Connect Google Sheets'}
               </Button>
             </Box>
           )}
         </Box>
       )}
 
-      {/* ── TRADINGVIEW TAB ── */}
+      {/* â”€â”€ TRADINGVIEW TAB â”€â”€ */}
       {activeTab === 2 && (
         <Box>
           {(status.tradingview?.connected || tvWebhook) ? (
@@ -1166,7 +1166,7 @@ Share your sheet with: ${res.data.share_with}`);
                 </Box>
                 <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', mb: 1 }}>Paste this URL in your Pine Script alert webhook:</Typography>
                 <Box sx={{ p: 1.2, borderRadius: '8px', background: 'rgba(0,0,0,0.4)', fontFamily: 'monospace', fontSize: '10px', color: '#38bdf8', wordBreak: 'break-all', mb: 1 }}>
-                  {tvWebhook || `http://localhost:8000/api/v1/integrations/tradingview/alert?token=YOUR_TOKEN&uid=YOUR_ID`}
+                  {tvWebhook || `https://riskguardian.onrender.com/api/v1/integrations/tradingview/alert?token=YOUR_TOKEN&uid=YOUR_ID`}
                 </Box>
                 {tvWebhook && (
                   <Button onClick={() => { navigator.clipboard.writeText(tvWebhook); }} size="small"
@@ -1195,7 +1195,7 @@ Share your sheet with: ${res.data.share_with}`);
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, maxHeight: 200, overflow: 'auto' }}>
                   {tvAlerts.slice(0,10).map((a, i) => (
                     <Box key={i} sx={{ display: 'flex', gap: 1.5, p: 1.2, borderRadius: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', alignItems: 'center' }}>
-                      <Typography sx={{ fontSize: '14px' }}>{a.action === 'buy' ? '🟢' : a.action === 'sell' ? '🔴' : '🔔'}</Typography>
+                      <Typography sx={{ fontSize: '14px' }}>{a.action === 'buy' ? 'ðŸŸ¢' : a.action === 'sell' ? 'ðŸ”´' : 'ðŸ””'}</Typography>
                       <Box sx={{ flex: 1 }}>
                         <Typography sx={{ fontSize: '12px', fontWeight: 600, color: 'white' }}>{a.ticker} <Box component="span" sx={{ color: a.action === 'buy' ? '#22c55e' : a.action === 'sell' ? '#ef4444' : '#38bdf8', textTransform: 'uppercase', fontSize: '10px' }}>{a.action}</Box></Typography>
                         <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)' }}>{new Date(a.received_at).toLocaleString()}</Typography>
@@ -1212,21 +1212,21 @@ Share your sheet with: ${res.data.share_with}`);
           ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box sx={{ p: 2, borderRadius: '12px', background: 'rgba(33,150,243,0.06)', border: '1px solid rgba(33,150,243,0.15)' }}>
-                <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#2196f3', mb: 1 }}>📖 How it works:</Typography>
+                <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#2196f3', mb: 1 }}>ðŸ“– How it works:</Typography>
                 <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.8 }}>
                   1. Set a secret token below (any password you choose)<br/>
                   2. Copy the generated webhook URL<br/>
-                  3. In TradingView alert settings → Webhook URL → paste it<br/>
+                  3. In TradingView alert settings â†’ Webhook URL â†’ paste it<br/>
                   4. Alerts fire into RiskGuardian + forward to Discord
                 </Typography>
               </Box>
               <TextField value={tvToken} onChange={e => setTvToken(e.target.value)}
                 label="Secret Token" placeholder="my-secret-token-123" sx={inputSx}
-                helperText="Choose any secret string — used to verify alerts come from you"
+                helperText="Choose any secret string â€” used to verify alerts come from you"
                 FormHelperTextProps={{ sx: { color: 'rgba(255,255,255,0.3)', fontSize: '11px' } }} />
               <Button onClick={saveTradingView} disabled={tvSaving || tvToken.length < 8} fullWidth
                 sx={{ borderRadius: '10px', background: 'linear-gradient(135deg, #1565c0, #2196f3)', color: 'white', fontWeight: 700, textTransform: 'none', py: 1.2, opacity: tvToken.length < 8 ? 0.5 : 1 }}>
-                {tvSaving ? <CircularProgress size={16} sx={{ color: 'white' }} /> : '📈 Connect TradingView'}
+                {tvSaving ? <CircularProgress size={16} sx={{ color: 'white' }} /> : 'ðŸ“ˆ Connect TradingView'}
               </Button>
             </Box>
           )}
@@ -1237,9 +1237,9 @@ Share your sheet with: ${res.data.share_with}`);
 };
 
 
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // MAIN ENTERPRISE PAGE
-// ═══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const EnterprisePage: React.FC = () => {
   const { plan, features, refetch } = usePlan();
   const isEnterprise = plan === 'enterprise';
@@ -1272,13 +1272,13 @@ const EnterprisePage: React.FC = () => {
           Enterprise Command Center
         </Typography>
         <Typography sx={{ fontSize: '15px', color: 'rgba(255,255,255,0.45)', maxWidth: 600 }}>
-          White label, API access, custom rules, team tools, dedicated support — everything you need to run RiskGuardian at scale.
+          White label, API access, custom rules, team tools, dedicated support â€” everything you need to run RiskGuardian at scale.
         </Typography>
         {!isEnterprise && (
           <Box sx={{ mt: 3, p: 2.5, borderRadius: '16px', background: 'linear-gradient(135deg, rgba(245,158,11,0.1), rgba(239,68,68,0.08))', border: '1px solid rgba(245,158,11,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, maxWidth: 600 }}>
             <Box>
               <Typography sx={{ fontSize: '15px', fontWeight: 700, color: 'white' }}>Unlock all Enterprise features</Typography>
-              <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)' }}>$149/mo · Cancel anytime</Typography>
+              <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)' }}>$149/mo Â· Cancel anytime</Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
               <Button onClick={() => startCheckout('enterprise')} sx={{ borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #ef4444)', color: 'white', fontWeight: 800, textTransform: 'none', px: 3, py: 1.2, fontSize: '14px' }}>
@@ -1307,3 +1307,4 @@ const EnterprisePage: React.FC = () => {
 };
 
 export default EnterprisePage;
+

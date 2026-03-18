@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   Box, Typography, TextField, Button, Card, CardContent,
   Alert, CircularProgress, InputAdornment, IconButton, Chip,
@@ -9,10 +9,10 @@ import axios from 'axios';
 
 // Plan display config
 const PLAN_CONFIG: Record<string, { label: string; color: string; emoji: string }> = {
-  free:       { label: 'Free Trial',  color: '#a855f7', emoji: '🎁' },
-  starter:    { label: 'Starter',     color: '#38bdf8', emoji: '🚀' },
-  pro:        { label: 'Pro',         color: '#22c55e', emoji: '⚡' },
-  enterprise: { label: 'Enterprise',  color: '#f97316', emoji: '🏢' },
+  free:       { label: 'Free Trial',  color: '#a855f7', emoji: 'ðŸŽ' },
+  starter:    { label: 'Starter',     color: '#38bdf8', emoji: 'ðŸš€' },
+  pro:        { label: 'Pro',         color: '#22c55e', emoji: 'âš¡' },
+  enterprise: { label: 'Enterprise',  color: '#f97316', emoji: 'ðŸ¢' },
 };
 
 const Register: React.FC = () => {
@@ -33,13 +33,13 @@ const Register: React.FC = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/v1/auth-multi/register',
+        'https://riskguardian.onrender.com/api/v1/auth-multi/register',
         formData
       );
 
       localStorage.setItem('access_token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-      localStorage.setItem('selected_plan', plan); // ✅ Save plan for setup wizard
+      localStorage.setItem('selected_plan', plan); // âœ… Save plan for setup wizard
 
       // New users go to setup wizard, carrying the plan
       navigate(`/setup?plan=${plan}`);
@@ -91,7 +91,7 @@ const Register: React.FC = () => {
           </Typography>
         </Box>
 
-        {/* ── Selected Plan Badge ── */}
+        {/* â”€â”€ Selected Plan Badge â”€â”€ */}
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Chip
             label={`${planInfo.emoji} ${planInfo.label} Plan Selected`}
@@ -111,7 +111,7 @@ const Register: React.FC = () => {
             </Typography>
             <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', mb: 4 }}>
               {plan === 'free'
-                ? 'Start your 14-day free trial — no card needed'
+                ? 'Start your 14-day free trial â€” no card needed'
                 : `Set up your ${planInfo.label} plan account`}
             </Typography>
 
@@ -154,7 +154,7 @@ const Register: React.FC = () => {
                   '&:hover': { transform: 'translateY(-2px)', boxShadow: `0 8px 30px ${planInfo.color}40` },
                   '&:disabled': { background: 'rgba(255,255,255,0.1)' },
                 }}>
-                {loading ? 'Creating Account...' : `Create Account & Continue →`}
+                {loading ? 'Creating Account...' : `Create Account & Continue â†’`}
               </Button>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>
@@ -177,3 +177,4 @@ export default Register;
 
 
   
+

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, Grid, LinearProgress, Chip } from '@mui/material';
 import BusinessIcon from '@mui/icons-material/Business';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { usePlan, startCheckout } from '../hooks/usePlan';
 
-const API = 'http://localhost:8000/api/v1/prop-firms';
+const API = 'https://riskguardian.onrender.com/api/v1/prop-firms';
 
 interface Preset {
   name: string; firm: string; account_size: number;
@@ -74,7 +74,7 @@ const PropFirmWidget: React.FC = () => {
         </Box>
         <Button onClick={() => startCheckout('pro')} fullWidth size="small"
           sx={{ borderRadius: '10px', background: 'linear-gradient(135deg, #a855f7, #ec4899)', color: 'white', fontWeight: 700, fontSize: '12px', textTransform: 'none', opacity: 1, cursor: 'pointer' }}>
-          🔒 Upgrade to Pro
+          ðŸ”’ Upgrade to Pro
         </Button>
       </Box>
     );
@@ -140,13 +140,13 @@ const PropFirmWidget: React.FC = () => {
         </Box>
         <Button onClick={() => setDialogOpen(true)} fullWidth
           sx={{ borderRadius: '10px', background: 'linear-gradient(135deg, #a855f7, #ec4899)', color: 'white', fontWeight: 700, fontSize: '13px', textTransform: 'none', py: 1.2, '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 6px 20px rgba(168,85,247,0.35)' } }}>
-          🏢 Select Firm Profile
+          ðŸ¢ Select Firm Profile
         </Button>
       </Box>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth
         PaperProps={{ sx: { background: '#0f172a', color: 'white', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)' } }}>
-        <DialogTitle sx={{ fontSize: '20px', fontWeight: 700 }}>🏢 Select Prop Firm Profile</DialogTitle>
+        <DialogTitle sx={{ fontSize: '20px', fontWeight: 700 }}>ðŸ¢ Select Prop Firm Profile</DialogTitle>
         <DialogContent>
           <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', mb: 3 }}>
             Automatically configure your risk rules to match your prop firm's requirements.
@@ -190,3 +190,4 @@ const PropFirmWidget: React.FC = () => {
 };
 
 export default PropFirmWidget;
+

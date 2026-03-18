@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+﻿import React, { useEffect, useState, useCallback } from "react";
 import {
   Box, Typography, Grid, Card, CardContent, Chip,
   LinearProgress, Button, useMediaQuery, useTheme, Dialog, DialogContent,
@@ -11,22 +11,22 @@ import OnboardingChecklist from './OnboardingChecklist';
 
 interface Alert { id: number; type: 'success' | 'warning' | 'error' | 'info'; message: string; time: Date; }
 
-const API = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API = process.env.REACT_APP_API_URL || 'https://riskguardian.onrender.com';
 
 const PRESETS      = [{ label:'15m',minutes:15},{label:'30m',minutes:30},{label:'1h',minutes:60},{label:'2h',minutes:120},{label:'4h',minutes:240}];
-const REASONS_OVERLAY = [{ key:'revenge',label:'😤 Revenge trade',emoji:'😤'},{key:'loss',label:'📉 Loss limit hit',emoji:'📉'},{key:'manual',label:'🧘 Clear my head',emoji:'🧘'}];
+const REASONS_OVERLAY = [{ key:'revenge',label:'ðŸ˜¤ Revenge trade',emoji:'ðŸ˜¤'},{key:'loss',label:'ðŸ“‰ Loss limit hit',emoji:'ðŸ“‰'},{key:'manual',label:'ðŸ§˜ Clear my head',emoji:'ðŸ§˜'}];
 const EXTEND_OPTIONS = [15, 30, 60];
 const overlayCard: React.CSSProperties = { borderRadius:'28px', overflow:'hidden', position:'relative' };
 
-// ── safe number helper — kills NaN everywhere ─────────────────────────────
+// â”€â”€ safe number helper â€” kills NaN everywhere â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const n = (v: any, fallback = 0): number => { const x = parseFloat(v); return isFinite(x) ? x : fallback; };
 const pct = (numerator: any, denominator: any, fallback = 0): number => {
   const d = n(denominator); return d === 0 ? fallback : n(numerator) / d * 100;
 };
 
-// ══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // RISK LOCK OVERLAY (unchanged from original)
-// ══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const RiskLockOverlay: React.FC<{
   open:boolean; locked:boolean; timeDisplay:string; progress:number;
   selectedMinutes:number; selectedReason:string;
@@ -50,7 +50,7 @@ const RiskLockOverlay: React.FC<{
         <Box sx={{ position:'relative',p:{xs:3,sm:4},textAlign:'center' }}>
           {!locked && (
             <>
-              <Box sx={{ width:72,height:72,borderRadius:'20px',mx:'auto',mb:2.5,background:'rgba(56,189,248,0.12)',border:'1px solid rgba(56,189,248,0.3)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'36px' }}>🔒</Box>
+              <Box sx={{ width:72,height:72,borderRadius:'20px',mx:'auto',mb:2.5,background:'rgba(56,189,248,0.12)',border:'1px solid rgba(56,189,248,0.3)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'36px' }}>ðŸ”’</Box>
               <Typography sx={{ fontSize:'20px',fontWeight:800,color:'white',mb:0.5 }}>Set Risk Lock</Typography>
               <Typography sx={{ fontSize:'13px',color:'rgba(255,255,255,0.4)',mb:3 }}>Choose duration and reason before locking</Typography>
               <Typography sx={{ fontSize:'11px',fontWeight:700,color:'rgba(255,255,255,0.35)',letterSpacing:'0.12em',textTransform:'uppercase',mb:1.5,textAlign:'left' }}>Duration</Typography>
@@ -78,23 +78,23 @@ const RiskLockOverlay: React.FC<{
                 ))}
               </Box>
               <Box sx={{ mb:3,p:2,borderRadius:'14px',background:'rgba(239,68,68,0.07)',border:'1px solid rgba(239,68,68,0.18)' }}>
-                <Typography sx={{ fontSize:'13px',color:'rgba(255,255,255,0.6)',fontWeight:600 }}>🔒 Lock for <span style={{color:'#ef4444'}}>{selectedMinutes>=60?`${selectedMinutes/60}h`:`${selectedMinutes}m`}</span> · New trades will be auto-closed within 3s</Typography>
+                <Typography sx={{ fontSize:'13px',color:'rgba(255,255,255,0.6)',fontWeight:600 }}>ðŸ”’ Lock for <span style={{color:'#ef4444'}}>{selectedMinutes>=60?`${selectedMinutes/60}h`:`${selectedMinutes}m`}</span> Â· New trades will be auto-closed within 3s</Typography>
               </Box>
               <Box sx={{ display:'flex',gap:1.5 }}>
                 <Button onClick={onClose} sx={{ flex:1,py:1.5,borderRadius:'14px',textTransform:'none',fontWeight:700,border:'1px solid rgba(255,255,255,0.12)',color:'rgba(255,255,255,0.4)','&:hover':{background:'rgba(255,255,255,0.06)',color:'white'} }}>Cancel</Button>
-                <Button onClick={onConfirmLock} sx={{ flex:2,py:1.5,borderRadius:'14px',textTransform:'none',fontWeight:800,fontSize:'14px',background:'linear-gradient(135deg,#ef4444,#f97316)',color:'white','&:hover':{transform:'translateY(-1px)',boxShadow:'0 6px 20px rgba(239,68,68,0.4)'} }}>🛑 Activate Lock</Button>
+                <Button onClick={onConfirmLock} sx={{ flex:2,py:1.5,borderRadius:'14px',textTransform:'none',fontWeight:800,fontSize:'14px',background:'linear-gradient(135deg,#ef4444,#f97316)',color:'white','&:hover':{transform:'translateY(-1px)',boxShadow:'0 6px 20px rgba(239,68,68,0.4)'} }}>ðŸ›‘ Activate Lock</Button>
               </Box>
             </>
           )}
 
           {locked && (
             <>
-              <Box sx={{ width:76,height:76,borderRadius:'22px',mx:'auto',mb:2.5,background:'linear-gradient(135deg,rgba(239,68,68,0.2),rgba(239,68,68,0.07))',border:'1px solid rgba(239,68,68,0.35)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'38px',animation:'lockPulse 2s ease-in-out infinite','@keyframes lockPulse':{'0%,100%':{boxShadow:'0 0 18px rgba(239,68,68,0.2)'},'50%':{boxShadow:'0 0 38px rgba(239,68,68,0.5)'}} }}>🔒</Box>
+              <Box sx={{ width:76,height:76,borderRadius:'22px',mx:'auto',mb:2.5,background:'linear-gradient(135deg,rgba(239,68,68,0.2),rgba(239,68,68,0.07))',border:'1px solid rgba(239,68,68,0.35)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'38px',animation:'lockPulse 2s ease-in-out infinite','@keyframes lockPulse':{'0%,100%':{boxShadow:'0 0 18px rgba(239,68,68,0.2)'},'50%':{boxShadow:'0 0 38px rgba(239,68,68,0.5)'}} }}>ðŸ”’</Box>
               <Typography sx={{ fontSize:'21px',fontWeight:800,color:'white',mb:0.4 }}>Risk Lock Active</Typography>
               <Typography sx={{ fontSize:'13px',color:'rgba(255,255,255,0.38)',mb:3 }}>New positions will be auto-closed instantly</Typography>
               <Box sx={{ mb:2.5,p:3,borderRadius:'20px',background:'rgba(239,68,68,0.06)',border:'1px solid rgba(239,68,68,0.15)' }}>
                 <Typography sx={{ fontSize:'11px',fontWeight:700,color:'rgba(255,255,255,0.3)',letterSpacing:'0.15em',textTransform:'uppercase',mb:1 }}>Time Remaining</Typography>
-                <Typography sx={{ fontSize:'50px',fontWeight:800,fontFamily:'"DM Mono",monospace',color:'#ef4444',lineHeight:1,mb:0.5,textShadow:'0 0 28px rgba(239,68,68,0.5)',animation:'countPulse 1s ease-in-out infinite','@keyframes countPulse':{'0%,100%':{opacity:1},'50%':{opacity:0.7}} }}>{timeDisplay||'…'}</Typography>
+                <Typography sx={{ fontSize:'50px',fontWeight:800,fontFamily:'"DM Mono",monospace',color:'#ef4444',lineHeight:1,mb:0.5,textShadow:'0 0 28px rgba(239,68,68,0.5)',animation:'countPulse 1s ease-in-out infinite','@keyframes countPulse':{'0%,100%':{opacity:1},'50%':{opacity:0.7}} }}>{timeDisplay||'â€¦'}</Typography>
                 <Box sx={{ mt:2,height:6,borderRadius:3,background:'rgba(255,255,255,0.06)',overflow:'hidden' }}>
                   <Box sx={{ height:'100%',borderRadius:3,width:`${progress}%`,background:'linear-gradient(90deg,#ef4444,#f97316)',boxShadow:'0 0 10px rgba(239,68,68,0.6)',transition:'width 1s linear' }} />
                 </Box>
@@ -106,9 +106,9 @@ const RiskLockOverlay: React.FC<{
                 ))}
               </Box>
               <Box sx={{ mb:2.5,p:2,borderRadius:'12px',background:'rgba(245,158,11,0.07)',border:'1px solid rgba(245,158,11,0.18)' }}>
-                <Typography sx={{ fontSize:'12px',color:'rgba(245,158,11,0.85)',fontWeight:600 }}>⚠️ Any new MT5 position opened right now will be closed automatically within 3 seconds</Typography>
+                <Typography sx={{ fontSize:'12px',color:'rgba(245,158,11,0.85)',fontWeight:600 }}>âš ï¸ Any new MT5 position opened right now will be closed automatically within 3 seconds</Typography>
               </Box>
-              <Button onClick={onLift} fullWidth sx={{ py:1.6,borderRadius:'14px',textTransform:'none',fontWeight:700,fontSize:'14px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.14)',color:'rgba(255,255,255,0.6)','&:hover':{background:'rgba(255,255,255,0.1)',color:'white',borderColor:'rgba(255,255,255,0.28)'} }}>🔓 Lift Risk Lock Early</Button>
+              <Button onClick={onLift} fullWidth sx={{ py:1.6,borderRadius:'14px',textTransform:'none',fontWeight:700,fontSize:'14px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.14)',color:'rgba(255,255,255,0.6)','&:hover':{background:'rgba(255,255,255,0.1)',color:'white',borderColor:'rgba(255,255,255,0.28)'} }}>ðŸ”“ Lift Risk Lock Early</Button>
             </>
           )}
         </Box>
@@ -117,14 +117,14 @@ const RiskLockOverlay: React.FC<{
   </Dialog>
 );
 
-// ══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // MAIN DASHBOARD
-// ══════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const RiskDashboardClean: React.FC = () => {
   const theme    = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  // ── Live data from default account (Deriv WS or MT5) ──
+  // â”€â”€ Live data from default account (Deriv WS or MT5) â”€â”€
   const live = useLiveTrades();
   const balance         = n(live.balance);
   const equity          = n(live.equity, balance);
@@ -150,7 +150,7 @@ const RiskDashboardClean: React.FC = () => {
 
   const lockActive = lockEndsAt > Date.now();
 
-  // ── Lock countdown ──────────────────────────────────────
+  // â”€â”€ Lock countdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const fiveMinWarnedRef = React.useRef(false);
   useEffect(() => { fiveMinWarnedRef.current = false; }, [lockEndsAt]);
 
@@ -168,7 +168,7 @@ const RiskDashboardClean: React.FC = () => {
       if (diff <= 5*60*1000 && diff > 4.9*60*1000 && !fiveMinWarnedRef.current) {
         fiveMinWarnedRef.current = true;
         playAlertSound('warning');
-        addAlert('warning','⏰ Risk Lock expires in 5 minutes');
+        addAlert('warning','â° Risk Lock expires in 5 minutes');
       }
     };
     tick();
@@ -176,7 +176,7 @@ const RiskDashboardClean: React.FC = () => {
     return () => clearInterval(t);
   }, [lockEndsAt, lockDuration]);
 
-  // ── Cooldown status, alerts, settings ──────────────────
+  // â”€â”€ Cooldown status, alerts, settings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const fetchCooldownStatus = useCallback(async () => {
     try {
       const token = localStorage.getItem('access_token');
@@ -206,7 +206,7 @@ const RiskDashboardClean: React.FC = () => {
     return () => { clearInterval(iv1); clearInterval(iv2); clearInterval(iv3); };
   }, [fetchCooldownStatus]);
 
-  // ── Sounds ──────────────────────────────────────────────
+  // â”€â”€ Sounds â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const playAlertSound = (type:'warning'|'unlock'='warning') => {
     try {
       const ctx  = new (window.AudioContext||(window as any).webkitAudioContext)();
@@ -240,7 +240,7 @@ const RiskDashboardClean: React.FC = () => {
     fetch(`${API}/api/v1/journal/lock-event`,{ method:'POST', headers:{'Content-Type':'application/json',Authorization:`Bearer ${token??''}`}, body:JSON.stringify({ reason,duration_minutes:minutes,triggered_by:triggeredBy,daily_loss_at_trigger:dailyPnl }) }).catch(()=>{});
   };
 
-  // ── Lock handlers ────────────────────────────────────────
+  // â”€â”€ Lock handlers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleRiskLock = () => {
     if (lockActive) { setOverlayLocked(true); setShowOverlay(true); return; }
     setPickerMinutes(60); setPickerReason('manual'); setOverlayLocked(false); setShowOverlay(true);
@@ -249,14 +249,14 @@ const RiskDashboardClean: React.FC = () => {
   const handleConfirmLock = () => {
     const MINUTES=pickerMinutes; const endsAtMs=Date.now()+MINUTES*60*1000;
     setLockEndsAt(endsAtMs); setLockDuration(MINUTES); setOverlayLocked(true);
-    addAlert('warning',`🔒 Risk Lock ON — ${MINUTES>=60?`${MINUTES/60}h`:`${MINUTES}m`} cooldown.`);
+    addAlert('warning',`ðŸ”’ Risk Lock ON â€” ${MINUTES>=60?`${MINUTES/60}h`:`${MINUTES}m`} cooldown.`);
     localStorage.setItem('rg_lock_activated','true');
     const token=localStorage.getItem('access_token');
     Promise.all([
       fetch(`${API}/api/v1/cooldown/start`,{ method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({ minutes:MINUTES,reason:pickerReason,notes:'Activated via Risk Lock button' }) })
         .then(r=>r.json()).then(data=>{ if(data.ends_at){ const ms=new Date(data.ends_at).getTime(); if(ms>Date.now()) setLockEndsAt(ms); } }).catch(()=>{}),
       fetch(`${API}/api/v1/trading/lock/with-duration?minutes=${MINUTES}`,{ method:'POST',headers:{'Content-Type':'application/json'} })
-        .then(r=>r.json()).then(data=>{ if(!data.success) addAlert('error','⚠️ MT5 watcher failed to start'); }).catch(()=>{ addAlert('error','⚠️ Could not start MT5 auto-close watcher'); }),
+        .then(r=>r.json()).then(data=>{ if(!data.success) addAlert('error','âš ï¸ MT5 watcher failed to start'); }).catch(()=>{ addAlert('error','âš ï¸ Could not start MT5 auto-close watcher'); }),
     ]);
     logLockToJournal(pickerReason,MINUTES,'button');
   };
@@ -264,7 +264,7 @@ const RiskDashboardClean: React.FC = () => {
   const handleExtend = (extraMinutes:number) => {
     const newEndsAt=Math.max(lockEndsAt,Date.now())+extraMinutes*60*1000;
     setLockEndsAt(newEndsAt); setLockDuration(lockDuration+extraMinutes);
-    addAlert('info',`⏱ Lock extended by ${extraMinutes}m`);
+    addAlert('info',`â± Lock extended by ${extraMinutes}m`);
     const token=localStorage.getItem('access_token');
     const rem=Math.ceil((newEndsAt-Date.now())/60000);
     fetch(`${API}/api/v1/cooldown/start`,{ method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({ minutes:rem,reason:pickerReason,notes:`Extended by ${extraMinutes}m` }) }).catch(()=>{});
@@ -276,32 +276,32 @@ const RiskDashboardClean: React.FC = () => {
       await fetch(`${API}/api/v1/cooldown/stop`,{ method:'POST',headers:{ Authorization:`Bearer ${token}` } });
       await fetch(`${API}/api/v1/trading/unlock`,{ method:'POST',headers:{'Content-Type':'application/json'} }).catch(()=>{});
       setLockEndsAt(0); setTimeDisplay(''); setShowOverlay(false); setOverlayLocked(false);
-      playAlertSound('unlock'); addAlert('success','🔓 Risk Lock lifted — trading is now normal');
-    } catch { addAlert('error','❌ Could not lift lock'); }
+      playAlertSound('unlock'); addAlert('success','ðŸ”“ Risk Lock lifted â€” trading is now normal');
+    } catch { addAlert('error','âŒ Could not lift lock'); }
   };
 
   const handleCooldownStarted = (endsAtMs:number,minutes:number) => {
     setLockEndsAt(endsAtMs); setLockDuration(minutes); setOverlayLocked(true); setShowOverlay(true);
-    addAlert('warning',`🔒 Risk Lock ON — ${minutes>=60?`${minutes/60}h`:`${minutes}m`} cooldown.`);
+    addAlert('warning',`ðŸ”’ Risk Lock ON â€” ${minutes>=60?`${minutes/60}h`:`${minutes}m`} cooldown.`);
     fetch(`${API}/api/v1/trading/lock/with-duration?minutes=${minutes}`,{ method:'POST',headers:{'Content-Type':'application/json'} })
-      .then(r=>r.json()).then(data=>{ if(!data.success) addAlert('error','⚠️ MT5 watcher failed to start'); }).catch(()=>{ addAlert('error','⚠️ Could not reach MT5 watcher'); });
+      .then(r=>r.json()).then(data=>{ if(!data.success) addAlert('error','âš ï¸ MT5 watcher failed to start'); }).catch(()=>{ addAlert('error','âš ï¸ Could not reach MT5 watcher'); });
   };
 
   const handleCooldownStopped = () => {
     setLockEndsAt(0); setShowOverlay(false);
-    addAlert('success','🔓 Cooldown cancelled');
+    addAlert('success','ðŸ”“ Cooldown cancelled');
     fetch(`${API}/api/v1/trading/unlock`,{ method:'POST',headers:{'Content-Type':'application/json'} }).catch(()=>{});
   };
 
   const handleCloseAll = async () => {
-    if (!window.confirm('⚠️ Close ALL open positions?')) return;
+    if (!window.confirm('âš ï¸ Close ALL open positions?')) return;
     setActionLoading('close');
     try {
       const res=await fetch(`${API}/api/v1/positions/close-all`,{ method:'POST',headers:{'Content-Type':'application/json'} });
       const data=await res.json();
-      if (res.ok&&data.success) addAlert('success',`✅ ${data.message}`);
-      else { addAlert('error',`❌ ${data.detail||data.message}`); data.errors?.forEach((e:string)=>addAlert('error',e)); }
-    } catch { addAlert('error','❌ Could not reach backend'); }
+      if (res.ok&&data.success) addAlert('success',`âœ… ${data.message}`);
+      else { addAlert('error',`âŒ ${data.detail||data.message}`); data.errors?.forEach((e:string)=>addAlert('error',e)); }
+    } catch { addAlert('error','âŒ Could not reach backend'); }
     finally  { setActionLoading(''); }
   };
 
@@ -313,17 +313,17 @@ const RiskDashboardClean: React.FC = () => {
         const blob=await res.blob(); const url=window.URL.createObjectURL(blob);
         const a=document.createElement('a'); a.href=url; a.download=`report-${new Date().toISOString().split('T')[0]}.pdf`;
         document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
-        addAlert('success','📊 Report exported!');
+        addAlert('success','ðŸ“Š Report exported!');
       } else addAlert('info','Export coming soon');
     } catch { addAlert('info','Export coming soon'); }
     finally  { setActionLoading(''); }
   };
 
-  const handleRefreshData = () => { addAlert('info','🔄 Refreshing...'); setTimeout(()=>window.location.reload(),500); };
+  const handleRefreshData = () => { addAlert('info','ðŸ”„ Refreshing...'); setTimeout(()=>window.location.reload(),500); };
 
   if (isMobile) return <MobileDashboard />;
 
-  // ── Risk calculations — all NaN-safe ────────────────────
+  // â”€â”€ Risk calculations â€” all NaN-safe â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const maxDrawdown  = balance > 0 ? Math.abs((balance - equity) / balance * 100) : 0;
   const riskPerTrade = activePositions > 0 && balance > 0 ? Math.abs(dailyPnl / activePositions / balance * 100) : 0;
   const equityPct    = balance > 0 ? (equity / balance * 100) : 100;  // 100% when no data yet
@@ -346,13 +346,13 @@ const RiskDashboardClean: React.FC = () => {
   };
 
   const buttons = [
-    { key:'close',  label:'🚫 Close All',    color:'#ef4444', fn:handleCloseAll },
-    { key:'lock',   label:lockActive?`🔒 LOCKED · ${timeDisplay}`:'🔒 Risk Lock', color:lockActive?'#ef4444':'#f59e0b', fn:handleRiskLock },
-    { key:'export', label:'📊 Export Report', color:'#64b5f6', fn:handleExportReport },
-    { key:'refresh',label:'🔄 Refresh Data',  color:'#22c55e', fn:handleRefreshData },
+    { key:'close',  label:'ðŸš« Close All',    color:'#ef4444', fn:handleCloseAll },
+    { key:'lock',   label:lockActive?`ðŸ”’ LOCKED Â· ${timeDisplay}`:'ðŸ”’ Risk Lock', color:lockActive?'#ef4444':'#f59e0b', fn:handleRiskLock },
+    { key:'export', label:'ðŸ“Š Export Report', color:'#64b5f6', fn:handleExportReport },
+    { key:'refresh',label:'ðŸ”„ Refresh Data',  color:'#22c55e', fn:handleRefreshData },
   ];
 
-  // ── Connection badge label ──────────────────────────────
+  // â”€â”€ Connection badge label â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const connLabel = connected ? (live.accountName?.startsWith('CR') || live.accountName?.startsWith('VR') ? 'DERIV LIVE' : 'MT5 LIVE') : 'DISCONNECTED';
 
   return (
@@ -360,7 +360,7 @@ const RiskDashboardClean: React.FC = () => {
 
       <RiskLockOverlay open={showOverlay} locked={overlayLocked} timeDisplay={timeDisplay} progress={progress} selectedMinutes={pickerMinutes} selectedReason={pickerReason} onSelectMinutes={setPickerMinutes} onSelectReason={setPickerReason} onConfirmLock={handleConfirmLock} onExtend={handleExtend} onLift={handleLiftLock} onClose={()=>setShowOverlay(false)} />
 
-      {/* ── Header ── */}
+      {/* â”€â”€ Header â”€â”€ */}
       <Box sx={{ display:'flex',justifyContent:'space-between',alignItems:'center',mb:4 }}>
         <Box>
           <Typography sx={{ fontSize:{xs:'28px',md:'36px'},fontWeight:800,mb:0.5,background:'linear-gradient(90deg,#38bdf8,#22c55e)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',letterSpacing:'-0.02em' }}>Risk Guardian</Typography>
@@ -369,7 +369,7 @@ const RiskDashboardClean: React.FC = () => {
         <Box sx={{ display:'flex',alignItems:'center',gap:2 }}>
           {lockActive && (
             <Box onClick={()=>setShowOverlay(true)} sx={{ px:2.5,py:1,borderRadius:'12px',cursor:'pointer',background:'rgba(239,68,68,0.12)',border:'1px solid rgba(239,68,68,0.35)','&:hover':{background:'rgba(239,68,68,0.2)'} }}>
-              <Typography sx={{ fontSize:'12px',fontWeight:800,color:'#ef4444',letterSpacing:'0.06em' }}>🔒 RISK LOCK · {timeDisplay}</Typography>
+              <Typography sx={{ fontSize:'12px',fontWeight:800,color:'#ef4444',letterSpacing:'0.06em' }}>ðŸ”’ RISK LOCK Â· {timeDisplay}</Typography>
             </Box>
           )}
           {/* Connection badge */}
@@ -387,32 +387,32 @@ const RiskDashboardClean: React.FC = () => {
 
       <OnboardingChecklist connected={connected} settings={settings} />
 
-      {/* ── Stats cards — all NaN-safe ── */}
+      {/* â”€â”€ Stats cards â€” all NaN-safe â”€â”€ */}
       <Grid container spacing={3} sx={{ mb:3 }}>
         {[
           {
             label:'Account Balance',
             value:`$${balance.toFixed(2)}`,
             subValue: currency,
-            color:'#64b5f6', icon:'💰',
+            color:'#64b5f6', icon:'ðŸ’°',
           },
           {
             label:'Current Equity',
             value:`$${equity.toFixed(2)}`,
             subValue:`${equityPct.toFixed(1)}%`,
-            color:'#81c784', icon:'📊',
+            color:'#81c784', icon:'ðŸ“Š',
           },
           {
             label:'Daily P&L',
             value:`${dailyPnl>=0?'+':''}$${dailyPnl.toFixed(2)}`,
             subValue:`${dailyPnlPct>=0?'+':''}${dailyPnlPct.toFixed(2)}%`,
-            color:dailyPnl>=0?'#22c55e':'#ef4444', icon:dailyPnl>=0?'📈':'📉',
+            color:dailyPnl>=0?'#22c55e':'#ef4444', icon:dailyPnl>=0?'ðŸ“ˆ':'ðŸ“‰',
           },
           {
             label:'Active Positions',
             value:activePositions.toString(),
             subValue:activePositions>0?'Open':'None',
-            color:'#ce93d8', icon:'📋',
+            color:'#ce93d8', icon:'ðŸ“‹',
           },
         ].map((stat,idx)=>(
           <Grid item xs={12} sm={6} md={3} key={idx}>
@@ -428,7 +428,7 @@ const RiskDashboardClean: React.FC = () => {
         ))}
       </Grid>
 
-      {/* ── Middle ── */}
+      {/* â”€â”€ Middle â”€â”€ */}
       <Grid container spacing={3} sx={{ mb:3 }}>
         <Grid item xs={12} md={5}>
           <Card sx={{ ...cardStyle,p:4,'&::before':{ content:'""',position:'absolute',top:0,left:0,right:0,height:'3px',background:`linear-gradient(90deg,transparent,${riskColor},transparent)` } }}>
@@ -471,7 +471,7 @@ const RiskDashboardClean: React.FC = () => {
               <Box sx={{ maxHeight:200,overflowY:'auto' }}>
                 {alerts.length===0 ? (
                   <Box sx={{ py:4,textAlign:'center' }}>
-                    <Typography sx={{ fontSize:'36px',opacity:0.2,mb:1 }}>🔔</Typography>
+                    <Typography sx={{ fontSize:'36px',opacity:0.2,mb:1 }}>ðŸ””</Typography>
                     <Typography sx={{ fontSize:'14px',color:'rgba(255,255,255,0.3)' }}>No recent activity</Typography>
                   </Box>
                 ) : alerts.map(alert=>(
@@ -486,11 +486,11 @@ const RiskDashboardClean: React.FC = () => {
         </Grid>
       </Grid>
 
-      {/* ── Quick Actions ── */}
+      {/* â”€â”€ Quick Actions â”€â”€ */}
       <Box sx={{ background:'rgba(255,255,255,0.04)',backdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'20px',p:3,display:'flex',gap:2,flexWrap:'wrap',justifyContent:'center' }}>
         {buttons.map(btn=>(
           <Button id={btn.key==='lock'?'rg-risk-lock-btn':undefined} key={btn.key} onClick={btn.fn} disabled={actionLoading===btn.key} sx={{ px:3,py:1.5,borderRadius:'12px', background:actionLoading===btn.key?'rgba(255,255,255,0.05)':btn.key==='lock'&&lockActive?`${btn.color}25`:`${btn.color}15`, border:`1px solid ${btn.color}${btn.key==='lock'&&lockActive?'60':'30'}`, color:actionLoading===btn.key?'rgba(255,255,255,0.3)':btn.color, fontSize:'13px',fontWeight:600,transition:'all 0.2s', boxShadow:btn.key==='lock'&&lockActive?`0 0 20px ${btn.color}30`:'none', '&:hover':{ background:`${btn.color}25`,transform:'translateY(-2px)',boxShadow:`0 8px 20px ${btn.color}30` }, '&:disabled':{ cursor:'not-allowed' } }}>
-            {actionLoading===btn.key?'⏳ Working...':btn.label}
+            {actionLoading===btn.key?'â³ Working...':btn.label}
           </Button>
         ))}
       </Box>
@@ -501,6 +501,7 @@ const RiskDashboardClean: React.FC = () => {
 };
 
 export default RiskDashboardClean;
+
 
 
 

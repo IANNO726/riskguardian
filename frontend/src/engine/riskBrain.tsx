@@ -1,4 +1,4 @@
-export interface RiskSnapshot {
+﻿export interface RiskSnapshot {
   balance: number
   equity: number
   pnl: number
@@ -31,3 +31,4 @@ export function evaluateRisk(data: RiskSnapshot): RiskDecision {
     killSwitch: true
   }
 }
+

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
@@ -31,7 +31,7 @@ import {
 import { usePlan, startCheckout } from '../hooks/usePlan';
 import axios from 'axios';
 
-const API = 'http://localhost:8000';
+const API = 'https://riskguardian.onrender.com';
 
 const MobileNav: React.FC = () => {
   const navigate = useNavigate();
@@ -39,11 +39,11 @@ const MobileNav: React.FC = () => {
   const { plan } = usePlan();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [accountName, setAccountName] = useState('My Account');
-  const [accountBalance, setAccountBalance] = useState('—');
+  const [accountBalance, setAccountBalance] = useState('â€”');
 
   const currentPath = location.pathname;
 
-  // ── Load current account info ──────────────────────────
+  // â”€â”€ Load current account info â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
@@ -176,7 +176,7 @@ const MobileNav: React.FC = () => {
           }
         }}
       >
-        {/* Account Info — now dynamic */}
+        {/* Account Info â€” now dynamic */}
         <Box sx={{ p: 3, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
             <Avatar sx={{
@@ -222,7 +222,7 @@ const MobileNav: React.FC = () => {
           ))}
         </List>
 
-        {/* ✅ Upgrade CTA — only for free/starter users */}
+        {/* âœ… Upgrade CTA â€” only for free/starter users */}
         {(plan === 'free' || plan === 'starter') && (
           <>
             <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
@@ -236,7 +236,7 @@ const MobileNav: React.FC = () => {
               }}
             >
               <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#a855f7' }}>
-                ⚡ Upgrade to {plan === 'free' ? 'Starter' : 'Pro'}
+                âš¡ Upgrade to {plan === 'free' ? 'Starter' : 'Pro'}
               </Typography>
               <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', mt: 0.3 }}>
                 Unlock more features
@@ -272,3 +272,4 @@ const MobileNav: React.FC = () => {
 };
 
 export default MobileNav;
+

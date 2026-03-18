@@ -1,5 +1,5 @@
-/**
- * TradeBlockBanner — shows a full-width red banner on all pages
+﻿/**
+ * TradeBlockBanner â€” shows a full-width red banner on all pages
  * when a risk rule has blocked new trades.
  *
  * Add to AppShell.tsx inside the main content area:
@@ -13,7 +13,7 @@ import { Box, Typography, Button, Collapse } from '@mui/material';
 import { Block, CheckCircle } from '@mui/icons-material';
 import axios from 'axios';
 
-const API = 'http://localhost:8000/api/v1';
+const API = 'https://riskguardian.onrender.com/api/v1';
 
 const TradeBlockBanner: React.FC = () => {
   const [isBlocked,   setIsBlocked]   = useState(false);
@@ -69,7 +69,7 @@ const TradeBlockBanner: React.FC = () => {
           </Box>
           <Box>
             <Typography sx={{ fontSize: '14px', fontWeight: 800, color: '#ef4444', letterSpacing: '0.02em' }}>
-              🚫 NEW TRADES BLOCKED BY RISK RULE
+              ðŸš« NEW TRADES BLOCKED BY RISK RULE
             </Typography>
             <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', mt: 0.2 }}>
               {reason || 'A risk rule has blocked new trading activity'}
@@ -86,3 +86,4 @@ const TradeBlockBanner: React.FC = () => {
 };
 
 export default TradeBlockBanner;
+

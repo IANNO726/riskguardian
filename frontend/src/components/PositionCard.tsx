@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Box, Typography, IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, CircularProgress } from '@mui/material';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Close, Edit } from '@mui/icons-material';
@@ -129,7 +129,7 @@ const PositionCard: React.FC<PositionCardProps> = ({ position, onClose, onModifi
             </Box>
 
             <Box sx={{ display: 'flex', gap: 1 }}>
-              {/* ✅ EDIT BUTTON */}
+              {/* âœ… EDIT BUTTON */}
               <IconButton
                 onClick={handleOpenModal}
                 sx={{
@@ -209,7 +209,7 @@ const PositionCard: React.FC<PositionCardProps> = ({ position, onClose, onModifi
         </Box>
       </motion.div>
 
-      {/* ✅ MODIFY POSITION MODAL */}
+      {/* âœ… MODIFY POSITION MODAL */}
       <Dialog
         open={modalOpen}
         onClose={() => !loading && setModalOpen(false)}
@@ -225,7 +225,7 @@ const PositionCard: React.FC<PositionCardProps> = ({ position, onClose, onModifi
         <DialogTitle sx={{ color: 'white', fontWeight: 800, pb: 1 }}>
           Modify Position
           <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', fontWeight: 400 }}>
-            {position.symbol} • Ticket #{position.ticket}
+            {position.symbol} â€¢ Ticket #{position.ticket}
           </Typography>
         </DialogTitle>
 
@@ -239,7 +239,7 @@ const PositionCard: React.FC<PositionCardProps> = ({ position, onClose, onModifi
             }}>
               <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>Current SL</Typography>
               <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#ef4444', fontFamily: 'monospace' }}>
-                {position.sl > 0 ? position.sl.toFixed(5) : '—'}
+                {position.sl > 0 ? position.sl.toFixed(5) : 'â€”'}
               </Typography>
             </Box>
             <Box sx={{
@@ -250,7 +250,7 @@ const PositionCard: React.FC<PositionCardProps> = ({ position, onClose, onModifi
             }}>
               <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>Current TP</Typography>
               <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#22c55e', fontFamily: 'monospace' }}>
-                {position.tp > 0 ? position.tp.toFixed(5) : '—'}
+                {position.tp > 0 ? position.tp.toFixed(5) : 'â€”'}
               </Typography>
             </Box>
           </Box>
@@ -296,18 +296,18 @@ const PositionCard: React.FC<PositionCardProps> = ({ position, onClose, onModifi
 
           {error && (
             <Typography sx={{ mt: 2, fontSize: '12px', color: '#ef4444', textAlign: 'center' }}>
-              ❌ {error}
+              âŒ {error}
             </Typography>
           )}
 
           {success && (
             <Typography sx={{ mt: 2, fontSize: '12px', color: '#22c55e', textAlign: 'center' }}>
-              ✅ Position modified successfully!
+              âœ… Position modified successfully!
             </Typography>
           )}
 
           <Typography sx={{ mt: 2, fontSize: '11px', color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
-            💡 You can modify SL only, TP only, or both. Empty fields keep current values.
+            ðŸ’¡ You can modify SL only, TP only, or both. Empty fields keep current values.
           </Typography>
         </DialogContent>
 
@@ -343,3 +343,4 @@ const PositionCard: React.FC<PositionCardProps> = ({ position, onClose, onModifi
 };
 
 export default PositionCard;
+

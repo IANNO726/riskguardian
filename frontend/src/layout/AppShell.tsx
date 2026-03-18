@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Box, Avatar, Typography, Button, Menu, MenuItem, Divider } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import {
@@ -180,7 +180,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     fontSize: '10px',
                     color: 'rgba(255,255,255,0.5)',
                   }}>
-                    {currentAccount.platform} • {currentAccount.broker_name}
+                    {currentAccount.platform} â€¢ {currentAccount.broker_name}
                   </Typography>
                 </Box>
 
@@ -306,6 +306,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 export default AppShell;
+
 
 
 

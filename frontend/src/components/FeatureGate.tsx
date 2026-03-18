@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Tooltip, Box, CircularProgress } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
 import { usePlan, Plan, PlanFeatures } from '../hooks/usePlan';
@@ -41,7 +41,7 @@ export function isPlanSufficient(userPlan: Plan, requiredPlan: Plan): boolean {
   return PLAN_ORDER.indexOf(userPlan) >= PLAN_ORDER.indexOf(requiredPlan);
 }
 
-// ── FeatureGate ───────────────────────────────────────────────
+// â”€â”€ FeatureGate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface FeatureGateProps {
   feature:       keyof PlanFeatures;
   children:      React.ReactNode;
@@ -62,7 +62,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({ feature, children, req
     <Tooltip
       title={
         <Box sx={{ p: 0.5 }}>
-          <Box sx={{ fontSize: '13px', fontWeight: 700, mb: 0.5 }}>🔒 {requiredLabel} Plan Required</Box>
+          <Box sx={{ fontSize: '13px', fontWeight: 700, mb: 0.5 }}>ðŸ”’ {requiredLabel} Plan Required</Box>
           <Box sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>
             Upgrade to <span style={{ color: requiredColor, fontWeight: 700 }}>{requiredLabel}</span> to unlock this feature.
           </Box>
@@ -92,7 +92,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({ feature, children, req
   );
 };
 
-// ── PlanBadge ─────────────────────────────────────────────────
+// â”€â”€ PlanBadge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const PlanBadge: React.FC = () => {
   const { plan, loading } = usePlan();
   if (loading) return null;
@@ -112,12 +112,12 @@ export const PlanBadge: React.FC = () => {
   );
 };
 
-// ── UpgradePrompt ─────────────────────────────────────────────
+// â”€â”€ UpgradePrompt â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface UpgradePromptProps {
   requiredPlan:    Plan;
   featureName:     string;
   onUpgrade:       () => void;
-  upgradeLoading?: boolean; // ✅ NEW
+  upgradeLoading?: boolean; // âœ… NEW
 }
 
 export const UpgradePrompt: React.FC<UpgradePromptProps> = ({ requiredPlan, featureName, onUpgrade, upgradeLoading = false }) => {
@@ -133,7 +133,7 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({ requiredPlan, feat
       background: `radial-gradient(ellipse at 50% 0%, ${color}12, transparent 70%)`,
       border: `1px solid ${color}25`, borderRadius: '20px', minHeight: 340,
     }}>
-      <Box sx={{ fontSize: '52px', mb: 2 }}>🔒</Box>
+      <Box sx={{ fontSize: '52px', mb: 2 }}>ðŸ”’</Box>
       <Box sx={{ fontSize: '22px', fontWeight: 800, color: 'white', mb: 1 }}>
         {featureName} requires {label} Plan
       </Box>
@@ -145,7 +145,7 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({ requiredPlan, feat
         and take your trading to the next level.
       </Box>
 
-      {/* ✅ Button with loading spinner */}
+      {/* âœ… Button with loading spinner */}
       <Box
         onClick={onUpgrade}
         sx={{
@@ -164,13 +164,14 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({ requiredPlan, feat
             Opening Stripe...
           </>
         ) : (
-          `Upgrade to ${label} →`
+          `Upgrade to ${label} â†’`
         )}
       </Box>
 
       <Box sx={{ mt: 2, fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
-        Cancel anytime · Instant activation
+        Cancel anytime Â· Instant activation
       </Box>
     </Box>
   );
 };
+

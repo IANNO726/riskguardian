@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Box, Typography, Chip, Avatar, TextField, Button, IconButton, Dialog, DialogContent, DialogTitle, MenuItem, Select, FormControl, CircularProgress } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, TrendingDown, Close, Add, Remove, Edit } from '@mui/icons-material';
@@ -24,9 +24,9 @@ interface OrderForm {
   tp?: number;
 }
 
-const API = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API = process.env.REACT_APP_API_URL || 'https://riskguardian.onrender.com';
 
-// ── Safe parser: handles any shape the API returns ──────────────────────────
+// â”€â”€ Safe parser: handles any shape the API returns â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function parsePositions(data: any): Position[] {
   if (!data) return [];
   // { positions: [...] }
@@ -106,24 +106,24 @@ const MobileTerminal: React.FC = () => {
         sl: orderForm.sl,
         tp: orderForm.tp,
       }, { headers: { Authorization: `Bearer ${token}` } });
-      alert('✅ Order placed successfully!');
+      alert('âœ… Order placed successfully!');
       setDialogOpen(false);
       fetchPositions();
     } catch (error: any) {
-      alert(`❌ Failed: ${error.response?.data?.detail || 'Please try again.'}`);
+      alert(`âŒ Failed: ${error.response?.data?.detail || 'Please try again.'}`);
     }
   };
 
   const handleClosePosition = async (ticket: number) => {
-    if (!window.confirm('⚠️ Close this position?')) return;
+    if (!window.confirm('âš ï¸ Close this position?')) return;
     try {
       const token = localStorage.getItem('access_token') || '';
       await axios.post(`${API}/api/v1/trades/close`, { ticket },
         { headers: { Authorization: `Bearer ${token}` } });
-      alert('✅ Position closed!');
+      alert('âœ… Position closed!');
       fetchPositions();
     } catch (error: any) {
-      alert(`❌ Failed: ${error.response?.data?.detail || 'Please try again.'}`);
+      alert(`âŒ Failed: ${error.response?.data?.detail || 'Please try again.'}`);
     }
   };
 
@@ -140,7 +140,7 @@ const MobileTerminal: React.FC = () => {
     if (!selectedPosition) return;
     const newSl = modifyForm.sl ? parseFloat(modifyForm.sl) : undefined;
     const newTp = modifyForm.tp ? parseFloat(modifyForm.tp) : undefined;
-    if (!newSl && !newTp) { alert('⚠️ Enter at least SL or TP.'); return; }
+    if (!newSl && !newTp) { alert('âš ï¸ Enter at least SL or TP.'); return; }
     try {
       const token = localStorage.getItem('access_token') || '';
       await axios.put(
@@ -148,11 +148,11 @@ const MobileTerminal: React.FC = () => {
         { stop_loss: newSl ?? null, take_profit: newTp ?? null },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert('✅ Position modified!');
+      alert('âœ… Position modified!');
       setModifyDialogOpen(false);
       fetchPositions();
     } catch (error: any) {
-      alert(`❌ Failed: ${error?.response?.data?.detail || 'Unknown error'}`);
+      alert(`âŒ Failed: ${error?.response?.data?.detail || 'Unknown error'}`);
     }
   };
 
@@ -165,7 +165,7 @@ const MobileTerminal: React.FC = () => {
     exit:    { opacity: 0, x: 20 },
   };
 
-  // ── These are now SAFE: positions is always [] or a real array ─────────────
+  // â”€â”€ These are now SAFE: positions is always [] or a real array â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const safePositions   = Array.isArray(positions) ? positions : [];
   const totalPositions  = safePositions.length;
   const totalProfit     = safePositions.reduce((sum, p) => sum + (p.profit || 0), 0);
@@ -255,7 +255,7 @@ const MobileTerminal: React.FC = () => {
         <AnimatePresence mode="popLayout">
           {safePositions.length === 0 ? (
             <Box sx={{ py:8, textAlign:'center' }}>
-              <Typography sx={{ fontSize:'48px', opacity:0.2, mb:2 }}>📊</Typography>
+              <Typography sx={{ fontSize:'48px', opacity:0.2, mb:2 }}>ðŸ“Š</Typography>
               <Typography sx={{ fontSize:'14px', color:'rgba(255,255,255,0.4)', mb:1 }}>No open positions</Typography>
               <Typography sx={{ fontSize:'12px', color:'rgba(255,255,255,0.3)' }}>Tap BUY or SELL to open a trade</Typography>
             </Box>
@@ -378,7 +378,7 @@ const MobileTerminal: React.FC = () => {
         </AnimatePresence>
       </Box>
 
-      {/* ── Place Order Dialog ─────────────────────────────────────── */}
+      {/* â”€â”€ Place Order Dialog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullScreen
         PaperProps={{ sx: { background:'linear-gradient(180deg, #0f1828 0%, #0a0e1a 100%)', color:'white' } }}>
         <DialogTitle sx={{ display:'flex', justifyContent:'space-between', alignItems:'center',
@@ -447,7 +447,7 @@ const MobileTerminal: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* ── Modify Dialog ──────────────────────────────────────────── */}
+      {/* â”€â”€ Modify Dialog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Dialog open={modifyDialogOpen} onClose={() => setModifyDialogOpen(false)} maxWidth="sm" fullWidth
         PaperProps={{ sx: { background:'linear-gradient(135deg, #1a1f2e 0%, #0f1419 100%)',
           borderRadius:'24px', border:'1px solid rgba(56,189,248,0.2)', m:2 } }}>
@@ -457,7 +457,7 @@ const MobileTerminal: React.FC = () => {
               <Typography sx={{ fontSize:'20px', fontWeight:700, color:'white', mb:0.5 }}>Modify Position</Typography>
               {selectedPosition && (
                 <Typography sx={{ fontSize:'12px', color:'rgba(255,255,255,0.5)' }}>
-                  {selectedPosition.symbol} • Ticket #{selectedPosition.ticket}
+                  {selectedPosition.symbol} â€¢ Ticket #{selectedPosition.ticket}
                 </Typography>
               )}
             </Box>
@@ -509,7 +509,7 @@ const MobileTerminal: React.FC = () => {
             <Box sx={{ p:2, borderRadius:'12px', background:'rgba(100,181,246,0.05)',
               border:'1px solid rgba(100,181,246,0.2)' }}>
               <Typography sx={{ fontSize:'11px', color:'rgba(100,181,246,0.8)', lineHeight:1.6 }}>
-                💡 <strong>Tip:</strong> Modify SL only, TP only, or both. Empty fields keep current values.
+                ðŸ’¡ <strong>Tip:</strong> Modify SL only, TP only, or both. Empty fields keep current values.
               </Typography>
             </Box>
 
@@ -534,3 +534,4 @@ const MobileTerminal: React.FC = () => {
 };
 
 export default MobileTerminal;
+

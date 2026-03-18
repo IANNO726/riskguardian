@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+﻿import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Box, Typography, Grid, LinearProgress } from '@mui/material';
 import { getRiskDashboard } from '../services/api';
 import { useLiveTrades } from '../hooks/useLiveTrades';
@@ -182,7 +182,7 @@ const RiskDashboard: React.FC = () => {
         background: connected ? 'rgba(0,230,118,0.08)' : 'rgba(255,82,82,0.08)',
         border: `1px solid ${connected ? '#00e676' : '#ff5252'}`
       }}>
-        MT5: {connected ? '🟢 LIVE' : '🔴 DISCONNECTED'}
+        MT5: {connected ? 'ðŸŸ¢ LIVE' : 'ðŸ”´ DISCONNECTED'}
         {' '}| Latency: {latency ?? '--'} ms
       </Box>
 
@@ -267,6 +267,7 @@ const RiskDashboard: React.FC = () => {
 };
 
 export default RiskDashboard;
+
 
 
 

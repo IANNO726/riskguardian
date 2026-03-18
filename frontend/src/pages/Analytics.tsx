@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import {
   Box, Typography, Grid, CircularProgress, Chip, Button,
   ToggleButton, ToggleButtonGroup,
@@ -13,7 +13,7 @@ import "react-calendar/dist/Calendar.css";
 import axios from "axios";
 import { TrendingUp, TrendingDown, Refresh, Lock } from "@mui/icons-material";
 
-const API = "http://localhost:8000/api/v1";
+const API = "https://riskguardian.onrender.com/api/v1";
 
 interface AnalyticsData {
   balance: number; equity: number; current_profit: number; currency: string;
@@ -26,7 +26,7 @@ interface AnalyticsData {
   pnl_by_date: Record<string, number>;
 }
 
-// ─── NEW: Lock history types ───────────────────────────────────────────────
+// â”€â”€â”€ NEW: Lock history types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface LockEvent {
   id: number;
   date: string;
@@ -49,7 +49,7 @@ interface LockHistory {
   recent_events: LockEvent[];
 }
 
-// ─── Existing sub-components (unchanged) ─────────────────────────────────────
+// â”€â”€â”€ Existing sub-components (unchanged) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CustomTooltip = ({ active, payload, label, isEquity }: any) => {
   if (!active || !payload?.length) return null;
   const val = payload[0]?.value;
@@ -101,7 +101,7 @@ const RingProgress: React.FC<{ value: number; color: string; size?: number }> = 
   );
 };
 
-// ─── NEW: Lock History Section ────────────────────────────────────────────────
+// â”€â”€â”€ NEW: Lock History Section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const LockHistorySection: React.FC = () => {
   const [data,    setData]    = useState<LockHistory | null>(null);
   const [loading, setLoading] = useState(true);
@@ -121,7 +121,7 @@ const LockHistorySection: React.FC = () => {
 
   if (!data || data.total_locks === 0) return (
     <Box sx={{ p: 4, borderRadius: '24px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
-      <Typography sx={{ fontSize: '40px', opacity: 0.2, mb: 1.5 }}>🔒</Typography>
+      <Typography sx={{ fontSize: '40px', opacity: 0.2, mb: 1.5 }}>ðŸ”’</Typography>
       <Typography sx={{ fontSize: '15px', color: 'rgba(255,255,255,0.3)' }}>No lock events yet</Typography>
       <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.18)', mt: 0.5 }}>Lock events will appear here when you activate Risk Lock</Typography>
     </Box>
@@ -133,11 +133,11 @@ const LockHistorySection: React.FC = () => {
     : `${data.avg_duration_minutes}m`;
 
   const reasonColors: Record<string, string> = {
-    '😤 Revenge Trade': '#f97316',
-    '📉 Loss Limit':    '#ef4444',
-    '🧘 Manual':        '#38bdf8',
-    '🤖 Auto Loss':     '#a855f7',
-    '🔒 Risk Lock':     '#fbbf24',
+    'ðŸ˜¤ Revenge Trade': '#f97316',
+    'ðŸ“‰ Loss Limit':    '#ef4444',
+    'ðŸ§˜ Manual':        '#38bdf8',
+    'ðŸ¤– Auto Loss':     '#a855f7',
+    'ðŸ”’ Risk Lock':     '#fbbf24',
   };
 
   const barData = Object.entries(data.reason_breakdown).map(([reason, count]) => ({
@@ -149,18 +149,18 @@ const LockHistorySection: React.FC = () => {
 
   return (
     <Box>
-      {/* ── Header ── */}
+      {/* â”€â”€ Header â”€â”€ */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
         <Box sx={{ width: 40, height: 40, borderRadius: '12px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Lock sx={{ color: '#ef4444', fontSize: 20 }} />
         </Box>
         <Box>
           <Typography sx={{ fontSize: '18px', fontWeight: 700, color: 'white' }}>Risk Lock History</Typography>
-          <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Discipline tracking — your emotional guardrails</Typography>
+          <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Discipline tracking â€” your emotional guardrails</Typography>
         </Box>
       </Box>
 
-      {/* ── KPI row ── */}
+      {/* â”€â”€ KPI row â”€â”€ */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
           {
@@ -170,18 +170,18 @@ const LockHistorySection: React.FC = () => {
             color: '#ef4444',
             bg: 'rgba(239,68,68,0.08)',
             border: 'rgba(239,68,68,0.2)',
-            icon: '🔒',
+            icon: 'ðŸ”’',
           },
           {
             label: 'This Week',
             value: data.locks_this_week.toString(),
             sub: weekTrend === 0 ? 'same as last week'
-              : weekTrend > 0 ? `↑ ${weekTrend} more than last week`
-              : `↓ ${Math.abs(weekTrend)} fewer than last week`,
+              : weekTrend > 0 ? `â†‘ ${weekTrend} more than last week`
+              : `â†“ ${Math.abs(weekTrend)} fewer than last week`,
             color: data.locks_this_week === 0 ? '#22c55e' : data.locks_this_week <= 2 ? '#fbbf24' : '#ef4444',
             bg: data.locks_this_week === 0 ? 'rgba(34,197,94,0.08)' : data.locks_this_week <= 2 ? 'rgba(251,191,36,0.08)' : 'rgba(239,68,68,0.08)',
             border: data.locks_this_week === 0 ? 'rgba(34,197,94,0.2)' : data.locks_this_week <= 2 ? 'rgba(251,191,36,0.2)' : 'rgba(239,68,68,0.2)',
-            icon: data.locks_this_week === 0 ? '✅' : '📅',
+            icon: data.locks_this_week === 0 ? 'âœ…' : 'ðŸ“…',
           },
           {
             label: 'Avg Duration',
@@ -190,7 +190,7 @@ const LockHistorySection: React.FC = () => {
             color: '#38bdf8',
             bg: 'rgba(56,189,248,0.08)',
             border: 'rgba(56,189,248,0.2)',
-            icon: '⏱',
+            icon: 'â±',
           },
           {
             label: 'Top Trigger',
@@ -199,7 +199,7 @@ const LockHistorySection: React.FC = () => {
             color: '#a855f7',
             bg: 'rgba(168,85,247,0.08)',
             border: 'rgba(168,85,247,0.2)',
-            icon: '🔍',
+            icon: 'ðŸ”',
           },
         ].map(card => (
           <Grid item xs={6} md={3} key={card.label}>
@@ -217,13 +217,13 @@ const LockHistorySection: React.FC = () => {
         ))}
       </Grid>
 
-      {/* ── Charts row ── */}
+      {/* â”€â”€ Charts row â”€â”€ */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
 
         {/* Weekly bar chart */}
         <Grid item xs={12} md={7}>
           <Box sx={{ p: 3, borderRadius: '20px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', height: '100%' }}>
-            <Typography sx={{ fontSize: '14px', fontWeight: 700, color: 'white', mb: 2 }}>🔒 Locks Per Week (Last 8 Weeks)</Typography>
+            <Typography sx={{ fontSize: '14px', fontWeight: 700, color: 'white', mb: 2 }}>ðŸ”’ Locks Per Week (Last 8 Weeks)</Typography>
             <ResponsiveContainer width="100%" height={160}>
               <BarChart data={data.weekly_counts} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
                 <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
@@ -247,7 +247,7 @@ const LockHistorySection: React.FC = () => {
         {/* Reason breakdown */}
         <Grid item xs={12} md={5}>
           <Box sx={{ p: 3, borderRadius: '20px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', height: '100%' }}>
-            <Typography sx={{ fontSize: '14px', fontWeight: 700, color: 'white', mb: 2 }}>🧠 Lock Triggers Breakdown</Typography>
+            <Typography sx={{ fontSize: '14px', fontWeight: 700, color: 'white', mb: 2 }}>ðŸ§  Lock Triggers Breakdown</Typography>
             {barData.map(item => {
               const total = barData.reduce((s, b) => s + b.count, 0);
               const pct   = total > 0 ? Math.round(item.count / total * 100) : 0;
@@ -255,7 +255,7 @@ const LockHistorySection: React.FC = () => {
                 <Box key={item.reason} sx={{ mb: 1.8 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.6 }}>
                     <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>{item.full}</Typography>
-                    <Typography sx={{ fontSize: '13px', fontWeight: 700, color: item.fill, fontFamily: '"DM Mono",monospace' }}>{item.count}×</Typography>
+                    <Typography sx={{ fontSize: '13px', fontWeight: 700, color: item.fill, fontFamily: '"DM Mono",monospace' }}>{item.count}Ã—</Typography>
                   </Box>
                   <Box sx={{ height: 8, borderRadius: 4, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
                     <Box sx={{ height: '100%', width: `${pct}%`, borderRadius: 4, background: item.fill, transition: 'width 0.8s ease', boxShadow: `0 0 8px ${item.fill}66` }} />
@@ -267,16 +267,16 @@ const LockHistorySection: React.FC = () => {
         </Grid>
       </Grid>
 
-      {/* ── Recent events list ── */}
+      {/* â”€â”€ Recent events list â”€â”€ */}
       <Box sx={{ p: 3, borderRadius: '20px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)' }}>
-        <Typography sx={{ fontSize: '14px', fontWeight: 700, color: 'white', mb: 2 }}>📋 Recent Lock Events</Typography>
+        <Typography sx={{ fontSize: '14px', fontWeight: 700, color: 'white', mb: 2 }}>ðŸ“‹ Recent Lock Events</Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
           {data.recent_events.slice(0, 10).map(event => {
             const dur = event.duration_minutes >= 60
               ? `${(event.duration_minutes / 60).toFixed(1)}h`
               : `${event.duration_minutes}m`;
             const d = new Date(event.date);
-            const dateStr = isNaN(d.getTime()) ? '—' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const dateStr = isNaN(d.getTime()) ? 'â€”' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
             const accentColor = reasonColors[event.reason_label] || '#38bdf8';
             return (
               <Box key={event.id} sx={{
@@ -287,16 +287,16 @@ const LockHistorySection: React.FC = () => {
                 flexWrap: 'wrap',
               }}>
                 <Box sx={{ width: 36, height: 36, borderRadius: '10px', background: `${accentColor}18`, border: `1px solid ${accentColor}35`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>
-                  🔒
+                  ðŸ”’
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography sx={{ fontSize: '14px', fontWeight: 700, color: 'white' }}>{event.reason_label}</Typography>
                   <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>{dateStr}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, flexWrap: 'wrap' }}>
-                  <Chip label={`⏱ ${dur}`} size="small" sx={{ height: 24, fontSize: '12px', fontWeight: 700, background: `${accentColor}18`, color: accentColor, border: `1px solid ${accentColor}35` }} />
+                  <Chip label={`â± ${dur}`} size="small" sx={{ height: 24, fontSize: '12px', fontWeight: 700, background: `${accentColor}18`, color: accentColor, border: `1px solid ${accentColor}35` }} />
                   {event.triggered_by === 'auto' && (
-                    <Chip label="🤖 Auto" size="small" sx={{ height: 24, fontSize: '11px', fontWeight: 600, background: 'rgba(168,85,247,0.15)', color: '#a855f7', border: '1px solid rgba(168,85,247,0.3)' }} />
+                    <Chip label="ðŸ¤– Auto" size="small" sx={{ height: 24, fontSize: '11px', fontWeight: 600, background: 'rgba(168,85,247,0.15)', color: '#a855f7', border: '1px solid rgba(168,85,247,0.3)' }} />
                   )}
                   {event.daily_loss_at_trigger != null && event.daily_loss_at_trigger < 0 && (
                     <Chip label={`P&L $${event.daily_loss_at_trigger.toFixed(2)}`} size="small" sx={{ height: 24, fontSize: '11px', fontWeight: 600, background: 'rgba(239,68,68,0.15)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)' }} />
@@ -311,7 +311,7 @@ const LockHistorySection: React.FC = () => {
   );
 };
 
-// ─── Auto-Lock Config Panel ───────────────────────────────────────────────────
+// â”€â”€â”€ Auto-Lock Config Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const AutoLockConfigPanel: React.FC = () => {
   const [enabled,    setEnabled]    = useState(false);
   const [threshold,  setThreshold]  = useState(2.0);
@@ -344,7 +344,7 @@ const AutoLockConfigPanel: React.FC = () => {
     <Box sx={{ p: 3, borderRadius: '20px', background: enabled ? 'rgba(239,68,68,0.06)' : 'rgba(255,255,255,0.025)', border: `1px solid ${enabled ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.07)'}`, mt: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2.5, flexWrap: 'wrap', gap: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Box sx={{ fontSize: '22px' }}>🤖</Box>
+          <Box sx={{ fontSize: '22px' }}>ðŸ¤–</Box>
           <Box>
             <Typography sx={{ fontSize: '16px', fontWeight: 700, color: 'white' }}>Auto-Lock Trigger</Typography>
             <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Automatically locks trading when daily loss hits threshold</Typography>
@@ -417,7 +417,7 @@ const AutoLockConfigPanel: React.FC = () => {
       {enabled && (
         <Box sx={{ mb: 2, p: 2, borderRadius: '12px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
           <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.7 }}>
-            ⚡ When your daily loss reaches <strong style={{ color: '#ef4444' }}>{threshold}% of balance</strong>, Risk Lock activates automatically for <strong style={{ color: '#ef4444' }}>{minutes >= 60 ? `${minutes/60}h` : `${minutes}m`}</strong> and logs the event to your journal.
+            âš¡ When your daily loss reaches <strong style={{ color: '#ef4444' }}>{threshold}% of balance</strong>, Risk Lock activates automatically for <strong style={{ color: '#ef4444' }}>{minutes >= 60 ? `${minutes/60}h` : `${minutes}m`}</strong> and logs the event to your journal.
           </Typography>
         </Box>
       )}
@@ -429,13 +429,13 @@ const AutoLockConfigPanel: React.FC = () => {
           border: `1px solid ${saved ? 'rgba(34,197,94,0.4)' : enabled ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.1)'}`,
           color: saved ? '#22c55e' : enabled ? '#ef4444' : 'rgba(255,255,255,0.4)',
         }}>
-        {saving ? 'Saving…' : saved ? '✅ Saved!' : 'Save Settings'}
+        {saving ? 'Savingâ€¦' : saved ? 'âœ… Saved!' : 'Save Settings'}
       </Button>
     </Box>
   );
 };
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const AnalyticsView: React.FC = () => {
   const [mode, setMode] = useState<"equity" | "drawdown">("equity");
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -488,7 +488,7 @@ const AnalyticsView: React.FC = () => {
       color: 'white',
     }}>
 
-      {/* ── Header ── */}
+      {/* â”€â”€ Header â”€â”€ */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: { xs: 3, md: 4 }, flexWrap: 'wrap', gap: 2 }}>
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
@@ -514,7 +514,7 @@ const AnalyticsView: React.FC = () => {
         </Box>
       </Box>
 
-      {/* ── KPI Cards Row ── */}
+      {/* â”€â”€ KPI Cards Row â”€â”€ */}
       <Grid container spacing={{ xs: 1.5, md: 2.5 }} sx={{ mb: { xs: 3, md: 4 } }}>
         <Grid item xs={12} sm={6} xl={3}>
           <Box sx={{ ...cardBase, background: 'linear-gradient(135deg,rgba(56,189,248,0.1),rgba(56,189,248,0.03))', border: '1px solid rgba(56,189,248,0.2)', '&:hover': { ...cardBase['&:hover'], boxShadow: '0 20px 50px rgba(56,189,248,0.18)' }, '&::before': { ...cardBase['&::before'], background: 'linear-gradient(90deg,transparent,#38bdf8,transparent)' } }}>
@@ -522,9 +522,9 @@ const AnalyticsView: React.FC = () => {
               <Box>
                 <Typography sx={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.12em', mb: 0.5 }}>Account Balance</Typography>
                 <Typography sx={{ fontSize: { xs: '24px', md: '28px' }, fontWeight: 800, color: '#38bdf8', fontFamily: '"DM Mono",monospace', lineHeight: 1 }}>${data.balance.toFixed(2)}</Typography>
-                <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', mt: 0.5 }}>{data.currency} • Initial: ${data.initial_balance.toFixed(0)}</Typography>
+                <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', mt: 0.5 }}>{data.currency} â€¢ Initial: ${data.initial_balance.toFixed(0)}</Typography>
               </Box>
-              <Box sx={{ width: 42, height: 42, borderRadius: '12px', background: 'rgba(56,189,248,0.15)', border: '1px solid rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>💰</Box>
+              <Box sx={{ width: 42, height: 42, borderRadius: '12px', background: 'rgba(56,189,248,0.15)', border: '1px solid rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>ðŸ’°</Box>
             </Box>
             <MiniSparkline data={sparkData} color="#38bdf8" />
           </Box>
@@ -541,7 +541,7 @@ const AnalyticsView: React.FC = () => {
                   <Typography sx={{ fontSize: '12px', color: data.net_profit >= 0 ? '#22c55e' : '#ef4444', fontWeight: 600 }}>${Math.abs(data.net_profit).toFixed(2)}</Typography>
                 </Box>
               </Box>
-              <Box sx={{ width: 42, height: 42, borderRadius: '12px', background: data.return_pct >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${data.return_pct >= 0 ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>{data.return_pct >= 0 ? '📈' : '📉'}</Box>
+              <Box sx={{ width: 42, height: 42, borderRadius: '12px', background: data.return_pct >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${data.return_pct >= 0 ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>{data.return_pct >= 0 ? 'ðŸ“ˆ' : 'ðŸ“‰'}</Box>
             </Box>
             <Box sx={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
               <Box sx={{ height: '100%', width: `${Math.min(Math.abs(data.return_pct), 100)}%`, borderRadius: 2, background: data.return_pct >= 0 ? 'linear-gradient(90deg,#16a34a,#22c55e)' : 'linear-gradient(90deg,#dc2626,#ef4444)', transition: 'width 1s ease' }} />
@@ -579,22 +579,22 @@ const AnalyticsView: React.FC = () => {
                 <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
                   <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Profit Factor</Typography>
                   <Typography sx={{ fontSize: '22px', fontWeight: 800, color: pfColor, fontFamily: '"DM Mono",monospace' }}>{data.profit_factor.toFixed(2)}</Typography>
-                  <Typography sx={{ fontSize: '10px', color: pfColor, fontWeight: 600 }}>{data.profit_factor >= 2 ? '✅ Excellent' : data.profit_factor >= 1 ? '⚠️ Acceptable' : '❌ Below 1.0'}</Typography>
+                  <Typography sx={{ fontSize: '10px', color: pfColor, fontWeight: 600 }}>{data.profit_factor >= 2 ? 'âœ… Excellent' : data.profit_factor >= 1 ? 'âš ï¸ Acceptable' : 'âŒ Below 1.0'}</Typography>
                 </Box>
               </Box>
-              <Box sx={{ width: 42, height: 42, borderRadius: '12px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>⚠️</Box>
+              <Box sx={{ width: 42, height: 42, borderRadius: '12px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>âš ï¸</Box>
             </Box>
           </Box>
         </Grid>
       </Grid>
 
-      {/* ── Chart Section ── */}
+      {/* â”€â”€ Chart Section â”€â”€ */}
       <Box sx={{ borderRadius: '24px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', mb: { xs: 3, md: 4 }, overflow: 'hidden' }}>
         <Box sx={{ px: { xs: 2, md: 4 }, pt: { xs: 2, md: 3 }, pb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2, borderBottom: '1px solid rgba(255,255,255,0.06)', background: isEquity ? 'rgba(34,197,94,0.03)' : 'rgba(239,68,68,0.03)' }}>
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Typography sx={{ fontSize: { xs: '15px', md: '17px' }, fontWeight: 700, color: 'white' }}>
-                {isEquity ? '📈 Equity Curve' : '📉 Drawdown Chart'}
+                {isEquity ? 'ðŸ“ˆ Equity Curve' : 'ðŸ“‰ Drawdown Chart'}
               </Typography>
               <Chip label="30 Days" size="small" sx={{ height: 20, fontSize: '10px', fontWeight: 700, background: 'rgba(56,189,248,0.15)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.3)' }} />
             </Box>
@@ -604,8 +604,8 @@ const AnalyticsView: React.FC = () => {
           </Box>
           <ToggleButtonGroup value={mode} exclusive onChange={(e, val) => val && setMode(val)} size="small"
             sx={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', p: 0.5, '& .MuiToggleButton-root': { color: 'rgba(255,255,255,0.5)', border: 'none', borderRadius: '8px !important', px: { xs: 1.5, md: 2.5 }, py: 0.8, fontSize: '12px', fontWeight: 600, textTransform: 'none', transition: 'all 0.2s', '&.Mui-selected': { background: isEquity ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)', color: isEquity ? '#22c55e' : '#ef4444' } } }}>
-            <ToggleButton value="equity">📈 Equity</ToggleButton>
-            <ToggleButton value="drawdown">📉 Drawdown</ToggleButton>
+            <ToggleButton value="equity">ðŸ“ˆ Equity</ToggleButton>
+            <ToggleButton value="drawdown">ðŸ“‰ Drawdown</ToggleButton>
           </ToggleButtonGroup>
         </Box>
         <Box sx={{ px: { xs: 0.5, md: 3 }, pt: 3, pb: 1 }}>
@@ -651,12 +651,12 @@ const AnalyticsView: React.FC = () => {
         </Box>
       </Box>
 
-      {/* ── Stats + Calendar ── */}
+      {/* â”€â”€ Stats + Calendar â”€â”€ */}
       <Grid container spacing={{ xs: 2, md: 3 }} sx={{ mb: { xs: 3, md: 4 } }}>
         <Grid item xs={12} lg={7}>
           <Box sx={{ p: { xs: 2.5, md: 3.5 }, borderRadius: '24px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', height: '100%' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
-              <Box sx={{ width: 36, height: 36, borderRadius: '10px', background: 'rgba(56,189,248,0.15)', border: '1px solid rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px' }}>📋</Box>
+              <Box sx={{ width: 36, height: 36, borderRadius: '10px', background: 'rgba(56,189,248,0.15)', border: '1px solid rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px' }}>ðŸ“‹</Box>
               <Box>
                 <Typography sx={{ fontSize: '16px', fontWeight: 700, color: 'white' }}>Detailed Statistics</Typography>
                 <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>{data.total_trades} total trades analyzed</Typography>
@@ -664,15 +664,15 @@ const AnalyticsView: React.FC = () => {
             </Box>
             <Grid container spacing={1.5}>
               {[
-                { label: 'Total Profit',  value: `+$${data.total_profit.toFixed(2)}`,                                  color: '#22c55e', bg: 'rgba(34,197,94,0.08)',   border: 'rgba(34,197,94,0.2)',  icon: '💚' },
-                { label: 'Total Loss',    value: `-$${data.total_loss.toFixed(2)}`,                                    color: '#ef4444', bg: 'rgba(239,68,68,0.08)',  border: 'rgba(239,68,68,0.2)', icon: '🔴' },
-                { label: 'Net P&L',       value: `${data.net_profit >= 0 ? '+' : ''}$${data.net_profit.toFixed(2)}`,  color: data.net_profit >= 0 ? '#22c55e' : '#ef4444', bg: data.net_profit >= 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', border: data.net_profit >= 0 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)', icon: '💰' },
-                { label: 'Avg Win',       value: `+$${data.avg_win.toFixed(2)}`,                                       color: '#22c55e', bg: 'rgba(34,197,94,0.06)',   border: 'rgba(34,197,94,0.15)', icon: '⬆️' },
-                { label: 'Avg Loss',      value: `-$${data.avg_loss.toFixed(2)}`,                                      color: '#ef4444', bg: 'rgba(239,68,68,0.06)',  border: 'rgba(239,68,68,0.15)', icon: '⬇️' },
-                { label: 'Profit Factor', value: data.profit_factor.toFixed(2),                                        color: pfColor,   bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.1)', icon: '⚖️' },
-                { label: 'Best Trade',    value: `+$${data.best_trade.toFixed(2)}`,                                    color: '#38bdf8', bg: 'rgba(56,189,248,0.08)',  border: 'rgba(56,189,248,0.2)', icon: '🏆' },
-                { label: 'Worst Trade',   value: `$${data.worst_trade.toFixed(2)}`,                                    color: '#f59e0b', bg: 'rgba(251,191,36,0.08)',  border: 'rgba(251,191,36,0.2)', icon: '⚡' },
-                { label: 'Total Trades',  value: `${data.total_trades}`,                                               color: '#a855f7', bg: 'rgba(168,85,247,0.08)',  border: 'rgba(168,85,247,0.2)', icon: '📊' },
+                { label: 'Total Profit',  value: `+$${data.total_profit.toFixed(2)}`,                                  color: '#22c55e', bg: 'rgba(34,197,94,0.08)',   border: 'rgba(34,197,94,0.2)',  icon: 'ðŸ’š' },
+                { label: 'Total Loss',    value: `-$${data.total_loss.toFixed(2)}`,                                    color: '#ef4444', bg: 'rgba(239,68,68,0.08)',  border: 'rgba(239,68,68,0.2)', icon: 'ðŸ”´' },
+                { label: 'Net P&L',       value: `${data.net_profit >= 0 ? '+' : ''}$${data.net_profit.toFixed(2)}`,  color: data.net_profit >= 0 ? '#22c55e' : '#ef4444', bg: data.net_profit >= 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', border: data.net_profit >= 0 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)', icon: 'ðŸ’°' },
+                { label: 'Avg Win',       value: `+$${data.avg_win.toFixed(2)}`,                                       color: '#22c55e', bg: 'rgba(34,197,94,0.06)',   border: 'rgba(34,197,94,0.15)', icon: 'â¬†ï¸' },
+                { label: 'Avg Loss',      value: `-$${data.avg_loss.toFixed(2)}`,                                      color: '#ef4444', bg: 'rgba(239,68,68,0.06)',  border: 'rgba(239,68,68,0.15)', icon: 'â¬‡ï¸' },
+                { label: 'Profit Factor', value: data.profit_factor.toFixed(2),                                        color: pfColor,   bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.1)', icon: 'âš–ï¸' },
+                { label: 'Best Trade',    value: `+$${data.best_trade.toFixed(2)}`,                                    color: '#38bdf8', bg: 'rgba(56,189,248,0.08)',  border: 'rgba(56,189,248,0.2)', icon: 'ðŸ†' },
+                { label: 'Worst Trade',   value: `$${data.worst_trade.toFixed(2)}`,                                    color: '#f59e0b', bg: 'rgba(251,191,36,0.08)',  border: 'rgba(251,191,36,0.2)', icon: 'âš¡' },
+                { label: 'Total Trades',  value: `${data.total_trades}`,                                               color: '#a855f7', bg: 'rgba(168,85,247,0.08)',  border: 'rgba(168,85,247,0.2)', icon: 'ðŸ“Š' },
               ].map((row) => (
                 <Grid item xs={6} sm={4} key={row.label}>
                   <Box sx={{ p: { xs: 1.5, md: 2 }, borderRadius: '14px', background: row.bg, border: `1px solid ${row.border}`, transition: 'all 0.2s', height: '100%', '&:hover': { transform: 'translateY(-2px)', boxShadow: `0 8px 24px ${row.border}` } }}>
@@ -687,8 +687,8 @@ const AnalyticsView: React.FC = () => {
             </Grid>
             <Box sx={{ mt: 2.5, p: 2.5, borderRadius: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
-                <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#22c55e' }}>🏆 Wins: {data.winning_trades} ({winPct.toFixed(1)}%)</Typography>
-                <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#ef4444' }}>❌ Losses: {data.losing_trades} ({(100-winPct).toFixed(1)}%)</Typography>
+                <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#22c55e' }}>ðŸ† Wins: {data.winning_trades} ({winPct.toFixed(1)}%)</Typography>
+                <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#ef4444' }}>âŒ Losses: {data.losing_trades} ({(100-winPct).toFixed(1)}%)</Typography>
               </Box>
               <Box sx={{ height: 10, borderRadius: 5, background: 'rgba(239,68,68,0.3)', overflow: 'hidden' }}>
                 <Box sx={{ height: '100%', width: `${winPct}%`, background: 'linear-gradient(90deg,#16a34a,#22c55e)', borderRadius: 5, transition: 'width 1.2s cubic-bezier(0.34,1.56,0.64,1)', boxShadow: '0 0 12px rgba(34,197,94,0.5)' }} />
@@ -700,10 +700,10 @@ const AnalyticsView: React.FC = () => {
         <Grid item xs={12} lg={5}>
           <Box sx={{ p: { xs: 2.5, md: 3 }, borderRadius: '24px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', height: '100%' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-              <Box sx={{ width: 36, height: 36, borderRadius: '10px', background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px' }}>📅</Box>
+              <Box sx={{ width: 36, height: 36, borderRadius: '10px', background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px' }}>ðŸ“…</Box>
               <Box>
                 <Typography sx={{ fontSize: '16px', fontWeight: 700, color: 'white' }}>Daily P&L Calendar</Typography>
-                <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Green = profit • Red = loss</Typography>
+                <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Green = profit â€¢ Red = loss</Typography>
               </Box>
             </Box>
             <Box sx={{ display: 'flex', gap: 1.5, mb: 2.5, flexWrap: 'wrap' }}>
@@ -734,9 +734,9 @@ const AnalyticsView: React.FC = () => {
         </Grid>
       </Grid>
 
-      {/* ══════════════════════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           NEW: Risk Lock History section
-          ══════════════════════════════════════════════════ */}
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <Box sx={{ p: { xs: 2.5, md: 3.5 }, borderRadius: '24px', background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(239,68,68,0.15)', mb: { xs: 3, md: 4 }, position: 'relative', overflow: 'hidden' }}>
         {/* Faint red glow in top-right */}
         <Box sx={{ position: 'absolute', top: -60, right: -60, width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle,rgba(239,68,68,0.08),transparent 70%)', pointerEvents: 'none' }} />
@@ -772,4 +772,5 @@ const AnalyticsView: React.FC = () => {
 };
 
 export default AnalyticsView;
+
 

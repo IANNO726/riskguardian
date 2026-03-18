@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+﻿import React, { useState, useEffect, useCallback } from "react";
 import {
   Box, Grid, Typography, CircularProgress,
   Chip, Button, IconButton,
@@ -7,11 +7,11 @@ import {
 import { Add, Delete, Calculate, ExpandMore, ExpandLess, Warning } from "@mui/icons-material";
 import { useLiveTrades } from "../hooks/useLiveTrades";
 
-const API  = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const API  = process.env.REACT_APP_API_URL || "https://riskguardian.onrender.com";
 const tok  = () => localStorage.getItem("access_token") || "";
 const hdrs = () => ({ Authorization: `Bearer ${tok()}`, "Content-Type": "application/json" });
 
-// ── Interfaces ───────────────────────────────────────────────
+// â”€â”€ Interfaces â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface PropFirm { key: string; name: string; daily_loss_limit_pct: number; max_drawdown_pct: number; max_risk_per_trade_pct: number; }
 interface EvalResult {
   symbol: string; display_name: string;
@@ -27,7 +27,7 @@ interface EvalResult {
   checklist: { label: string; passed: boolean; detail: string; }[];
 }
 
-// ── Portfolio interfaces ─────────────────────────────────────
+// â”€â”€ Portfolio interfaces â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface PortPosition {
   id:            string;
   symbol:        string;
@@ -72,7 +72,7 @@ interface PortAnalysisResult {
   flags:                  Array<{ type: string; msg: string }>;
 }
 
-// ── Constants ────────────────────────────────────────────────
+// â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const DERIV_SYNTHETICS = [
   "Volatility 10 Index","Volatility 25 Index","Volatility 50 Index",
   "Volatility 75 Index","Volatility 100 Index",
@@ -100,7 +100,7 @@ const DERIV_SYNTHETICS = [
 const FOREX_COMMON    = ["EURUSD","GBPUSD","USDJPY","AUDUSD","USDCAD","USDCHF","NZDUSD","GBPJPY","EURJPY","XAUUSD","XAGUSD","US30","NAS100","US500"];
 const POPULAR_PAIRS   = ["EURUSD","GBPUSD","USDJPY","XAUUSD","GBPJPY","EURJPY","AUDUSD","USDCAD","USDCHF","NZDUSD","CHFJPY","EURGBP","EURAUD","AUDJPY","CADJPY"];
 
-// ── Helpers ──────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function isSynthetic(sym: string) {
   const s = sym.toUpperCase();
   return s.includes("VOLATILITY") || s.includes("CRASH") || s.includes("BOOM") ||
@@ -131,7 +131,7 @@ function dollarsAtRisk(sym: string, dist: number, lot: number): number {
   return dist * lot;
 }
 
-// ── Shared styles ────────────────────────────────────────────
+// â”€â”€ Shared styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const card = (extra?: any) => ({ background:"#0d1625", border:"1px solid rgba(255,255,255,0.06)", borderRadius:"18px", color:"white", ...extra });
 const INP: React.CSSProperties = { width:"100%", background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.09)", borderRadius:"12px", padding:"11px 14px", color:"white", fontSize:"14px", outline:"none", boxSizing:"border-box", fontFamily:"inherit", transition:"border-color 0.2s" };
 const SEL: React.CSSProperties = { ...INP, appearance:"none" };
@@ -149,7 +149,7 @@ const inputSx = {
   "& .MuiSelect-icon": { color:"rgba(255,255,255,0.4)" },
 };
 
-// ── Sub-components ───────────────────────────────────────────
+// â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ScoreArc({ score, color }: { score: number; color: string }) {
   const r = 54; const circ = 2 * Math.PI * r; const filled = (score / 100) * circ;
   return (
@@ -170,9 +170,9 @@ function ScoreArc({ score, color }: { score: number; color: string }) {
 
 function ActionBadge({ action }: { action: string }) {
   const map: any = {
-    PROCEED: { bg:"rgba(34,197,94,0.12)",  border:"rgba(34,197,94,0.3)",  color:"#22c55e", icon:"✅", label:"PROCEED"     },
-    REDUCE:  { bg:"rgba(245,158,11,0.12)", border:"rgba(245,158,11,0.3)", color:"#f59e0b", icon:"⚠️", label:"REDUCE LOT"  },
-    AVOID:   { bg:"rgba(239,68,68,0.12)",  border:"rgba(239,68,68,0.3)",  color:"#ef4444", icon:"🚫", label:"AVOID TRADE" },
+    PROCEED: { bg:"rgba(34,197,94,0.12)",  border:"rgba(34,197,94,0.3)",  color:"#22c55e", icon:"âœ…", label:"PROCEED"     },
+    REDUCE:  { bg:"rgba(245,158,11,0.12)", border:"rgba(245,158,11,0.3)", color:"#f59e0b", icon:"âš ï¸", label:"REDUCE LOT"  },
+    AVOID:   { bg:"rgba(239,68,68,0.12)",  border:"rgba(239,68,68,0.3)",  color:"#ef4444", icon:"ðŸš«", label:"AVOID TRADE" },
   };
   const s = map[action] || map.AVOID;
   return (
@@ -197,11 +197,11 @@ function SymbolPicker({ value, onChange }: { value: string; onChange: (s: string
   };
 
   const tabs = [
-    { k:"vol",   label:"📊 Vol",        c:"168,85,247" },
-    { k:"crash", label:"💥 Crash/Boom", c:"239,68,68"  },
-    { k:"step",  label:"🪜 Step",       c:"245,158,11" },
-    { k:"other", label:"🎲 Other",      c:"34,197,94"  },
-    { k:"forex", label:"💱 Forex",      c:"56,189,248" },
+    { k:"vol",   label:"ðŸ“Š Vol",        c:"168,85,247" },
+    { k:"crash", label:"ðŸ’¥ Crash/Boom", c:"239,68,68"  },
+    { k:"step",  label:"ðŸªœ Step",       c:"245,158,11" },
+    { k:"other", label:"ðŸŽ² Other",      c:"34,197,94"  },
+    { k:"forex", label:"ðŸ’± Forex",      c:"56,189,248" },
   ] as const;
 
   const allKnown = [...DERIV_SYNTHETICS, ...FOREX_COMMON];
@@ -213,20 +213,20 @@ function SymbolPicker({ value, onChange }: { value: string; onChange: (s: string
       <Box sx={{ position:"relative" }}>
         <input
           style={{...INP, borderColor: isCustom ? "rgba(245,158,11,0.45)" : "rgba(255,255,255,0.09)", paddingRight: isCustom ? "120px" : INP.padding }}
-          placeholder="Type any symbol — e.g. Volatility 75(1s) Index, Hybrid 30 Index, EURUSD"
+          placeholder="Type any symbol â€” e.g. Volatility 75(1s) Index, Hybrid 30 Index, EURUSD"
           value={value}
           onChange={e => onChange(e.target.value)}
         />
         {isCustom && (
           <Box sx={{ position:"absolute", right:"10px", top:"50%", transform:"translateY(-50%)", px:"8px", py:"2px", borderRadius:"6px", background:"rgba(245,158,11,0.15)", border:"1px solid rgba(245,158,11,0.35)", display:"flex", alignItems:"center", gap:"4px" }}>
-            <Typography sx={{ fontSize:"9px", fontWeight:800, color:"#f59e0b", textTransform:"uppercase", letterSpacing:"0.05em" }}>✏️ Custom</Typography>
+            <Typography sx={{ fontSize:"9px", fontWeight:800, color:"#f59e0b", textTransform:"uppercase", letterSpacing:"0.05em" }}>âœï¸ Custom</Typography>
           </Box>
         )}
       </Box>
       {isCustom && (
         <Box sx={{ mt:"6px", p:"7px 12px", borderRadius:"8px", background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.15)" }}>
           <Typography sx={{ fontSize:"11px", color:"rgba(245,158,11,0.8)" }}>
-            ✅ Custom symbol detected — formula will be auto-detected from the name.
+            âœ… Custom symbol detected â€” formula will be auto-detected from the name.
           </Typography>
         </Box>
       )}
@@ -262,7 +262,7 @@ function SymbolPicker({ value, onChange }: { value: string; onChange: (s: string
         })}
       </Box>
       <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.2)", mt:"6px", fontStyle:"italic" }}>
-        💡 Not in the list? Just type the symbol name above — it will compute automatically.
+        ðŸ’¡ Not in the list? Just type the symbol name above â€” it will compute automatically.
       </Typography>
     </Box>
   );
@@ -277,7 +277,7 @@ function BalanceField({ liveBalance, useCustom, onToggle, customVal, onCustomCha
         <Typography sx={LBL}>Account Balance</Typography>
         <Box onClick={onToggle} sx={{ display:"flex", alignItems:"center", gap:"6px", cursor:"pointer", px:"8px", py:"3px", borderRadius:"8px", background:useCustom?"rgba(245,158,11,0.1)":"rgba(255,255,255,0.04)", border:useCustom?"1px solid rgba(245,158,11,0.3)":"1px solid rgba(255,255,255,0.08)", transition:"all 0.15s" }}>
           <Box sx={{ width:12, height:12, borderRadius:"3px", background:useCustom?"#f59e0b":"rgba(255,255,255,0.1)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-            {useCustom && <Typography sx={{ fontSize:"9px", color:"#000", fontWeight:900, lineHeight:1 }}>✓</Typography>}
+            {useCustom && <Typography sx={{ fontSize:"9px", color:"#000", fontWeight:900, lineHeight:1 }}>âœ“</Typography>}
           </Box>
           <Typography sx={{ fontSize:"10px", fontWeight:700, color:useCustom?"#f59e0b":"rgba(255,255,255,0.3)" }}>Custom balance</Typography>
         </Box>
@@ -294,9 +294,9 @@ function BalanceField({ liveBalance, useCustom, onToggle, customVal, onCustomCha
 }
 
 
-// ════════════════════════════════════════════════════════════════
-// TAB 1 — RISK CHECK
-// ════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// TAB 1 â€” RISK CHECK
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function RiskCheckTab({ liveBalance }: { liveBalance: number }) {
   const [propFirms,    setPropFirms]    = useState<PropFirm[]>([]);
   const [accountId,    setAccountId]    = useState<number | null>(null);
@@ -324,19 +324,19 @@ function RiskCheckTab({ liveBalance }: { liveBalance: number }) {
 
   const copyResult = (r: EvalResult) => {
     const lines = [
-      `📊 RiskGuardian — Trade Risk Report`,
+      `ðŸ“Š RiskGuardian â€” Trade Risk Report`,
       `Symbol:      ${r.symbol}`,
       `Entry:       ${form.entry_price}  SL: ${form.stop_loss}  TP: ${form.take_profit}`,
       `Lot Size:    ${r.lot_size}`,
-      `─────────────────────────────────`,
+      `â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€`,
       `Dollar Risk: $${r.metrics.dollar_risk.toFixed(2)} (${r.metrics.risk_pct.toFixed(4)}%)`,
       `Dollar Prof: $${r.metrics.dollar_profit.toFixed(2)} (${r.metrics.reward_pct.toFixed(4)}%)`,
       `Risk:Reward: 1:${r.metrics.rr_ratio.toFixed(2)}`,
-      `Safety Score: ${r.safety_score.total}/100 — ${r.safety_score.zone.toUpperCase()}`,
+      `Safety Score: ${r.safety_score.total}/100 â€” ${r.safety_score.zone.toUpperCase()}`,
       `Formula:     ${r.metrics.formula_used}`,
       `Action:      ${r.recommendation.action}`,
       r.recommendation.message,
-      r.prop_check ? `Prop (${r.prop_check.firm}): ${r.prop_check.passed ? "PASSED ✅" : "FAILED ❌"}` : "",
+      r.prop_check ? `Prop (${r.prop_check.firm}): ${r.prop_check.passed ? "PASSED âœ…" : "FAILED âŒ"}` : "",
     ].filter(Boolean).join("\n");
     navigator.clipboard.writeText(lines).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2500); });
   };
@@ -378,15 +378,15 @@ function RiskCheckTab({ liveBalance }: { liveBalance: number }) {
 
   return (
     <Grid container spacing={3}>
-      {/* ── FORM ── */}
+      {/* â”€â”€ FORM â”€â”€ */}
       <Grid item xs={12} md={5}>
         <Box sx={{ ...card(), p:"24px" }}>
-          <Typography sx={{ fontSize:"14px", fontWeight:800, mb:"18px", color:"rgba(255,255,255,0.8)" }}>📋 Trade Parameters</Typography>
+          <Typography sx={{ fontSize:"14px", fontWeight:800, mb:"18px", color:"rgba(255,255,255,0.8)" }}>ðŸ“‹ Trade Parameters</Typography>
 
           <Box sx={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px", mb:"18px" }}>
             {[
-              { k:"lot",  icon:"📦", label:"Lot → Risk",  sub:"Enter lot, see risk",    c:"56,189,248" },
-              { k:"risk", icon:"🎯", label:"Risk → Lot",  sub:"Enter risk %, get lot",  c:"34,197,94"  },
+              { k:"lot",  icon:"ðŸ“¦", label:"Lot â†’ Risk",  sub:"Enter lot, see risk",    c:"56,189,248" },
+              { k:"risk", icon:"ðŸŽ¯", label:"Risk â†’ Lot",  sub:"Enter risk %, get lot",  c:"34,197,94"  },
             ].map(t => (
               <Box key={t.k} onClick={() => { setInputMode(t.k as any); setResult(null); }} sx={{ p:"11px 12px", borderRadius:"12px", cursor:"pointer", transition:"all 0.2s", textAlign:"center", background:inputMode===t.k?`rgba(${t.c},0.12)`:"rgba(255,255,255,0.03)", border:inputMode===t.k?`1px solid rgba(${t.c},0.4)`:"1px solid rgba(255,255,255,0.07)", boxShadow:inputMode===t.k?`0 4px 16px rgba(${t.c},0.1)`:"none" }}>
                 <Typography sx={{ fontSize:"16px", mb:"3px" }}>{t.icon}</Typography>
@@ -466,8 +466,8 @@ function RiskCheckTab({ liveBalance }: { liveBalance: number }) {
           <Box mb={1.5}>
             <Typography sx={LBL}>Prop Firm (optional)</Typography>
             <select style={SEL} value={form.prop_firm} onChange={e => f("prop_firm", e.target.value)}>
-              <option value="">— Personal account / no prop firm —</option>
-              {propFirms.map(pf => <option key={pf.key} value={pf.key}>{pf.name} · Daily {pf.daily_loss_limit_pct}% · Max {pf.max_risk_per_trade_pct}%/trade</option>)}
+              <option value="">â€” Personal account / no prop firm â€”</option>
+              {propFirms.map(pf => <option key={pf.key} value={pf.key}>{pf.name} Â· Daily {pf.daily_loss_limit_pct}% Â· Max {pf.max_risk_per_trade_pct}%/trade</option>)}
             </select>
           </Box>
           {form.prop_firm && (
@@ -479,36 +479,36 @@ function RiskCheckTab({ liveBalance }: { liveBalance: number }) {
 
           {error && <Box sx={{ p:"11px 14px", borderRadius:"11px", mb:"14px", background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.22)" }}><Typography sx={{ fontSize:"12.5px", color:"#fca5a5" }}>{error}</Typography></Box>}
           <Box onClick={!loading?evaluate:undefined} sx={{ py:"13px", borderRadius:"13px", textAlign:"center", cursor:loading?"not-allowed":"pointer", fontWeight:800, fontSize:"14px", background:loading?"rgba(56,189,248,0.2)":"linear-gradient(135deg,#0ea5e9,#6366f1)", color:"white", display:"flex", alignItems:"center", justifyContent:"center", gap:1, opacity:loading?0.7:1, boxShadow:loading?"none":"0 6px 24px rgba(56,189,248,0.25)", transition:"all 0.15s", "&:hover":!loading?{transform:"translateY(-1px)"}:{} }}>
-            {loading ? <><CircularProgress size={14} sx={{color:"white"}}/> Analysing…</> : "🔍 Evaluate Trade Risk →"}
+            {loading ? <><CircularProgress size={14} sx={{color:"white"}}/> Analysingâ€¦</> : "ðŸ” Evaluate Trade Risk â†’"}
           </Box>
         </Box>
       </Grid>
 
-      {/* ── RESULTS ── */}
+      {/* â”€â”€ RESULTS â”€â”€ */}
       <Grid item xs={12} md={7}>
         {!result && !loading && (
           <Box sx={{ ...card(), p:"52px 40px", textAlign:"center", border:"1px dashed rgba(56,189,248,0.1)" }}>
-            <Typography sx={{ fontSize:"48px", mb:2, opacity:0.12 }}>🎯</Typography>
+            <Typography sx={{ fontSize:"48px", mb:2, opacity:0.12 }}>ðŸŽ¯</Typography>
             <Typography sx={{ fontSize:"16px", fontWeight:700, color:"rgba(255,255,255,0.25)", mb:1 }}>Fill in your trade details</Typography>
             <Typography sx={{ fontSize:"13px", color:"rgba(255,255,255,0.15)" }}>Supports Forex, Gold, Indices and all Deriv Synthetic Indices</Typography>
           </Box>
         )}
-        {loading && <Box sx={{ ...card(), p:"52px 40px", textAlign:"center" }}><CircularProgress sx={{color:"#38bdf8",mb:2}} size={36}/><Typography sx={{color:"rgba(255,255,255,0.4)"}}>Calculating…</Typography></Box>}
+        {loading && <Box sx={{ ...card(), p:"52px 40px", textAlign:"center" }}><CircularProgress sx={{color:"#38bdf8",mb:2}} size={36}/><Typography sx={{color:"rgba(255,255,255,0.4)"}}>Calculatingâ€¦</Typography></Box>}
 
         {result && !loading && (
           <Box sx={{ display:"flex", flexDirection:"column", gap:2 }}>
             <Box sx={{ display:"flex", gap:"8px", justifyContent:"flex-end" }}>
               <Box onClick={() => copyResult(result)} sx={{ display:"flex", alignItems:"center", gap:"5px", px:"12px", py:"6px", borderRadius:"9px", cursor:"pointer", fontSize:"12px", fontWeight:700, background:copied?"rgba(34,197,94,0.12)":"rgba(255,255,255,0.05)", border:copied?"1px solid rgba(34,197,94,0.35)":"1px solid rgba(255,255,255,0.1)", color:copied?"#22c55e":"rgba(255,255,255,0.45)", transition:"all 0.2s" }}>
-                {copied ? "✅ Copied!" : "📋 Copy Result"}
+                {copied ? "âœ… Copied!" : "ðŸ“‹ Copy Result"}
               </Box>
               <Box onClick={clearAll} sx={{ display:"flex", alignItems:"center", gap:"5px", px:"12px", py:"6px", borderRadius:"9px", cursor:"pointer", fontSize:"12px", fontWeight:700, background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.08)", color:"rgba(255,255,255,0.35)", transition:"all 0.2s", "&:hover":{ background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.2)", color:"#ef4444" } }}>
-                🗑 Clear
+                ðŸ—‘ Clear
               </Box>
             </Box>
 
             {inputMode==="risk" && (
               <Box sx={{ ...card(), p:"20px 24px", background:"linear-gradient(135deg,rgba(34,197,94,0.1),rgba(56,189,248,0.05))", border:"1px solid rgba(34,197,94,0.3)" }}>
-                <Typography sx={{ fontSize:"11px", color:"rgba(34,197,94,0.7)", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.08em", mb:"10px" }}>🎯 Risk-First — Computed Lot Size</Typography>
+                <Typography sx={{ fontSize:"11px", color:"rgba(34,197,94,0.7)", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.08em", mb:"10px" }}>ðŸŽ¯ Risk-First â€” Computed Lot Size</Typography>
                 <Box sx={{ display:"flex", alignItems:"center", gap:3, flexWrap:"wrap" }}>
                   {[
                     { label:"Lot used",        val:`${result.lot_size}`,                           color:"#22c55e", big:true },
@@ -533,7 +533,7 @@ function RiskCheckTab({ liveBalance }: { liveBalance: number }) {
                 <Grid item xs={12} sm={5}>
                   <ScoreArc score={result.safety_score.total} color={result.safety_score.color} />
                   <Typography sx={{ textAlign:"center", fontSize:"12px", fontWeight:700, color:result.safety_score.color, textTransform:"uppercase", letterSpacing:"0.08em", mt:1 }}>
-                    {result.safety_score.zone==="safe"?"✅ Safe to Trade":result.safety_score.zone==="caution"?"⚠️ Caution":"🚫 Dangerous"}
+                    {result.safety_score.zone==="safe"?"âœ… Safe to Trade":result.safety_score.zone==="caution"?"âš ï¸ Caution":"ðŸš« Dangerous"}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={7}>
@@ -548,7 +548,7 @@ function RiskCheckTab({ liveBalance }: { liveBalance: number }) {
                     );
                   })}
                   <Box sx={{ mt:1, p:"7px 10px", borderRadius:"8px", background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)" }}>
-                    <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.25)", fontFamily:'"Roboto Mono",monospace' }}>📐 {result.metrics.formula_used}</Typography>
+                    <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.25)", fontFamily:'"Roboto Mono",monospace' }}>ðŸ“ {result.metrics.formula_used}</Typography>
                   </Box>
                 </Grid>
               </Grid>
@@ -559,7 +559,7 @@ function RiskCheckTab({ liveBalance }: { liveBalance: number }) {
                 <Box>
                   <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.3)", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.06em", mb:"3px" }}>SL Risk</Typography>
                   <Typography sx={{ fontSize:"22px", fontWeight:900, color:"#ef4444", fontFamily:'"Roboto Mono",monospace', lineHeight:1 }}>-${result.metrics.dollar_risk.toFixed(2)}</Typography>
-                  <Typography sx={{ fontSize:"11px", color:"rgba(239,68,68,0.6)", mt:"2px" }}>{result.metrics.point_risk.toFixed(2)} pts · {result.metrics.risk_pct.toFixed(4)}%</Typography>
+                  <Typography sx={{ fontSize:"11px", color:"rgba(239,68,68,0.6)", mt:"2px" }}>{result.metrics.point_risk.toFixed(2)} pts Â· {result.metrics.risk_pct.toFixed(4)}%</Typography>
                 </Box>
                 <Box sx={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
                   <Typography sx={{ fontSize:"20px", fontWeight:900, color:result.metrics.rr_ratio>=2?"#22c55e":result.metrics.rr_ratio>=1?"#f59e0b":"#ef4444", fontFamily:'"Roboto Mono",monospace' }}>1:{result.metrics.rr_ratio.toFixed(2)}</Typography>
@@ -568,7 +568,7 @@ function RiskCheckTab({ liveBalance }: { liveBalance: number }) {
                 <Box sx={{ textAlign:"right" }}>
                   <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.3)", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.06em", mb:"3px" }}>TP Profit</Typography>
                   <Typography sx={{ fontSize:"22px", fontWeight:900, color:"#22c55e", fontFamily:'"Roboto Mono",monospace', lineHeight:1 }}>+${result.metrics.dollar_profit.toFixed(2)}</Typography>
-                  <Typography sx={{ fontSize:"11px", color:"rgba(34,197,94,0.6)", mt:"2px" }}>{result.metrics.point_reward.toFixed(2)} pts · {result.metrics.reward_pct.toFixed(4)}%</Typography>
+                  <Typography sx={{ fontSize:"11px", color:"rgba(34,197,94,0.6)", mt:"2px" }}>{result.metrics.point_reward.toFixed(2)} pts Â· {result.metrics.reward_pct.toFixed(4)}%</Typography>
                 </Box>
               </Box>
               <Box sx={{ height:8, borderRadius:4, display:"flex", overflow:"hidden" }}>
@@ -578,12 +578,12 @@ function RiskCheckTab({ liveBalance }: { liveBalance: number }) {
 
             <Grid container spacing={1.5}>
               {[
-                { label:"Dollar Risk",      value:`$${result.metrics.dollar_risk.toFixed(2)}`,   color:result.metrics.risk_pct>2?"#ef4444":result.metrics.risk_pct>1?"#f59e0b":"#22c55e", icon:"🛑" },
-                { label:"Dollar Profit",    value:`$${result.metrics.dollar_profit.toFixed(2)}`, color:"#22c55e", icon:"💰" },
-                { label:"Risk %",           value:`${result.metrics.risk_pct.toFixed(4)}%`,     color:result.metrics.risk_pct>2?"#ef4444":result.metrics.risk_pct>1?"#f59e0b":"#22c55e", icon:"📊" },
-                { label:"Risk:Reward",      value:`1:${result.metrics.rr_ratio.toFixed(2)}`,    color:result.metrics.rr_ratio>=2?"#22c55e":result.metrics.rr_ratio>=1?"#f59e0b":"#ef4444", icon:"⚖️" },
-                { label:"Max Lot (1%)",     value:String(result.metrics.max_lot_for_1pct),      color:"#a855f7", icon:"🎯" },
-                { label:"Balance",          value:`$${result.metrics.balance_used.toLocaleString("en",{maximumFractionDigits:0})}`, color:"#38bdf8", icon:"🏦" },
+                { label:"Dollar Risk",      value:`$${result.metrics.dollar_risk.toFixed(2)}`,   color:result.metrics.risk_pct>2?"#ef4444":result.metrics.risk_pct>1?"#f59e0b":"#22c55e", icon:"ðŸ›‘" },
+                { label:"Dollar Profit",    value:`$${result.metrics.dollar_profit.toFixed(2)}`, color:"#22c55e", icon:"ðŸ’°" },
+                { label:"Risk %",           value:`${result.metrics.risk_pct.toFixed(4)}%`,     color:result.metrics.risk_pct>2?"#ef4444":result.metrics.risk_pct>1?"#f59e0b":"#22c55e", icon:"ðŸ“Š" },
+                { label:"Risk:Reward",      value:`1:${result.metrics.rr_ratio.toFixed(2)}`,    color:result.metrics.rr_ratio>=2?"#22c55e":result.metrics.rr_ratio>=1?"#f59e0b":"#ef4444", icon:"âš–ï¸" },
+                { label:"Max Lot (1%)",     value:String(result.metrics.max_lot_for_1pct),      color:"#a855f7", icon:"ðŸŽ¯" },
+                { label:"Balance",          value:`$${result.metrics.balance_used.toLocaleString("en",{maximumFractionDigits:0})}`, color:"#38bdf8", icon:"ðŸ¦" },
               ].map(({ label,value,color,icon }) => (
                 <Grid item xs={6} sm={4} key={label}>
                   <Box sx={{ ...card(), p:"14px 16px", textAlign:"center" }}>
@@ -609,11 +609,11 @@ function RiskCheckTab({ liveBalance }: { liveBalance: number }) {
             {result.prop_check && (
               <Box sx={{ ...card(), p:"20px 24px", border:result.prop_check.passed?"1px solid rgba(34,197,94,0.2)":"1px solid rgba(239,68,68,0.2)" }}>
                 <Box sx={{ display:"flex", alignItems:"center", gap:2, mb:"12px" }}>
-                  <Typography sx={{ fontSize:"14px", fontWeight:800 }}>{result.prop_check.passed?"✅":"❌"} {result.prop_check.firm}</Typography>
+                  <Typography sx={{ fontSize:"14px", fontWeight:800 }}>{result.prop_check.passed?"âœ…":"âŒ"} {result.prop_check.firm}</Typography>
                   <Box sx={{ px:"8px", py:"2px", borderRadius:"6px", fontSize:"10px", fontWeight:800, background:result.prop_check.passed?"rgba(34,197,94,0.1)":"rgba(239,68,68,0.1)", color:result.prop_check.passed?"#22c55e":"#ef4444", border:`1px solid ${result.prop_check.passed?"rgba(34,197,94,0.3)":"rgba(239,68,68,0.3)"}` }}>{result.prop_check.passed?"PASSED":"FAILED"}</Box>
                 </Box>
-                {result.prop_check.violations.map((v,i) => <Box key={i} sx={{ display:"flex", gap:1.5, mb:1, p:"10px 12px", borderRadius:"10px", background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.15)" }}><Typography>🚫</Typography><Typography sx={{ fontSize:"12.5px", color:"#fca5a5" }}>{v}</Typography></Box>)}
-                {result.prop_check.warnings.map((w,i)  => <Box key={i} sx={{ display:"flex", gap:1.5, mb:1, p:"10px 12px", borderRadius:"10px", background:"rgba(245,158,11,0.07)",  border:"1px solid rgba(245,158,11,0.15)"  }}><Typography>⚠️</Typography><Typography sx={{ fontSize:"12.5px", color:"#fde68a" }}>{w}</Typography></Box>)}
+                {result.prop_check.violations.map((v,i) => <Box key={i} sx={{ display:"flex", gap:1.5, mb:1, p:"10px 12px", borderRadius:"10px", background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.15)" }}><Typography>ðŸš«</Typography><Typography sx={{ fontSize:"12.5px", color:"#fca5a5" }}>{v}</Typography></Box>)}
+                {result.prop_check.warnings.map((w,i)  => <Box key={i} sx={{ display:"flex", gap:1.5, mb:1, p:"10px 12px", borderRadius:"10px", background:"rgba(245,158,11,0.07)",  border:"1px solid rgba(245,158,11,0.15)"  }}><Typography>âš ï¸</Typography><Typography sx={{ fontSize:"12.5px", color:"#fde68a" }}>{w}</Typography></Box>)}
                 {result.prop_check.passed && !result.prop_check.warnings.length && <Typography sx={{ fontSize:"12.5px", color:"#22c55e" }}>All {result.prop_check.firm} rules satisfied.</Typography>}
               </Box>
             )}
@@ -622,7 +622,7 @@ function RiskCheckTab({ liveBalance }: { liveBalance: number }) {
               <Typography sx={{ fontSize:"12px", fontWeight:800, color:"rgba(255,255,255,0.5)", mb:"14px", textTransform:"uppercase", letterSpacing:"0.08em" }}>Pre-Trade Checklist</Typography>
               {result.checklist.map((item,i) => (
                 <Box key={i} sx={{ display:"flex", alignItems:"flex-start", gap:1.5, py:"9px", borderBottom:i<result.checklist.length-1?"1px solid rgba(255,255,255,0.05)":"none" }}>
-                  <Box sx={{ width:20, height:20, borderRadius:"6px", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", fontSize:"12px", background:item.passed?"rgba(34,197,94,0.12)":"rgba(239,68,68,0.12)", border:`1px solid ${item.passed?"rgba(34,197,94,0.3)":"rgba(239,68,68,0.3)"}` }}>{item.passed?"✓":"✗"}</Box>
+                  <Box sx={{ width:20, height:20, borderRadius:"6px", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", fontSize:"12px", background:item.passed?"rgba(34,197,94,0.12)":"rgba(239,68,68,0.12)", border:`1px solid ${item.passed?"rgba(34,197,94,0.3)":"rgba(239,68,68,0.3)"}` }}>{item.passed?"âœ“":"âœ—"}</Box>
                   <Box><Typography sx={{ fontSize:"13px", fontWeight:700, color:item.passed?"rgba(255,255,255,0.8)":"rgba(255,255,255,0.4)" }}>{item.label}</Typography><Typography sx={{ fontSize:"11.5px", color:"rgba(255,255,255,0.3)" }}>{item.detail}</Typography></Box>
                 </Box>
               ))}
@@ -635,9 +635,9 @@ function RiskCheckTab({ liveBalance }: { liveBalance: number }) {
 }
 
 
-// ════════════════════════════════════════════════════════════════
-// TAB 2 — SCALE-IN CALCULATOR
-// ════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// TAB 2 â€” SCALE-IN CALCULATOR
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 interface ScaleResult {
   scale_lot: number; scale_dollar_risk: number; scale_dollar_tp: number; scale_rr: number;
   total_lot: number; total_dollar_risk: number; total_risk_pct: number;
@@ -707,7 +707,7 @@ function ScaleInTab({ liveBalance }: { liveBalance: number }) {
       <Box sx={{ ...card(), p:"22px", mb:2, borderLeft:"3px solid #38bdf8" }}>
         <Box sx={{ display:"flex", alignItems:"center", gap:1.5, mb:"16px" }}>
           <Box sx={{ width:10, height:10, borderRadius:"50%", background:"#38bdf8", boxShadow:"0 0 10px #38bdf8" }} />
-          <Typography sx={{ fontSize:"14px", fontWeight:800, color:"rgba(255,255,255,0.85)" }}>Trade 1 — Already Open</Typography>
+          <Typography sx={{ fontSize:"14px", fontWeight:800, color:"rgba(255,255,255,0.85)" }}>Trade 1 â€” Already Open</Typography>
         </Box>
         <Grid container spacing={2}>
           {[{label:"Entry Price",field:"orig_entry",ph:"9604.15"},{label:"Stop Loss",field:"orig_sl",ph:"9675.00"},{label:"Lot Size",field:"orig_lot",ph:"1.15"}].map(({ label,field,ph }) => (
@@ -719,9 +719,9 @@ function ScaleInTab({ liveBalance }: { liveBalance: number }) {
         </Grid>
         {committedPreview !== null && committedPreview > 0 && (
           <Box sx={{ mt:"12px", p:"9px 14px", borderRadius:"9px", background:"rgba(56,189,248,0.05)", border:"1px solid rgba(56,189,248,0.15)", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-            <Typography sx={{ fontSize:"12px", color:"rgba(56,189,248,0.7)" }}>💙 Risk committed by Trade 1</Typography>
+            <Typography sx={{ fontSize:"12px", color:"rgba(56,189,248,0.7)" }}>ðŸ’™ Risk committed by Trade 1</Typography>
             <Typography sx={{ fontSize:"13px", fontWeight:800, color:"#38bdf8", fontFamily:'"Roboto Mono",monospace' }}>
-              ${committedPreview.toFixed(2)}{activeBalance > 0 && <span style={{fontSize:"11px",fontWeight:400,color:"rgba(255,255,255,0.35)"}}> · {(committedPreview/activeBalance*100).toFixed(4)}%</span>}
+              ${committedPreview.toFixed(2)}{activeBalance > 0 && <span style={{fontSize:"11px",fontWeight:400,color:"rgba(255,255,255,0.35)"}}> Â· {(committedPreview/activeBalance*100).toFixed(4)}%</span>}
             </Typography>
           </Box>
         )}
@@ -730,7 +730,7 @@ function ScaleInTab({ liveBalance }: { liveBalance: number }) {
       <Box sx={{ ...card(), p:"22px", mb:2, borderLeft:"3px solid #22c55e" }}>
         <Box sx={{ display:"flex", alignItems:"center", gap:1.5, mb:"16px" }}>
           <Box sx={{ width:10, height:10, borderRadius:"50%", background:"#22c55e", boxShadow:"0 0 10px #22c55e" }} />
-          <Typography sx={{ fontSize:"14px", fontWeight:800, color:"rgba(255,255,255,0.85)" }}>Trade 2 — Scale-In Entry</Typography>
+          <Typography sx={{ fontSize:"14px", fontWeight:800, color:"rgba(255,255,255,0.85)" }}>Trade 2 â€” Scale-In Entry</Typography>
         </Box>
         <Grid container spacing={2}>
           {[{label:"Entry Price",field:"scale_entry",ph:"9500.00"},{label:"Stop Loss",field:"scale_sl",ph:"9580.00"},{label:"Take Profit (optional)",field:"scale_tp",ph:"9200.00"}].map(({ label,field,ph }) => (
@@ -748,8 +748,8 @@ function ScaleInTab({ liveBalance }: { liveBalance: number }) {
           <Box sx={{ mt:"10px" }}>
             <Typography sx={LBL}>Prop Firm (optional)</Typography>
             <select style={SEL} value={propFirm} onChange={e => setPropFirm(e.target.value)}>
-              <option value="">— Personal account / no prop firm —</option>
-              {propFirms.map(pf => <option key={pf.key} value={pf.key}>{pf.name} · Daily {pf.daily_loss_limit_pct}%</option>)}
+              <option value="">â€” Personal account / no prop firm â€”</option>
+              {propFirms.map(pf => <option key={pf.key} value={pf.key}>{pf.name} Â· Daily {pf.daily_loss_limit_pct}%</option>)}
             </select>
           </Box>
           {propFirm && (
@@ -762,7 +762,7 @@ function ScaleInTab({ liveBalance }: { liveBalance: number }) {
         <Grid item xs={12} sm={7}>
           <Box sx={{ ...card(), p:"18px 20px", height:"100%" }}>
             <Box sx={{ display:"flex", alignItems:"center", justifyContent:"space-between", mb:"12px" }}>
-              <Typography sx={{ fontSize:"13px", fontWeight:800, color:"rgba(255,255,255,0.8)" }}>📈 Scale-In Risk Budget</Typography>
+              <Typography sx={{ fontSize:"13px", fontWeight:800, color:"rgba(255,255,255,0.8)" }}>ðŸ“ˆ Scale-In Risk Budget</Typography>
               <Box sx={{ display:"flex", borderRadius:"9px", overflow:"hidden", border:"1px solid rgba(255,255,255,0.1)" }}>
                 {(["pct","dollar"] as const).map(m => (
                   <Box key={m} onClick={() => setCapMode(m)} sx={{ px:"14px", py:"6px", cursor:"pointer", fontSize:"12px", fontWeight:800, background:capMode===m?"rgba(56,189,248,0.2)":"transparent", color:capMode===m?"#38bdf8":"rgba(255,255,255,0.35)", transition:"all 0.15s", borderRight:m==="pct"?"1px solid rgba(255,255,255,0.1)":"none" }}>{m==="pct"?"%":"$"}</Box>
@@ -771,7 +771,7 @@ function ScaleInTab({ liveBalance }: { liveBalance: number }) {
             </Box>
             {capMode === "pct" && (
               <>
-                <Typography sx={{ fontSize:"11px", color:"rgba(255,255,255,0.3)", mb:"8px" }}>Raise total risk cap to — scale-in uses only the <span style={{color:"#38bdf8"}}>extra %</span></Typography>
+                <Typography sx={{ fontSize:"11px", color:"rgba(255,255,255,0.3)", mb:"8px" }}>Raise total risk cap to â€” scale-in uses only the <span style={{color:"#38bdf8"}}>extra %</span></Typography>
                 <Box sx={{ position:"relative", mb:"8px" }}>
                   <input style={{...INP, paddingRight:"32px", borderColor:"rgba(56,189,248,0.25)", background:"rgba(56,189,248,0.04)"}} placeholder="e.g. 8.00" type="number" step="0.01" min="0.01" value={form.new_cap_pct} onChange={e => g("new_cap_pct", e.target.value)} />
                   <Box sx={{ position:"absolute", right:"12px", top:"50%", transform:"translateY(-50%)", fontSize:"14px", fontWeight:800, color:"rgba(56,189,248,0.5)" }}>%</Box>
@@ -781,7 +781,7 @@ function ScaleInTab({ liveBalance }: { liveBalance: number }) {
                     <Box key={v} onClick={() => g("new_cap_pct", v)} sx={{ flex:1, py:"6px", borderRadius:"8px", textAlign:"center", fontSize:"12px", fontWeight:800, cursor:"pointer", background:form.new_cap_pct===v?"rgba(56,189,248,0.2)":"rgba(255,255,255,0.04)", border:form.new_cap_pct===v?"1px solid rgba(56,189,248,0.5)":"1px solid rgba(255,255,255,0.08)", color:form.new_cap_pct===v?"#38bdf8":"rgba(255,255,255,0.4)", transition:"all 0.15s" }}>{v}%</Box>
                   ))}
                 </Box>
-                {capDollarHint !== null && <Typography sx={{ fontSize:"11px", color:"rgba(56,189,248,0.6)", mt:"8px", fontFamily:'"Roboto Mono",monospace' }}>≈ ${capDollarHint.toFixed(2)} extra for scale-in</Typography>}
+                {capDollarHint !== null && <Typography sx={{ fontSize:"11px", color:"rgba(56,189,248,0.6)", mt:"8px", fontFamily:'"Roboto Mono",monospace' }}>â‰ˆ ${capDollarHint.toFixed(2)} extra for scale-in</Typography>}
               </>
             )}
             {capMode === "dollar" && (
@@ -796,7 +796,7 @@ function ScaleInTab({ liveBalance }: { liveBalance: number }) {
                     <Box key={v} onClick={() => g("new_cap_dollar", String(v))} sx={{ flex:1, py:"6px", borderRadius:"8px", textAlign:"center", fontSize:"11px", fontWeight:800, cursor:"pointer", background:form.new_cap_dollar===String(v)?"rgba(34,197,94,0.2)":"rgba(255,255,255,0.04)", border:form.new_cap_dollar===String(v)?"1px solid rgba(34,197,94,0.5)":"1px solid rgba(255,255,255,0.08)", color:form.new_cap_dollar===String(v)?"#22c55e":"rgba(255,255,255,0.4)", transition:"all 0.15s" }}>${v}</Box>
                   ))}
                 </Box>
-                {capPctHint !== null && <Typography sx={{ fontSize:"11px", color:"rgba(34,197,94,0.6)", mt:"8px", fontFamily:'"Roboto Mono",monospace' }}>≈ Total risk becomes {capPctHint.toFixed(4)}% after scale-in</Typography>}
+                {capPctHint !== null && <Typography sx={{ fontSize:"11px", color:"rgba(34,197,94,0.6)", mt:"8px", fontFamily:'"Roboto Mono",monospace' }}>â‰ˆ Total risk becomes {capPctHint.toFixed(4)}% after scale-in</Typography>}
               </>
             )}
           </Box>
@@ -806,11 +806,11 @@ function ScaleInTab({ liveBalance }: { liveBalance: number }) {
       {committedPreview !== null && committedPreview > 0 && activeBalance > 0 && (capMode==="pct" ? form.new_cap_pct : form.new_cap_dollar) && (
         <Box sx={{ ...card(), p:"14px 18px", mb:2, background:"rgba(255,255,255,0.02)" }}>
           <Box sx={{ display:"flex", gap:"24px", flexWrap:"wrap", justifyContent:"space-between" }}>
-            <Box><Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.3)", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.06em", mb:"2px" }}>Trade 1 committed</Typography><Typography sx={{ fontSize:"13px", fontWeight:800, color:"#38bdf8", fontFamily:'"Roboto Mono",monospace' }}>${committedPreview.toFixed(2)} · {(committedPreview/activeBalance*100).toFixed(4)}%</Typography></Box>
+            <Box><Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.3)", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.06em", mb:"2px" }}>Trade 1 committed</Typography><Typography sx={{ fontSize:"13px", fontWeight:800, color:"#38bdf8", fontFamily:'"Roboto Mono",monospace' }}>${committedPreview.toFixed(2)} Â· {(committedPreview/activeBalance*100).toFixed(4)}%</Typography></Box>
             <Box sx={{ display:"flex", alignItems:"center", color:"rgba(255,255,255,0.2)", fontSize:"18px" }}>+</Box>
             <Box><Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.3)", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.06em", mb:"2px" }}>Scale-in budget</Typography><Typography sx={{ fontSize:"13px", fontWeight:800, color:"#22c55e", fontFamily:'"Roboto Mono",monospace' }}>{capMode==="dollar" ? `$${form.new_cap_dollar}` : `$${Math.max(0, activeBalance * +form.new_cap_pct / 100 - committedPreview).toFixed(2)}`}</Typography></Box>
             <Box sx={{ display:"flex", alignItems:"center", color:"rgba(255,255,255,0.2)", fontSize:"18px" }}>=</Box>
-            <Box><Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.3)", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.06em", mb:"2px" }}>Total at risk</Typography><Typography sx={{ fontSize:"13px", fontWeight:800, color:result?.safe?"#22c55e":"#f59e0b", fontFamily:'"Roboto Mono",monospace' }}>{result ? `$${result.total_dollar_risk.toFixed(2)} · ${result.total_risk_pct.toFixed(4)}%` : "—"}</Typography></Box>
+            <Box><Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.3)", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.06em", mb:"2px" }}>Total at risk</Typography><Typography sx={{ fontSize:"13px", fontWeight:800, color:result?.safe?"#22c55e":"#f59e0b", fontFamily:'"Roboto Mono",monospace' }}>{result ? `$${result.total_dollar_risk.toFixed(2)} Â· ${result.total_risk_pct.toFixed(4)}%` : "â€”"}</Typography></Box>
           </Box>
         </Box>
       )}
@@ -821,7 +821,7 @@ function ScaleInTab({ liveBalance }: { liveBalance: number }) {
         const ready   = hasBase && hasCap;
         return (
           <Box sx={{ py:"14px", borderRadius:"14px", textAlign:"center", fontWeight:800, fontSize:"15px", background:ready?"linear-gradient(135deg,#0ea5e9,#6366f1)":"rgba(255,255,255,0.05)", color:ready?"white":"rgba(255,255,255,0.2)", border:ready?"none":"1px dashed rgba(255,255,255,0.1)", boxShadow:ready?"0 6px 24px rgba(56,189,248,0.25)":"none", cursor:ready?"pointer":"default", display:"flex", alignItems:"center", justifyContent:"center", gap:1.5, transition:"all 0.2s", mb:2 }}>
-            {ready ? "📐 Calculate Scale-In Lot →" : "Fill in all fields above to calculate"}
+            {ready ? "ðŸ“ Calculate Scale-In Lot â†’" : "Fill in all fields above to calculate"}
           </Box>
         );
       })()}
@@ -830,8 +830,8 @@ function ScaleInTab({ liveBalance }: { liveBalance: number }) {
         <Box sx={{ display:"flex", flexDirection:"column", gap:2 }}>
           <Box sx={{ ...card(), p:"26px 28px", background:result.safe?"linear-gradient(135deg,rgba(34,197,94,0.1),rgba(13,22,37,0.95))":"linear-gradient(135deg,rgba(245,158,11,0.1),rgba(13,22,37,0.95))", border:result.safe?"1px solid rgba(34,197,94,0.3)":"1px solid rgba(245,158,11,0.3)" }}>
             <Box sx={{ display:"flex", alignItems:"center", gap:1.5, mb:"20px" }}>
-              <Typography sx={{ fontSize:"18px" }}>{result.safe?"✅":"⚠️"}</Typography>
-              <Typography sx={{ fontSize:"14px", fontWeight:800, color:result.safe?"#22c55e":"#f59e0b" }}>{result.safe?"Scale-in is within safe limits":"This scale-in pushes risk above 5% — trade carefully"}</Typography>
+              <Typography sx={{ fontSize:"18px" }}>{result.safe?"âœ…":"âš ï¸"}</Typography>
+              <Typography sx={{ fontSize:"14px", fontWeight:800, color:result.safe?"#22c55e":"#f59e0b" }}>{result.safe?"Scale-in is within safe limits":"This scale-in pushes risk above 5% â€” trade carefully"}</Typography>
             </Box>
             <Box sx={{ textAlign:"center", py:"22px", borderRadius:"16px", background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", mb:"20px" }}>
               <Typography sx={{ fontSize:"11px", color:"rgba(255,255,255,0.3)", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.1em", mb:"8px" }}>Recommended Scale-In Lot Size</Typography>
@@ -927,11 +927,11 @@ function ScaleInTab({ liveBalance }: { liveBalance: number }) {
             return (
               <Box sx={{ ...card(), p:"18px 22px", border:passed?"1px solid rgba(34,197,94,0.2)":"1px solid rgba(239,68,68,0.2)" }}>
                 <Box sx={{ display:"flex", alignItems:"center", gap:2, mb:"10px" }}>
-                  <Typography sx={{ fontSize:"14px", fontWeight:800 }}>{passed?"✅":"❌"} {pf.name} — Combined Risk Check</Typography>
+                  <Typography sx={{ fontSize:"14px", fontWeight:800 }}>{passed?"âœ…":"âŒ"} {pf.name} â€” Combined Risk Check</Typography>
                   <Box sx={{ px:"8px", py:"2px", borderRadius:"6px", fontSize:"10px", fontWeight:800, background:passed?"rgba(34,197,94,0.1)":"rgba(239,68,68,0.1)", color:passed?"#22c55e":"#ef4444", border:`1px solid ${passed?"rgba(34,197,94,0.3)":"rgba(239,68,68,0.3)"}` }}>{passed?"PASSED":"FAILED"}</Box>
                 </Box>
-                {overDaily && <Box sx={{ display:"flex", gap:1.5, mb:1, p:"9px 12px", borderRadius:"9px", background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.15)" }}><Typography>🚫</Typography><Typography sx={{ fontSize:"12.5px", color:"#fca5a5" }}>Combined daily loss {combinedDailyPct.toFixed(3)}% exceeds {pf.name} limit of {pf.daily_loss_limit_pct}%</Typography></Box>}
-                {overPerTrade && <Box sx={{ display:"flex", gap:1.5, mb:1, p:"9px 12px", borderRadius:"9px", background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.15)" }}><Typography>🚫</Typography><Typography sx={{ fontSize:"12.5px", color:"#fca5a5" }}>Scale-in risk {(result.scale_dollar_risk/activeBalance*100).toFixed(3)}% exceeds max risk per trade of {pf.max_risk_per_trade_pct}%</Typography></Box>}
+                {overDaily && <Box sx={{ display:"flex", gap:1.5, mb:1, p:"9px 12px", borderRadius:"9px", background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.15)" }}><Typography>ðŸš«</Typography><Typography sx={{ fontSize:"12.5px", color:"#fca5a5" }}>Combined daily loss {combinedDailyPct.toFixed(3)}% exceeds {pf.name} limit of {pf.daily_loss_limit_pct}%</Typography></Box>}
+                {overPerTrade && <Box sx={{ display:"flex", gap:1.5, mb:1, p:"9px 12px", borderRadius:"9px", background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.15)" }}><Typography>ðŸš«</Typography><Typography sx={{ fontSize:"12.5px", color:"#fca5a5" }}>Scale-in risk {(result.scale_dollar_risk/activeBalance*100).toFixed(3)}% exceeds max risk per trade of {pf.max_risk_per_trade_pct}%</Typography></Box>}
                 {passed && <Typography sx={{ fontSize:"12.5px", color:"#22c55e" }}>Combined T1+T2 risk is within all {pf.name} rules.</Typography>}
               </Box>
             );
@@ -943,9 +943,9 @@ function ScaleInTab({ liveBalance }: { liveBalance: number }) {
 }
 
 
-// ════════════════════════════════════════════════════════════════
-// TAB 3 — PORTFOLIO EXPOSURE TRACKER + MARGIN CALCULATOR
-// ════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// TAB 3 â€” PORTFOLIO EXPOSURE TRACKER + MARGIN CALCULATOR
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 const emptyPortPosition = (): PortPosition => ({
   id:            `pos_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
@@ -1012,7 +1012,7 @@ function PortfolioResultsPanel({ result, showDetails, onToggleDetails }: {
 
       {correlation_warnings.length > 0 && (
         <Box sx={{ mb:2, p:"14px 16px", borderRadius:"12px", background:"rgba(251,191,36,0.05)", border:"1px solid rgba(251,191,36,0.18)" }}>
-          <Typography sx={{ fontSize:"11px", fontWeight:700, color:"#fbbf24", textTransform:"uppercase", letterSpacing:".08em", mb:1 }}>⚡ Correlation Warnings</Typography>
+          <Typography sx={{ fontSize:"11px", fontWeight:700, color:"#fbbf24", textTransform:"uppercase", letterSpacing:".08em", mb:1 }}>âš¡ Correlation Warnings</Typography>
           {correlation_warnings.slice(0,5).map((warn,i) => (
             <Box key={i} sx={{ display:"flex", alignItems:"center", gap:2, mb:1, p:"10px 12px", borderRadius:"8px", background:"rgba(255,255,255,0.02)" }}>
               <Box sx={{ display:"flex", gap:"5px", alignItems:"center", flexWrap:"wrap" }}>
@@ -1047,8 +1047,8 @@ function PortfolioResultsPanel({ result, showDetails, onToggleDetails }: {
                 { label:"Risk %",     value:`${pos.risk_pct?.toFixed(3)}%`,                                          color:pos.risk_pct>2?"#ef4444":"#22c55e" },
                 { label:"Margin",     value:`$${pos.margin_usd?.toFixed(0)}` },
                 { label:"Pip Val",    value:`$${pos.pip_value?.toFixed(4)}` },
-                { label:"Unrealised", value:pos.unrealised_pnl!==0?`${pos.unrealised_pnl>=0?"+":""}$${pos.unrealised_pnl?.toFixed(2)}`:"—", color:pos.unrealised_pnl>=0?"#22c55e":"#ef4444" },
-                { label:"RR",         value:pos.rr?`${pos.rr}:1`:"—",                                               color:pos.rr&&pos.rr>=2?"#22c55e":pos.rr&&pos.rr>=1?"#f59e0b":"#ef4444" },
+                { label:"Unrealised", value:pos.unrealised_pnl!==0?`${pos.unrealised_pnl>=0?"+":""}$${pos.unrealised_pnl?.toFixed(2)}`:"â€”", color:pos.unrealised_pnl>=0?"#22c55e":"#ef4444" },
+                { label:"RR",         value:pos.rr?`${pos.rr}:1`:"â€”",                                               color:pos.rr&&pos.rr>=2?"#22c55e":pos.rr&&pos.rr>=1?"#f59e0b":"#ef4444" },
               ].map((stat,si) => (
                 <Box key={si} sx={{ minWidth:70 }}>
                   <Typography sx={{ fontSize:"10px", color:"rgba(255,255,255,0.3)", mb:"2px" }}>{stat.label}</Typography>
@@ -1126,7 +1126,7 @@ function PortfolioTab({ liveBalance }: { liveBalance: number }) {
     <Box sx={{ maxWidth:"900px" }}>
       {/* Header */}
       <Box sx={{ mb:3 }}>
-        <Typography sx={{ fontSize:"18px", fontWeight:800, color:"white", mb:"4px" }}>📊 Portfolio Exposure Tracker</Typography>
+        <Typography sx={{ fontSize:"18px", fontWeight:800, color:"white", mb:"4px" }}>ðŸ“Š Portfolio Exposure Tracker</Typography>
         <Typography sx={{ fontSize:"12px", color:"rgba(255,255,255,0.4)" }}>
           Combined risk, margin, and correlation analysis for all open positions
         </Typography>
@@ -1169,7 +1169,7 @@ function PortfolioTab({ liveBalance }: { liveBalance: number }) {
             <Box sx={{ display:"flex", alignItems:"center", mb:1 }}>
               <Typography sx={{ fontSize:"11px", color:"rgba(255,255,255,0.35)", fontWeight:700 }}>Position {idx+1}</Typography>
               {positions.length > 1 && (
-                <Box onClick={() => removePos(pos.id)} sx={{ ml:"auto", p:"3px 8px", borderRadius:"6px", cursor:"pointer", fontSize:"11px", color:"rgba(239,68,68,0.5)", "&:hover":{ color:"#ef4444", background:"rgba(239,68,68,0.08)" } }}>✕</Box>
+                <Box onClick={() => removePos(pos.id)} sx={{ ml:"auto", p:"3px 8px", borderRadius:"6px", cursor:"pointer", fontSize:"11px", color:"rgba(239,68,68,0.5)", "&:hover":{ color:"#ef4444", background:"rgba(239,68,68,0.08)" } }}>âœ•</Box>
               )}
             </Box>
             <Box sx={{ display:"flex", gap:"10px", flexWrap:"wrap" }}>
@@ -1191,7 +1191,7 @@ function PortfolioTab({ liveBalance }: { liveBalance: number }) {
                       background:pos.direction===d?(d==="buy"?"rgba(34,197,94,0.15)":"rgba(239,68,68,0.15)"):"rgba(255,255,255,0.03)",
                       border:pos.direction===d?(d==="buy"?"1px solid rgba(34,197,94,0.5)":"1px solid rgba(239,68,68,0.5)"):"1px solid rgba(255,255,255,0.07)",
                       color:pos.direction===d?(d==="buy"?"#22c55e":"#ef4444"):"rgba(255,255,255,0.3)", transition:"all 0.15s" }}>
-                      {d==="buy"?"▲ BUY":"▼ SELL"}
+                      {d==="buy"?"â–² BUY":"â–¼ SELL"}
                     </Box>
                   ))}
                 </Box>
@@ -1215,17 +1215,17 @@ function PortfolioTab({ liveBalance }: { liveBalance: number }) {
         ))}
       </Box>
 
-      {error && <Box sx={{ p:"10px 14px", mb:2, borderRadius:"10px", background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.25)" }}><Typography sx={{ fontSize:"12px", color:"#ef4444" }}>⚠ {error}</Typography></Box>}
+      {error && <Box sx={{ p:"10px 14px", mb:2, borderRadius:"10px", background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.25)" }}><Typography sx={{ fontSize:"12px", color:"#ef4444" }}>âš  {error}</Typography></Box>}
 
       <Box onClick={!loading?analyze:undefined} sx={{ py:"13px", borderRadius:"13px", textAlign:"center", cursor:loading?"not-allowed":"pointer", fontWeight:800, fontSize:"14px", mb:3, background:loading?"rgba(168,85,247,0.2)":"linear-gradient(135deg,#a855f7,#ec4899)", color:"white", display:"flex", alignItems:"center", justifyContent:"center", gap:1, opacity:loading?0.7:1, boxShadow:loading?"none":"0 6px 24px rgba(168,85,247,0.2)", transition:"all 0.15s" }}>
-        {loading ? <><CircularProgress size={14} sx={{color:"white"}} /> Analysing…</> : "📊 Analyze Portfolio →"}
+        {loading ? <><CircularProgress size={14} sx={{color:"white"}} /> Analysingâ€¦</> : "ðŸ“Š Analyze Portfolio â†’"}
       </Box>
 
       {result && <PortfolioResultsPanel result={result} showDetails={showDetails} onToggleDetails={() => setShowDetails(v=>!v)} />}
 
-      {/* ── Margin Calculator ── */}
+      {/* â”€â”€ Margin Calculator â”€â”€ */}
       <Box sx={{ mt:4, p:"22px 24px", borderRadius:"18px", background:"rgba(56,189,248,0.04)", border:"1px solid rgba(56,189,248,0.14)" }}>
-        <Typography sx={{ fontSize:"15px", fontWeight:800, color:"white", mb:"3px" }}>🧮 Margin Calculator</Typography>
+        <Typography sx={{ fontSize:"15px", fontWeight:800, color:"white", mb:"3px" }}>ðŸ§® Margin Calculator</Typography>
         <Typography sx={{ fontSize:"11px", color:"rgba(255,255,255,0.35)", mb:"16px" }}>Calculate the margin required for a single position</Typography>
 
         <Box sx={{ display:"flex", gap:"10px", flexWrap:"wrap", mb:"16px", alignItems:"flex-end" }}>
@@ -1252,7 +1252,7 @@ function PortfolioTab({ liveBalance }: { liveBalance: number }) {
             </select>
           </Box>
           <Box onClick={calcMargin} sx={{ px:"18px", py:"11px", borderRadius:"11px", cursor:"pointer", fontWeight:800, fontSize:"13px", background:"rgba(56,189,248,0.12)", border:"1px solid rgba(56,189,248,0.3)", color:"#38bdf8", display:"flex", alignItems:"center", gap:"6px", transition:"all 0.15s", "&:hover":{ background:"rgba(56,189,248,0.2)" }, whiteSpace:"nowrap" }}>
-            {marginLoading ? <CircularProgress size={13} sx={{color:"#38bdf8"}} /> : "🧮"} Calculate
+            {marginLoading ? <CircularProgress size={13} sx={{color:"#38bdf8"}} /> : "ðŸ§®"} Calculate
           </Box>
         </Box>
 
@@ -1281,17 +1281,17 @@ function PortfolioTab({ liveBalance }: { liveBalance: number }) {
 }
 
 
-// ════════════════════════════════════════════════════════════════
-// PAGE — Tab switcher (3 tabs)
-// ════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// PAGE â€” Tab switcher (3 tabs)
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 export default function RiskCheck() {
   const { balance: liveBalance, accountName } = useLiveTrades();
   const [activeTab, setActiveTab] = useState<"check"|"scalein"|"portfolio">("check");
 
   const tabs = [
-    { k:"check",     icon:"🔍", label:"Risk Check",          sub:"Evaluate a single trade"    },
-    { k:"scalein",   icon:"📐", label:"Scale-In Calculator", sub:"Add to an open position"    },
-    { k:"portfolio", icon:"📊", label:"Portfolio Tracker",   sub:"Multi-position exposure"    },
+    { k:"check",     icon:"ðŸ”", label:"Risk Check",          sub:"Evaluate a single trade"    },
+    { k:"scalein",   icon:"ðŸ“", label:"Scale-In Calculator", sub:"Add to an open position"    },
+    { k:"portfolio", icon:"ðŸ“Š", label:"Portfolio Tracker",   sub:"Multi-position exposure"    },
   ] as const;
 
   return (
@@ -1307,7 +1307,7 @@ export default function RiskCheck() {
         </Box>
         <Typography sx={{ color:"rgba(255,255,255,0.35)", fontSize:"13px", ml:"20px" }}>
           Account: <span style={{color:"#38bdf8"}}>{accountName||"Default"}</span>
-          {" · "}Balance: <span style={{color:"#22c55e"}}>${liveBalance.toLocaleString("en",{minimumFractionDigits:2})}</span>
+          {" Â· "}Balance: <span style={{color:"#22c55e"}}>${liveBalance.toLocaleString("en",{minimumFractionDigits:2})}</span>
         </Typography>
       </Box>
 
@@ -1335,3 +1335,4 @@ export default function RiskCheck() {
     </Box>
   );
 }
+

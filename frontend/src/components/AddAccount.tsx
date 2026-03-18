@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -46,7 +46,7 @@ const AddAccount: React.FC = () => {
       }
 
       const response = await axios.post(
-        'http://localhost:8000/api/v1/accounts-multi/',
+        'https://riskguardian.onrender.com/api/v1/accounts-multi/',
         formData,
         { 
           headers: { 
@@ -56,7 +56,7 @@ const AddAccount: React.FC = () => {
         }
       );
 
-      setSuccess(`Account "${response.data.account_name}" added successfully! ✅`);
+      setSuccess(`Account "${response.data.account_name}" added successfully! âœ…`);
       
       // Reset form
       setFormData({
@@ -152,7 +152,7 @@ const AddAccount: React.FC = () => {
           letterSpacing: '-0.02em',
           mb: 1
         }}>
-          ➕ Add Trading Account
+          âž• Add Trading Account
         </Typography>
         <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px' }}>
           Connect a new MT5, MT4, or cTrader account
@@ -245,7 +245,7 @@ const AddAccount: React.FC = () => {
                       required
                       type="password"
                       label="Password"
-                      placeholder="••••••••"
+                      placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       sx={inputStyles}
@@ -255,7 +255,7 @@ const AddAccount: React.FC = () => {
                   <Grid item xs={12}>
                     <Alert severity="info" sx={{ borderRadius: '12px', mb: 2 }}>
                       <Typography sx={{ fontSize: '13px' }}>
-                        🔒 Your credentials are encrypted and stored securely. We use industry-standard encryption to protect your data.
+                        ðŸ”’ Your credentials are encrypted and stored securely. We use industry-standard encryption to protect your data.
                       </Typography>
                     </Alert>
                   </Grid>
@@ -301,3 +301,4 @@ const AddAccount: React.FC = () => {
 };
 
 export default AddAccount;
+

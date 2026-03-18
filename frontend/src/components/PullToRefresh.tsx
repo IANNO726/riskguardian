@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+﻿import React, { useState, useRef } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { Refresh } from '@mui/icons-material';
@@ -70,3 +70,4 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, children }) =>
 };
 
 export default PullToRefresh;
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function AdminRisk() {
@@ -8,7 +8,7 @@ export default function AdminRisk() {
   const loadRisk = async () => {
 
     const res = await axios.get(
-      "http://localhost:8000/api/v1/admin/risk-violations"
+      "https://riskguardian.onrender.com/api/v1/admin/risk-violations"
     );
 
     setViolations(res.data);
@@ -32,7 +32,7 @@ export default function AdminRisk() {
 
       {violations.map((v,i)=>(
         <div key={i}>
-          ⚠ {v.rule}
+          âš  {v.rule}
         </div>
       ))}
 
@@ -41,3 +41,4 @@ export default function AdminRisk() {
   );
 
 }
+

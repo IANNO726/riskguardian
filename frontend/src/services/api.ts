@@ -1,9 +1,9 @@
-import axios from "axios";
+﻿import axios from "axios";
 
 /* =========================
    API CLIENT
 ========================= */
-const API_BASE_URL = "http://localhost:8000/api/v1";
+const API_BASE_URL = "https://riskguardian.onrender.com/api/v1";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -104,3 +104,4 @@ export const acknowledgeAlert = async (id: number) => {
 
 export default api;
 export const getAccounts = () => api.get('/accounts');
+

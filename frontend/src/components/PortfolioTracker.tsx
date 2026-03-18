@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PortfolioTracker.tsx
  * --------------------
  * Portfolio exposure tracker + margin calculator.
@@ -18,7 +18,7 @@ import {
 import { Add, Delete, Calculate, ExpandMore, ExpandLess, Warning } from '@mui/icons-material';
 import axios from 'axios';
 
-const API = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
+const API = process.env.REACT_APP_API_URL || 'https://riskguardian.onrender.com/api/v1';
 
 interface Position {
   id:            string;
@@ -247,8 +247,8 @@ const PortfolioTracker: React.FC = () => {
               <FormControl sx={{ ...inputSx, minWidth: 100 }} size="small">
                 <InputLabel>Dir</InputLabel>
                 <Select value={pos.direction} label="Dir" onChange={e => updatePosition(pos.id, 'direction', e.target.value)} sx={{ color: pos.direction === 'buy' ? '#22c55e' : '#ef4444', fontWeight: 700 }}>
-                  <MenuItem value="buy"  sx={{ background: '#0f172a', color: '#22c55e', fontWeight: 700 }}>▲ BUY</MenuItem>
-                  <MenuItem value="sell" sx={{ background: '#0f172a', color: '#ef4444', fontWeight: 700 }}>▼ SELL</MenuItem>
+                  <MenuItem value="buy"  sx={{ background: '#0f172a', color: '#22c55e', fontWeight: 700 }}>â–² BUY</MenuItem>
+                  <MenuItem value="sell" sx={{ background: '#0f172a', color: '#ef4444', fontWeight: 700 }}>â–¼ SELL</MenuItem>
                 </Select>
               </FormControl>
 
@@ -273,7 +273,7 @@ const PortfolioTracker: React.FC = () => {
 
       {error && (
         <Box sx={{ p: 1.5, mb: 2, borderRadius: '10px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
-          <Typography sx={{ fontSize: '13px', color: '#ef4444' }}>⚠ {error}</Typography>
+          <Typography sx={{ fontSize: '13px', color: '#ef4444' }}>âš  {error}</Typography>
         </Box>
       )}
 
@@ -284,15 +284,15 @@ const PortfolioTracker: React.FC = () => {
         fullWidth
         sx={{ mb: 3, py: 1.5, borderRadius: '14px', background: 'linear-gradient(135deg,#a855f7,#ec4899)', color: 'white', fontWeight: 700, textTransform: 'none', fontSize: '15px' }}
       >
-        {loading ? 'Analysing…' : 'Analyze Portfolio'}
+        {loading ? 'Analysingâ€¦' : 'Analyze Portfolio'}
       </Button>
 
       {/* Results */}
       {result && <PortfolioResults result={result} showDetails={showDetails} onToggleDetails={() => setShowDetails(v => !v)} />}
 
-      {/* ── Margin Calculator (standalone) ────────────────────────────────── */}
+      {/* â”€â”€ Margin Calculator (standalone) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Box sx={{ mt: 4, borderRadius: '18px', background: 'rgba(56,189,248,0.05)', border: '1px solid rgba(56,189,248,0.15)', p: 2.5 }}>
-        <Typography sx={{ fontSize: '16px', fontWeight: 700, color: 'white', mb: 0.5 }}>🧮 Margin Calculator</Typography>
+        <Typography sx={{ fontSize: '16px', fontWeight: 700, color: 'white', mb: 0.5 }}>ðŸ§® Margin Calculator</Typography>
         <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', mb: 2 }}>
           Calculate the margin required for a single position
         </Typography>
@@ -355,7 +355,7 @@ const PortfolioTracker: React.FC = () => {
 };
 
 
-// ── Portfolio results component ───────────────────────────────────────────────
+// â”€â”€ Portfolio results component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const PortfolioResults: React.FC<{
   result: AnalysisResult;
@@ -428,7 +428,7 @@ const PortfolioResults: React.FC<{
       {correlation_warnings.length > 0 && (
         <Box sx={{ mb: 3, p: 2, borderRadius: '14px', background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.2)' }}>
           <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#fbbf24', textTransform: 'uppercase', letterSpacing: '.08em', mb: 1.5 }}>
-            ⚡ Correlation Warnings
+            âš¡ Correlation Warnings
           </Typography>
           {correlation_warnings.slice(0, 5).map((warn, i) => (
             <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1, p: 1.5, borderRadius: '8px', background: 'rgba(255,255,255,0.03)' }}>
@@ -471,8 +471,8 @@ const PortfolioResults: React.FC<{
                 { label: 'Risk %', value: `${pos.risk_pct?.toFixed(3)}%`, color: pos.risk_pct > 2 ? '#ef4444' : '#22c55e' },
                 { label: 'Margin', value: `$${pos.margin_usd?.toFixed(0)}` },
                 { label: 'Pip Val', value: `$${pos.pip_value?.toFixed(4)}` },
-                { label: 'Unrealised', value: pos.unrealised_pnl !== 0 ? `${pos.unrealised_pnl >= 0 ? '+' : ''}$${pos.unrealised_pnl?.toFixed(2)}` : '—', color: pos.unrealised_pnl >= 0 ? '#22c55e' : '#ef4444' },
-                { label: 'RR', value: pos.rr ? `${pos.rr}:1` : '—', color: pos.rr && pos.rr >= 2 ? '#22c55e' : pos.rr && pos.rr >= 1 ? '#f59e0b' : '#ef4444' },
+                { label: 'Unrealised', value: pos.unrealised_pnl !== 0 ? `${pos.unrealised_pnl >= 0 ? '+' : ''}$${pos.unrealised_pnl?.toFixed(2)}` : 'â€”', color: pos.unrealised_pnl >= 0 ? '#22c55e' : '#ef4444' },
+                { label: 'RR', value: pos.rr ? `${pos.rr}:1` : 'â€”', color: pos.rr && pos.rr >= 2 ? '#22c55e' : pos.rr && pos.rr >= 1 ? '#f59e0b' : '#ef4444' },
               ].map((stat, si) => (
                 <Box key={si} sx={{ minWidth: 70 }}>
                   <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', mb: 0.3 }}>{stat.label}</Typography>
@@ -488,3 +488,4 @@ const PortfolioResults: React.FC<{
 };
 
 export default PortfolioTracker;
+

@@ -1,9 +1,9 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+﻿import { useState, useEffect, createContext, useContext } from 'react';
 import axios from 'axios';
 
-const API = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API = process.env.REACT_APP_API_URL || 'https://riskguardian.onrender.com';
 
-// ── Types ─────────────────────────────────────────────────────
+// â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export type Plan = 'free' | 'starter' | 'pro' | 'enterprise';
 
 export interface PlanFeatures {
@@ -136,7 +136,7 @@ export function usePlan() {
   return useContext(PlanContext);
 }
 
-// ✅ startCheckout now accepts optional setLoading callback
+// âœ… startCheckout now accepts optional setLoading callback
 // so each button can show its own spinner
 export async function startCheckout(
   planName: Plan,
@@ -163,7 +163,7 @@ export async function startCheckout(
       return { success: false, error: 'No checkout URL' };
     }
 
-    // Loading stays true — page will navigate away to Stripe
+    // Loading stays true â€” page will navigate away to Stripe
     window.top!.location.href = data.checkout_url;
     return { success: true };
 
@@ -174,3 +174,4 @@ export async function startCheckout(
     return { success: false, error: msg };
   }
 }
+

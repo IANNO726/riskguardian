@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function AdminAccounts() {
@@ -8,7 +8,7 @@ export default function AdminAccounts() {
   const loadAccounts = async () => {
 
     const res = await axios.get(
-      "http://localhost:8000/api/v1/admin/active-accounts"
+      "https://riskguardian.onrender.com/api/v1/admin/active-accounts"
     );
 
     setAccounts(res.data);
@@ -41,3 +41,4 @@ export default function AdminAccounts() {
   );
 
 }
+

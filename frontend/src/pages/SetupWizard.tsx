@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import {
   Typography, TextField, Button, CircularProgress, Box,
   InputAdornment, IconButton, Switch, Chip,
@@ -10,38 +10,38 @@ import {
 } from "@mui/icons-material";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-// ── Plan config (match your Stripe Price IDs here) ──────────
+// â”€â”€ Plan config (match your Stripe Price IDs here) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PLAN_CONFIG: Record<string, {
   label: string; color: string; emoji: string;
   monthlyPriceId: string; annualPriceId: string;
 }> = {
   free: {
-    label: 'Free Trial', color: '#a855f7', emoji: '🎁',
+    label: 'Free Trial', color: '#a855f7', emoji: 'ðŸŽ',
     monthlyPriceId: '',  // No Stripe needed for free
     annualPriceId:  '',
   },
   starter: {
-    label: 'Starter', color: '#38bdf8', emoji: '🚀',
-    monthlyPriceId: 'price_1T65ru6JfXB9ffkPoNcx8gEI',  // ← Replace with your Stripe Price ID
-    annualPriceId:  'price_1T65ru6JfXB9ffkPoNcx8gEI',   // ← Replace with your Stripe Price ID
+    label: 'Starter', color: '#38bdf8', emoji: 'ðŸš€',
+    monthlyPriceId: 'price_1T65ru6JfXB9ffkPoNcx8gEI',  // â† Replace with your Stripe Price ID
+    annualPriceId:  'price_1T65ru6JfXB9ffkPoNcx8gEI',   // â† Replace with your Stripe Price ID
   },
   pro: {
-    label: 'Pro', color: '#22c55e', emoji: '⚡',
-    monthlyPriceId: 'price_1T65rv6JfXB9ffkPxiCNxwRb',      // ← Replace with your Stripe Price ID
-    annualPriceId:  'price_1T65rv6JfXB9ffkPxiCNxwRb',       // ← Replace with your Stripe Price ID
+    label: 'Pro', color: '#22c55e', emoji: 'âš¡',
+    monthlyPriceId: 'price_1T65rv6JfXB9ffkPxiCNxwRb',      // â† Replace with your Stripe Price ID
+    annualPriceId:  'price_1T65rv6JfXB9ffkPxiCNxwRb',       // â† Replace with your Stripe Price ID
   },
   enterprise: {
-    label: 'Enterprise', color: '#f97316', emoji: '🏢',
-    monthlyPriceId: 'price_1T65rw6JfXB9ffkPJkN5jn0m', // ← Replace with your Stripe Price ID
-    annualPriceId:  'price_1T65rw6JfXB9ffkPJkN5jn0m',  // ← Replace with your Stripe Price ID
+    label: 'Enterprise', color: '#f97316', emoji: 'ðŸ¢',
+    monthlyPriceId: 'price_1T65rw6JfXB9ffkPJkN5jn0m', // â† Replace with your Stripe Price ID
+    annualPriceId:  'price_1T65rw6JfXB9ffkPJkN5jn0m',  // â† Replace with your Stripe Price ID
   },
 };
 
 const steps = [
-  { id: 0, label: "Broker",  icon: "🔗", color: "#38bdf8", desc: "Connect MT5 account"    },
-  { id: 1, label: "Risk",    icon: "🛡️", color: "#ef4444", desc: "Set risk limits"         },
-  { id: 2, label: "Alerts",  icon: "🔔", color: "#a855f7", desc: "Configure notifications" },
-  { id: 3, label: "AI",      icon: "🤖", color: "#22c55e", desc: "Enable AI monitoring"    },
+  { id: 0, label: "Broker",  icon: "ðŸ”—", color: "#38bdf8", desc: "Connect MT5 account"    },
+  { id: 1, label: "Risk",    icon: "ðŸ›¡ï¸", color: "#ef4444", desc: "Set risk limits"         },
+  { id: 2, label: "Alerts",  icon: "ðŸ””", color: "#a855f7", desc: "Configure notifications" },
+  { id: 3, label: "AI",      icon: "ðŸ¤–", color: "#22c55e", desc: "Enable AI monitoring"    },
 ];
 
 const SetupWizard: React.FC = () => {
@@ -57,7 +57,7 @@ const SetupWizard: React.FC = () => {
   const [loadingMsg, setLoadingMsg]     = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const API = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+  const API = process.env.REACT_APP_API_URL || 'https://riskguardian.onrender.com';
 
   const [form, setForm] = useState({
     broker: "", account: "", password: "", server: "",
@@ -74,7 +74,7 @@ const SetupWizard: React.FC = () => {
       const token = localStorage.getItem("access_token");
       if (!token) { navigate("/login"); return; }
 
-      // Step 1 — save setup
+      // Step 1 â€” save setup
       setLoadingMsg('Saving your configuration...');
       const [setupRes, checkoutRes] = await Promise.all([
         fetch(`${API}/api/v1/setup/complete`, {
@@ -107,13 +107,13 @@ const SetupWizard: React.FC = () => {
       const setupOk = setupRes.ok || setupData.detail === "Setup already completed";
       if (!setupOk) { alert(setupData.detail || "Setup failed"); return; }
 
-      // Free plan — go straight to dashboard
+      // Free plan â€” go straight to dashboard
       if (plan === 'free' || !planInfo.monthlyPriceId) {
         navigate('/app');
         return;
       }
 
-      // Paid plan — redirect to Stripe
+      // Paid plan â€” redirect to Stripe
       setLoadingMsg('Redirecting to secure payment...');
       const checkoutData = await (checkoutRes as Response).json();
 
@@ -126,14 +126,14 @@ const SetupWizard: React.FC = () => {
 
     } catch (err) {
       console.error(err);
-      alert("Setup error — check your connection");
+      alert("Setup error â€” check your connection");
     } finally {
       setLoading(false);
       setLoadingMsg('');
     }
   };
 
-  // ── Shared input style ───────────────────────────────────
+  // â”€â”€ Shared input style â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const si = (accent = '#38bdf8') => ({
     '& .MuiOutlinedInput-root': {
       color: 'white', borderRadius: '14px', background: '#111827',
@@ -148,7 +148,7 @@ const SetupWizard: React.FC = () => {
     '& .MuiInputAdornment-root svg': { fontSize: '22px' },
   });
 
-  // ── Toggle row ────────────────────────────────────────────
+  // â”€â”€ Toggle row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const ToggleRow: React.FC<{ icon: string; label: string; desc: string; checked: boolean; onChange: (v: boolean) => void; color: string }> =
     ({ icon, label, desc, checked, onChange, color }) => (
       <Box onClick={() => onChange(!checked)}
@@ -186,10 +186,10 @@ const SetupWizard: React.FC = () => {
       case 1: return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {[
-            { label: 'Daily Loss Limit', key: 'dailyLoss',    color: '#ef4444', emoji: '🔴', desc: '% of account balance' },
-            { label: 'Max Drawdown',     key: 'maxDD',        color: '#f97316', emoji: '🟠', desc: '% from peak equity'  },
-            { label: 'Risk Per Trade',   key: 'riskPerTrade', color: '#facc15', emoji: '🟡', desc: '% per position'      },
-            { label: 'Min Risk/Reward',  key: 'minRR',        color: '#22c55e', emoji: '🟢', desc: 'Minimum RR ratio'    },
+            { label: 'Daily Loss Limit', key: 'dailyLoss',    color: '#ef4444', emoji: 'ðŸ”´', desc: '% of account balance' },
+            { label: 'Max Drawdown',     key: 'maxDD',        color: '#f97316', emoji: 'ðŸŸ ', desc: '% from peak equity'  },
+            { label: 'Risk Per Trade',   key: 'riskPerTrade', color: '#facc15', emoji: 'ðŸŸ¡', desc: '% per position'      },
+            { label: 'Min Risk/Reward',  key: 'minRR',        color: '#22c55e', emoji: 'ðŸŸ¢', desc: 'Minimum RR ratio'    },
           ].map(f => (
             <Box key={f.key} sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, borderRadius: '16px', background: `${f.color}08`, border: `1px solid ${f.color}20`, transition: 'all 0.2s', '&:hover': { background: `${f.color}12` } }}>
               <Box sx={{ width: 44, height: 44, borderRadius: '12px', background: `${f.color}15`, border: `1px solid ${f.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '20px' }}>{f.emoji}</Box>
@@ -206,9 +206,9 @@ const SetupWizard: React.FC = () => {
       );
       case 2: return (
         <Box>
-          <ToggleRow icon="📧" label="Email Alerts"    desc="Detailed trade reports & summaries"  checked={form.email}    onChange={v => update("email",    v)} color="#22c55e" />
-          <ToggleRow icon="📱" label="Telegram Alerts" desc="Instant push notifications"          checked={form.telegram} onChange={v => update("telegram", v)} color="#38bdf8" />
-          <ToggleRow icon="💬" label="SMS Alerts"      desc="Critical SMS warnings on your phone" checked={form.sms}      onChange={v => update("sms",      v)} color="#a855f7" />
+          <ToggleRow icon="ðŸ“§" label="Email Alerts"    desc="Detailed trade reports & summaries"  checked={form.email}    onChange={v => update("email",    v)} color="#22c55e" />
+          <ToggleRow icon="ðŸ“±" label="Telegram Alerts" desc="Instant push notifications"          checked={form.telegram} onChange={v => update("telegram", v)} color="#38bdf8" />
+          <ToggleRow icon="ðŸ’¬" label="SMS Alerts"      desc="Critical SMS warnings on your phone" checked={form.sms}      onChange={v => update("sms",      v)} color="#a855f7" />
         </Box>
       );
       case 3: return (
@@ -227,9 +227,9 @@ const SetupWizard: React.FC = () => {
               </Typography>
             </Box>
           </Box>
-          <ToggleRow icon="🧠" label="Emotional Detection" desc="Detect overtrading & revenge trading patterns" checked={form.emotionalAI}  onChange={v => update("emotionalAI",  v)} color="#22c55e" />
-          <ToggleRow icon="🔮" label="Predictive Alerts"   desc="AI-powered early warning signals"              checked={form.predictiveAI} onChange={v => update("predictiveAI", v)} color="#38bdf8" />
-          <ToggleRow icon="⚡" label="Risk Optimizer"      desc="Automatically suggest position size adjustments" checked={form.optimizerAI}  onChange={v => update("optimizerAI",  v)} color="#a855f7" />
+          <ToggleRow icon="ðŸ§ " label="Emotional Detection" desc="Detect overtrading & revenge trading patterns" checked={form.emotionalAI}  onChange={v => update("emotionalAI",  v)} color="#22c55e" />
+          <ToggleRow icon="ðŸ”®" label="Predictive Alerts"   desc="AI-powered early warning signals"              checked={form.predictiveAI} onChange={v => update("predictiveAI", v)} color="#38bdf8" />
+          <ToggleRow icon="âš¡" label="Risk Optimizer"      desc="Automatically suggest position size adjustments" checked={form.optimizerAI}  onChange={v => update("optimizerAI",  v)} color="#a855f7" />
         </Box>
       );
       default: return null;
@@ -245,8 +245,8 @@ const SetupWizard: React.FC = () => {
         <span>{loadingMsg || 'Processing...'}</span>
       </Box>
     );
-    if (plan === 'free') return '🚀 Launch RiskGuardian';
-    return `🚀 Launch & Pay for ${planInfo.label}`;
+    if (plan === 'free') return 'ðŸš€ Launch RiskGuardian';
+    return `ðŸš€ Launch & Pay for ${planInfo.label}`;
   };
 
   return (
@@ -258,10 +258,10 @@ const SetupWizard: React.FC = () => {
 
       <Box sx={{ width: '100%', maxWidth: 560, borderRadius: '28px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.5)' }}>
 
-        {/* ── Top accent bar ── */}
+        {/* â”€â”€ Top accent bar â”€â”€ */}
         <Box sx={{ height: '3px', background: `linear-gradient(90deg,transparent,${planInfo.color},${current.color},transparent)` }} />
 
-        {/* ── Header ── */}
+        {/* â”€â”€ Header â”€â”€ */}
         <Box sx={{ px: { xs: 3, md: 4 }, pt: 4, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
@@ -287,7 +287,7 @@ const SetupWizard: React.FC = () => {
           </Typography>
         </Box>
 
-        {/* ── Step Progress ── */}
+        {/* â”€â”€ Step Progress â”€â”€ */}
         <Box sx={{ px: { xs: 3, md: 4 }, pt: 3, pb: 2 }}>
           <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
             {steps.map((s, i) => {
@@ -310,7 +310,7 @@ const SetupWizard: React.FC = () => {
           </Box>
         </Box>
 
-        {/* ── Step header ── */}
+        {/* â”€â”€ Step header â”€â”€ */}
         <Box sx={{ px: { xs: 3, md: 4 }, pb: 2.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2.5, borderRadius: '18px', background: `${current.color}08`, border: `1px solid ${current.color}20` }}>
             <Box sx={{ width: 52, height: 52, borderRadius: '15px', background: `linear-gradient(135deg,${current.color}40,${current.color}20)`, border: `1px solid ${current.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, boxShadow: `0 4px 16px ${current.color}30` }}>
@@ -330,18 +330,18 @@ const SetupWizard: React.FC = () => {
           </Box>
         </Box>
 
-        {/* ── Step content ── */}
+        {/* â”€â”€ Step content â”€â”€ */}
         <Box sx={{ px: { xs: 3, md: 4 }, pb: 3 }}>
           {renderStep()}
         </Box>
 
-        {/* ── Footer navigation ── */}
+        {/* â”€â”€ Footer navigation â”€â”€ */}
         <Box sx={{ px: { xs: 3, md: 4 }, pb: 4, pt: 1, display: 'flex', justifyContent: 'space-between', gap: 2, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           <Button
             disabled={activeStep === 0 || loading}
             onClick={() => setActiveStep(p => p - 1)}
             sx={{ px: 3, py: 1.3, borderRadius: '14px', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 600, fontSize: '15px', textTransform: 'none', transition: 'all 0.2s', '&:hover': { background: 'rgba(255,255,255,0.05)', color: 'white', borderColor: 'rgba(255,255,255,0.2)' }, '&:disabled': { color: 'rgba(255,255,255,0.2)', borderColor: 'rgba(255,255,255,0.05)' } }}>
-            ← Back
+            â† Back
           </Button>
 
           {activeStep === steps.length - 1 ? (
@@ -352,7 +352,7 @@ const SetupWizard: React.FC = () => {
           ) : (
             <Button onClick={() => setActiveStep(p => p + 1)}
               sx={{ flex: 1, py: 1.4, borderRadius: '14px', background: `linear-gradient(135deg,${current.color}cc,${current.color}88)`, color: 'white', fontWeight: 800, fontSize: '16px', textTransform: 'none', boxShadow: `0 6px 20px ${current.color}30`, transition: 'all 0.2s', '&:hover': { transform: 'translateY(-2px)', boxShadow: `0 10px 28px ${current.color}45`, background: `linear-gradient(135deg,${current.color},${current.color}cc)` } }}>
-              Continue →
+              Continue â†’
             </Button>
           )}
         </Box>
@@ -366,3 +366,4 @@ const SetupWizard: React.FC = () => {
 };
 
 export default SetupWizard;
+

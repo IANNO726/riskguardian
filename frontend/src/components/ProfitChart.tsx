@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { Card, CardContent, Typography, useTheme, alpha } from '@mui/material';
 
@@ -70,3 +70,4 @@ const ProfitChart: React.FC<ProfitChartProps> = ({ trades }) => {
 };
 
 export default ProfitChart;
+

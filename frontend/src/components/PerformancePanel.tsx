@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import { Box, Typography } from '@mui/material'
 
 const PerformancePanel: React.FC<{
@@ -14,3 +14,4 @@ const PerformancePanel: React.FC<{
 )
 
 export default PerformancePanel
+

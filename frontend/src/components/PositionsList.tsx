@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, Typography, Chip, Box
@@ -126,3 +126,4 @@ const PositionsList: React.FC = () => {
 };
 
 export default PositionsList;
+

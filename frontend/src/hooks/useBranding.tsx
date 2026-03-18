@@ -1,5 +1,5 @@
-/**
- * useBranding — Global branding context
+﻿/**
+ * useBranding â€” Global branding context
  * Loads white label settings from backend on login.
  * Used by AppShell to apply brand name, color, logo.
  *
@@ -9,7 +9,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API = 'http://localhost:8000/api/v1';
+const API = 'https://riskguardian.onrender.com/api/v1';
 
 interface Branding {
   brand_name:    string;
@@ -68,3 +68,4 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useBranding() { return useContext(BrandingContext); }
+

@@ -1,5 +1,5 @@
-/**
- * useLiveTrades — Singleton live data store.
+﻿/**
+ * useLiveTrades â€” Singleton live data store.
  *
  * The polling loop lives at MODULE level (outside React),
  * so it NEVER stops when navigating between pages.
@@ -8,11 +8,11 @@
 
 import { useState, useEffect } from "react";
 
-const API  = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const API  = process.env.REACT_APP_API_URL || "https://riskguardian.onrender.com";
 const tok  = () => localStorage.getItem("access_token") || "";
 const hdrs = () => ({ Authorization: `Bearer ${tok()}`, "Content-Type": "application/json" });
 
-// ── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface Position {
   ticket:        number;
@@ -52,7 +52,7 @@ const DEFAULTS: LiveTradesState = {
   positions:       [],
 };
 
-// ── Singleton store (module-level, survives navigation) ──────────────────────
+// â”€â”€ Singleton store (module-level, survives navigation) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 let _state: LiveTradesState           = { ...DEFAULTS };
 let _listeners: Set<(s: LiveTradesState) => void> = new Set();
@@ -61,14 +61,14 @@ let _pollTimer:  ReturnType<typeof setInterval> | null = null;
 let _fails       = 0;
 let _booted      = false;
 const MAX_FAILS  = 2;
-const POLL_MS    = 6_000;   // 6 s — fast enough to feel live
+const POLL_MS    = 6_000;   // 6 s â€” fast enough to feel live
 
 function _notify(next: LiveTradesState) {
   _state = next;
   _listeners.forEach(fn => fn(next));
 }
 
-// ── Account ID resolver ───────────────────────────────────────────────────────
+// â”€â”€ Account ID resolver â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function _resolveId(): Promise<number | null> {
   if (_defaultId) return _defaultId;
@@ -85,19 +85,19 @@ async function _resolveId(): Promise<number | null> {
   }
 }
 
-// ── Core fetch ────────────────────────────────────────────────────────────────
+// â”€â”€ Core fetch â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function _fetchLive() {
   const id = await _resolveId();
   if (!id) {
-    // No accounts yet — keep showing last known state, don't flip to disconnected
+    // No accounts yet â€” keep showing last known state, don't flip to disconnected
     return;
   }
 
   try {
     const res = await fetch(`${API}/api/v1/accounts-multi/${id}/live-data`, {
       headers: hdrs(),
-      signal:  AbortSignal.timeout(7_000),   // 7s timeout — don't hang forever
+      signal:  AbortSignal.timeout(7_000),   // 7s timeout â€” don't hang forever
     });
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -146,18 +146,18 @@ async function _fetchLive() {
       // Keep all other data (balance, equity) from last good fetch
       _notify({ ..._state, connected: false });
     }
-    // If just 1 failure — keep showing last state as-is (no flicker)
+    // If just 1 failure â€” keep showing last state as-is (no flicker)
   }
 }
 
-// ── Retry on focus — reconnects instantly when user comes back to tab ─────────
+// â”€â”€ Retry on focus â€” reconnects instantly when user comes back to tab â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function _onFocus() {
   _fails = 0;   // reset failure count on tab focus
   _fetchLive();
 }
 
-// ── Boot the singleton (called once ever) ────────────────────────────────────
+// â”€â”€ Boot the singleton (called once ever) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function _boot() {
   if (_booted) return;
@@ -179,7 +179,7 @@ function _boot() {
   });
 }
 
-// ── React hook — just subscribes to the singleton ────────────────────────────
+// â”€â”€ React hook â€” just subscribes to the singleton â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function useLiveTrades(): LiveTradesState {
   const [state, setState] = useState<LiveTradesState>(_state);
@@ -215,14 +215,14 @@ export function useLiveTrades(): LiveTradesState {
   return state;
 }
 
-// ── Export helper so other components can trigger a refresh ──────────────────
+// â”€â”€ Export helper so other components can trigger a refresh â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function refreshLiveData() {
   _defaultId = null;
   _fails     = 0;
   _fetchLive();
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function safeNum(v: any, fallback = 0): number {
   const n = parseFloat(v);
   return isFinite(n) ? n : fallback;
@@ -230,6 +230,7 @@ function safeNum(v: any, fallback = 0): number {
 function round2(n: number): number {
   return Math.round(n * 100) / 100;
 }
+
 
 
 

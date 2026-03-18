@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   Box, Typography, TextField, Button, Card, CardContent,
   Alert, CircularProgress, InputAdornment, IconButton, Chip,
@@ -8,10 +8,10 @@ import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 
 const PLAN_CONFIG: Record<string, { label: string; color: string; emoji: string }> = {
-  free:       { label: 'Free Trial',  color: '#a855f7', emoji: '🎁' },
-  starter:    { label: 'Starter',     color: '#38bdf8', emoji: '🚀' },
-  pro:        { label: 'Pro',         color: '#22c55e', emoji: '⚡' },
-  enterprise: { label: 'Enterprise',  color: '#f97316', emoji: '🏢' },
+  free:       { label: 'Free Trial',  color: '#a855f7', emoji: 'ðŸŽ' },
+  starter:    { label: 'Starter',     color: '#38bdf8', emoji: 'ðŸš€' },
+  pro:        { label: 'Pro',         color: '#22c55e', emoji: 'âš¡' },
+  enterprise: { label: 'Enterprise',  color: '#f97316', emoji: 'ðŸ¢' },
 };
 
 const Login: React.FC = () => {
@@ -47,11 +47,11 @@ const Login: React.FC = () => {
       const setupDone = response.data.user?.setup_complete;
 
       if (plan) {
-        // Coming from pricing page — send to setup/checkout with plan
+        // Coming from pricing page â€” send to setup/checkout with plan
         localStorage.setItem('selected_plan', plan);
         navigate(setupDone ? `/checkout?plan=${plan}` : `/setup?plan=${plan}`);
       } else {
-        // ✅ Restore the page they were trying to visit before being sent to login
+        // âœ… Restore the page they were trying to visit before being sent to login
         const redirectTo = localStorage.getItem('redirect_after_login');
         localStorage.removeItem('redirect_after_login');
         navigate(setupDone ? (redirectTo || '/app') : '/setup');
@@ -171,7 +171,7 @@ const Login: React.FC = () => {
                   '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 30px rgba(37,99,235,0.4)' },
                   '&:disabled': { background: 'rgba(255,255,255,0.1)' },
                 }}>
-                {loading ? 'Logging in...' : planInfo ? `Login & Activate ${planInfo.label} →` : 'Login'}
+                {loading ? 'Logging in...' : planInfo ? `Login & Activate ${planInfo.label} â†’` : 'Login'}
               </Button>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>
@@ -193,3 +193,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+﻿import React, { useEffect, useState, useCallback } from "react";
 import {
   Box, Grid, Typography, CircularProgress,
   Table, TableHead, TableRow, TableCell, TableBody,
@@ -9,12 +9,12 @@ import {
   ResponsiveContainer, BarChart, Bar, Cell,
 } from "recharts";
 
-const API = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const API = process.env.REACT_APP_API_URL || "https://riskguardian.onrender.com";
 const token = () => localStorage.getItem("access_token") || "";
 
 const headers = () => ({ Authorization: `Bearer ${token()}` });
 
-// ── Styles ────────────────────────────────────────────────────
+// â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const card = {
   background:   "#0f172a",
   border:       "1px solid rgba(255,255,255,0.07)",
@@ -31,9 +31,9 @@ const PLAN_COLORS: Record<string, string> = {
 };
 
 
-// ══════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // STAT CARD
-// ══════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function StatCard({
   title, value, sub, color, icon,
 }: { title: string; value: any; sub?: string; color: string; icon: string }) {
@@ -74,9 +74,9 @@ function StatCard({
 }
 
 
-// ══════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // PLAN BADGE
-// ══════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function PlanBadge({ plan }: { plan: string }) {
   const color = PLAN_COLORS[plan] || "#64748b";
   return (
@@ -92,10 +92,10 @@ function PlanBadge({ plan }: { plan: string }) {
 }
 
 
-// ══════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // MAIN DASHBOARD
-// ══════════════════════════════════════════════════════════════
-// NOTE: OnboardingChecklist.tsx change needed — add this inside the allDone useEffect:
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// NOTE: OnboardingChecklist.tsx change needed â€” add this inside the allDone useEffect:
 // if (allDone) {
 //   fetch(`${API}/api/v1/admin/onboarding/complete`, {
 //     method: "POST",
@@ -151,11 +151,11 @@ export default function AdminDashboard() {
   }, []);
 
   const tabs = [
-    { key: "overview",   label: "📊 Overview"   },
-    { key: "trials",     label: "⏰ Trials"      },
-    { key: "users",      label: "👥 Users"       },
-    { key: "onboarding", label: "✅ Onboarding"  },
-    { key: "referrals",  label: "🔗 Referrals"   },
+    { key: "overview",   label: "ðŸ“Š Overview"   },
+    { key: "trials",     label: "â° Trials"      },
+    { key: "users",      label: "ðŸ‘¥ Users"       },
+    { key: "onboarding", label: "âœ… Onboarding"  },
+    { key: "referrals",  label: "ðŸ”— Referrals"   },
   ];
 
   return (
@@ -195,34 +195,34 @@ export default function AdminDashboard() {
       </Box>
 
 
-      {/* ── OVERVIEW TAB ── */}
+      {/* â”€â”€ OVERVIEW TAB â”€â”€ */}
       {activeTab === "overview" && (
         <Box>
           {/* Top stat cards */}
           <Grid container spacing={3} mb={4}>
             <Grid item xs={6} md={3}>
-              <StatCard title="Total Users"      value={stats?.total_users}       color="#38bdf8" icon="👥" sub={`+${stats?.new_this_week || 0} this week`} />
+              <StatCard title="Total Users"      value={stats?.total_users}       color="#38bdf8" icon="ðŸ‘¥" sub={`+${stats?.new_this_week || 0} this week`} />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard title="Active Trials"    value={stats?.active_trials}     color="#a855f7" icon="⏰" sub={`${stats?.expiring_24h || 0} expiring in 24h`} />
+              <StatCard title="Active Trials"    value={stats?.active_trials}     color="#a855f7" icon="â°" sub={`${stats?.expiring_24h || 0} expiring in 24h`} />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard title="Paid Users"       value={stats?.paid_users}        color="#22c55e" icon="💳" sub={`${stats?.conversion_rate || 0}% trial→paid`} />
+              <StatCard title="Paid Users"       value={stats?.paid_users}        color="#22c55e" icon="ðŸ’³" sub={`${stats?.conversion_rate || 0}% trialâ†’paid`} />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard title="Risk Alerts"      value={stats?.risk_alerts}       color="#ef4444" icon="🚨" sub="all time" />
+              <StatCard title="Risk Alerts"      value={stats?.risk_alerts}       color="#ef4444" icon="ðŸš¨" sub="all time" />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard title="Telegram Connected" value={stats?.telegram_connected} color="#38bdf8" icon="✈️" sub="users with alerts live" />
+              <StatCard title="Telegram Connected" value={stats?.telegram_connected} color="#38bdf8" icon="âœˆï¸" sub="users with alerts live" />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard title="Expiring 48h"     value={stats?.expiring_48h}      color="#f59e0b" icon="⚠️" sub="need upgrade nudge" />
+              <StatCard title="Expiring 48h"     value={stats?.expiring_48h}      color="#f59e0b" icon="âš ï¸" sub="need upgrade nudge" />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard title="Referral Signups" value={stats?.total_referrals}   color="#ec4899" icon="🔗" sub="via referral codes" />
+              <StatCard title="Referral Signups" value={stats?.total_referrals}   color="#ec4899" icon="ðŸ”—" sub="via referral codes" />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard title="Onboarding Done"  value={stats?.onboarding_complete} color="#22c55e" icon="✅" sub="completed all steps" />
+              <StatCard title="Onboarding Done"  value={stats?.onboarding_complete} color="#22c55e" icon="âœ…" sub="completed all steps" />
             </Grid>
           </Grid>
 
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
                 {/* Conversion funnel */}
                 <Box sx={{ mt: 3, pt: 2, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
                   <Typography sx={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", mb: 1.5, fontWeight: 700, textTransform: "uppercase" }}>
-                    Trial → Paid Conversion
+                    Trial â†’ Paid Conversion
                   </Typography>
                   <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.8 }}>
                     <Typography sx={{ fontSize: "13px", color: "rgba(255,255,255,0.6)" }}>Expired trials</Typography>
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
             <Grid item xs={12} md={8}>
               <Box sx={card}>
                 <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "rgba(255,255,255,0.6)", mb: 2, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                  New Signups — Last 30 Days
+                  New Signups â€” Last 30 Days
                 </Typography>
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={signupChart}>
@@ -294,7 +294,7 @@ export default function AdminDashboard() {
           {/* Revenue chart */}
           <Box sx={{ ...card, mb: 4 }}>
             <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "rgba(255,255,255,0.6)", mb: 2, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              Revenue — Last 30 Days (USD)
+              Revenue â€” Last 30 Days (USD)
             </Typography>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={revenueChart}>
@@ -309,7 +309,7 @@ export default function AdminDashboard() {
           {/* Live trades */}
           <Box sx={card}>
             <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "rgba(255,255,255,0.6)", mb: 2, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              🔴 Live Trades Stream
+              ðŸ”´ Live Trades Stream
             </Typography>
             {liveTrades.length === 0 ? (
               <Typography sx={{ color: "rgba(255,255,255,0.3)", fontSize: "13px" }}>No active trades</Typography>
@@ -327,27 +327,27 @@ export default function AdminDashboard() {
       )}
 
 
-      {/* ── TRIALS TAB ── */}
+      {/* â”€â”€ TRIALS TAB â”€â”€ */}
       {activeTab === "trials" && (
         <Box>
           <Grid container spacing={3} mb={4}>
             <Grid item xs={6} md={3}>
-              <StatCard title="Active Trials"  value={stats?.active_trials}  color="#a855f7" icon="⏰" />
+              <StatCard title="Active Trials"  value={stats?.active_trials}  color="#a855f7" icon="â°" />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard title="Expiring 24h"   value={stats?.expiring_24h}   color="#ef4444" icon="🔥" />
+              <StatCard title="Expiring 24h"   value={stats?.expiring_24h}   color="#ef4444" icon="ðŸ”¥" />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard title="Expiring 48h"   value={stats?.expiring_48h}   color="#f59e0b" icon="⚠️" />
+              <StatCard title="Expiring 48h"   value={stats?.expiring_48h}   color="#f59e0b" icon="âš ï¸" />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard title="Converted"      value={stats?.trial_to_paid}  color="#22c55e" icon="💳" sub={`${stats?.conversion_rate}% rate`} />
+              <StatCard title="Converted"      value={stats?.trial_to_paid}  color="#22c55e" icon="ðŸ’³" sub={`${stats?.conversion_rate}% rate`} />
             </Grid>
           </Grid>
 
           <Box sx={card}>
             <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "rgba(255,255,255,0.6)", mb: 2, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              Active Trial Users — Sorted by Expiry
+              Active Trial Users â€” Sorted by Expiry
             </Typography>
             <Table>
               <TableHead>
@@ -373,12 +373,12 @@ export default function AdminDashboard() {
                     </TableCell>
                     <TableCell sx={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                       {u.telegram
-                        ? <Box sx={{ color: "#22c55e", fontSize: "13px", fontWeight: 600 }}>✅ Connected</Box>
+                        ? <Box sx={{ color: "#22c55e", fontSize: "13px", fontWeight: 600 }}>âœ… Connected</Box>
                         : <Box sx={{ color: "rgba(255,255,255,0.3)", fontSize: "13px" }}>Not connected</Box>
                       }
                     </TableCell>
                     <TableCell sx={{ color: "rgba(255,255,255,0.4)", fontSize: "12px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                      {u.joined ? new Date(u.joined).toLocaleDateString() : "—"}
+                      {u.joined ? new Date(u.joined).toLocaleDateString() : "â€”"}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -396,7 +396,7 @@ export default function AdminDashboard() {
       )}
 
 
-      {/* ── USERS TAB ── */}
+      {/* â”€â”€ USERS TAB â”€â”€ */}
       {activeTab === "users" && (
         <Box sx={card}>
           <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "rgba(255,255,255,0.6)", mb: 2, textTransform: "uppercase", letterSpacing: "0.1em" }}>
@@ -430,10 +430,10 @@ export default function AdminDashboard() {
                     </Typography>
                   </TableCell>
                   <TableCell sx={{ borderBottom: "1px solid rgba(255,255,255,0.04)", fontSize: "13px", color: u.telegram ? "#22c55e" : "rgba(255,255,255,0.3)" }}>
-                    {u.telegram ? "✅" : "—"}
+                    {u.telegram ? "âœ…" : "â€”"}
                   </TableCell>
                   <TableCell sx={{ color: "rgba(255,255,255,0.4)", fontSize: "12px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                    {u.joined ? new Date(u.joined).toLocaleDateString() : "—"}
+                    {u.joined ? new Date(u.joined).toLocaleDateString() : "â€”"}
                   </TableCell>
                 </TableRow>
               ))}
@@ -443,15 +443,15 @@ export default function AdminDashboard() {
       )}
 
 
-      {/* ── ONBOARDING TAB ── */}
+      {/* â”€â”€ ONBOARDING TAB â”€â”€ */}
       {activeTab === "onboarding" && (
         <Box>
           <Grid container spacing={3} mb={4}>
             <Grid item xs={6} md={3}>
-              <StatCard title="Total Users"       value={onboarding?.total_users}   color="#38bdf8" icon="👥" />
+              <StatCard title="Total Users"       value={onboarding?.total_users}   color="#38bdf8" icon="ðŸ‘¥" />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard title="Fully Completed"   value={stats?.onboarding_complete} color="#22c55e" icon="✅" />
+              <StatCard title="Fully Completed"   value={stats?.onboarding_complete} color="#22c55e" icon="âœ…" />
             </Grid>
           </Grid>
 
@@ -488,12 +488,12 @@ export default function AdminDashboard() {
       )}
 
 
-      {/* ── REFERRALS TAB ── */}
+      {/* â”€â”€ REFERRALS TAB â”€â”€ */}
       {activeTab === "referrals" && (
         <Box>
           <Grid container spacing={3} mb={4}>
             <Grid item xs={6} md={3}>
-              <StatCard title="Total Referral Signups" value={referrals?.total_referrals} color="#ec4899" icon="🔗" />
+              <StatCard title="Total Referral Signups" value={referrals?.total_referrals} color="#ec4899" icon="ðŸ”—" />
             </Grid>
           </Grid>
 
@@ -525,7 +525,7 @@ export default function AdminDashboard() {
                 {(!referrals?.top_referrers || referrals.top_referrers.length === 0) && (
                   <TableRow>
                     <TableCell colSpan={4} sx={{ color: "rgba(255,255,255,0.3)", textAlign: "center", py: 4, borderBottom: "none" }}>
-                      No referrals yet — run the migration first
+                      No referrals yet â€” run the migration first
                     </TableCell>
                   </TableRow>
                 )}
@@ -538,3 +538,4 @@ export default function AdminDashboard() {
     </Box>
   );
 }
+

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 
 interface Props {
   riskScore: number;
@@ -30,9 +30,10 @@ const RiskAlarm: React.FC<Props> = ({ riskScore }) => {
       fontWeight: 700,
       zIndex: 9999
     }}>
-      ⚠ HIGH RISK ALERT
+      âš  HIGH RISK ALERT
     </div>
   );
 };
 
 export default RiskAlarm;
+

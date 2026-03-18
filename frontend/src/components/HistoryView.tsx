@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+﻿import React, { useEffect, useState, useMemo } from "react";
 import {
   Box, Typography, Grid, Chip, CircularProgress,
   useMediaQuery, useTheme, TextField, InputAdornment,
@@ -31,7 +31,7 @@ interface Stats {
   largestLoss: number;
 }
 
-// ── Ring Progress ────────────────────────────────────────────────────────────
+// â”€â”€ Ring Progress â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const RingProgress: React.FC<{ value: number; color: string; size?: number }> = ({ value, color, size = 72 }) => {
   const r = (size - 10) / 2;
   const circ = 2 * Math.PI * r;
@@ -74,7 +74,7 @@ const HistoryView: React.FC = () => {
 
   const fetchHistory = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/v1/trades/history");
+      const res = await axios.get("https://riskguardian.onrender.com/api/v1/trades/history");
       if (res.data.trades && Array.isArray(res.data.trades)) setTrades(res.data.trades);
       setLoading(false);
     } catch { setLoading(false); }
@@ -141,7 +141,7 @@ const HistoryView: React.FC = () => {
       color: 'white',
     }}>
 
-      {/* ── Header ── */}
+      {/* â”€â”€ Header â”€â”€ */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: { xs: 3, md: 4 }, flexWrap: 'wrap', gap: 2 }}>
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
@@ -151,7 +151,7 @@ const HistoryView: React.FC = () => {
             </Typography>
           </Box>
           <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '13px', ml: '20px' }}>
-            Closed MT5 positions • {trades.length} total records
+            Closed MT5 positions â€¢ {trades.length} total records
           </Typography>
         </Box>
 
@@ -176,7 +176,7 @@ const HistoryView: React.FC = () => {
         </Box>
       </Box>
 
-      {/* ── KPI Cards ── */}
+      {/* â”€â”€ KPI Cards â”€â”€ */}
       {stats ? (
         <Grid container spacing={{ xs: 1.5, md: 2.5 }} sx={{ mb: { xs: 3, md: 4 } }}>
 
@@ -192,12 +192,12 @@ const HistoryView: React.FC = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.8 }}>
                     {stats.netProfit >= 0 ? <TrendingUp sx={{ fontSize: 13, color: '#22c55e' }} /> : <TrendingDown sx={{ fontSize: 13, color: '#ef4444' }} />}
                     <Typography sx={{ fontSize: '11px', color: stats.netProfit >= 0 ? '#22c55e' : '#ef4444' }}>
-                      Profit: ${stats.totalProfit.toFixed(2)} • Loss: ${stats.totalLoss.toFixed(2)}
+                      Profit: ${stats.totalProfit.toFixed(2)} â€¢ Loss: ${stats.totalLoss.toFixed(2)}
                     </Typography>
                   </Box>
                 </Box>
                 <Box sx={{ width: 42, height: 42, borderRadius: '12px', background: stats.netProfit >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${stats.netProfit >= 0 ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>
-                  {stats.netProfit >= 0 ? '💰' : '💸'}
+                  {stats.netProfit >= 0 ? 'ðŸ’°' : 'ðŸ’¸'}
                 </Box>
               </Box>
               {/* P&L bar */}
@@ -244,7 +244,7 @@ const HistoryView: React.FC = () => {
                     <Typography sx={{ fontSize: '16px', fontWeight: 700, color: '#22c55e', fontFamily: '"Roboto Mono",monospace' }}>+${stats.avgWin.toFixed(2)}</Typography>
                   </Box>
                 </Box>
-                <Box sx={{ width: 42, height: 42, borderRadius: '12px', background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>🏆</Box>
+                <Box sx={{ width: 42, height: 42, borderRadius: '12px', background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>ðŸ†</Box>
               </Box>
             </Box>
           </Grid>
@@ -261,7 +261,7 @@ const HistoryView: React.FC = () => {
                     <Typography sx={{ fontSize: '16px', fontWeight: 700, color: '#ef4444', fontFamily: '"Roboto Mono",monospace' }}>-${stats.avgLoss.toFixed(2)}</Typography>
                   </Box>
                 </Box>
-                <Box sx={{ width: 42, height: 42, borderRadius: '12px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>⚡</Box>
+                <Box sx={{ width: 42, height: 42, borderRadius: '12px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>âš¡</Box>
               </Box>
             </Box>
           </Grid>
@@ -269,18 +269,18 @@ const HistoryView: React.FC = () => {
       ) : (
         /* Empty stats placeholder */
         <Box sx={{ mb: 4, p: 2.5, borderRadius: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography sx={{ fontSize: '22px' }}>📊</Typography>
+          <Typography sx={{ fontSize: '22px' }}>ðŸ“Š</Typography>
           <Typography sx={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>No trades found for the selected period</Typography>
         </Box>
       )}
 
-      {/* ── Trades Table ── */}
+      {/* â”€â”€ Trades Table â”€â”€ */}
       <Box sx={{ borderRadius: '24px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', overflow: 'hidden' }}>
 
         {/* Table Header Bar */}
         <Box sx={{ px: { xs: 2, md: 4 }, pt: 3, pb: 2.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2, borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(168,85,247,0.03)' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box sx={{ width: 34, height: 34, borderRadius: '10px', background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>📜</Box>
+            <Box sx={{ width: 34, height: 34, borderRadius: '10px', background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>ðŸ“œ</Box>
             <Box>
               <Typography sx={{ fontSize: '16px', fontWeight: 700 }}>Closed Trades</Typography>
               <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>{filteredTrades.length} records</Typography>
@@ -302,14 +302,14 @@ const HistoryView: React.FC = () => {
             {/* Sort toggle */}
             <Box onClick={() => setSortDir(d => d === 'desc' ? 'asc' : 'desc')}
               sx={{ px: 2, py: 1, borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 1, fontSize: '12px', color: 'rgba(255,255,255,0.5)', fontWeight: 600, transition: 'all 0.2s', '&:hover': { background: 'rgba(255,255,255,0.1)' } }}>
-              {sortDir === 'desc' ? '↓' : '↑'} Date
+              {sortDir === 'desc' ? 'â†“' : 'â†‘'} Date
             </Box>
           </Box>
         </Box>
 
         {filteredTrades.length === 0 ? (
           <Box sx={{ py: 10, textAlign: 'center' }}>
-            <Typography sx={{ fontSize: '52px', opacity: 0.15, mb: 2 }}>📭</Typography>
+            <Typography sx={{ fontSize: '52px', opacity: 0.15, mb: 2 }}>ðŸ“­</Typography>
             <Typography sx={{ fontSize: '16px', color: 'rgba(255,255,255,0.35)', mb: 0.5 }}>No trades found</Typography>
             <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.2)' }}>{search ? 'Try a different search term' : 'Close some positions to see them here'}</Typography>
           </Box>
@@ -363,14 +363,14 @@ const HistoryView: React.FC = () => {
                     {/* Symbol */}
                     <Grid item xs={2.5}>
                       <Typography sx={{ fontSize: '14px', fontWeight: 700, color: 'white', letterSpacing: '0.02em' }}>{trade.symbol}</Typography>
-                      <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', fontFamily: '"Roboto Mono",monospace' }}>@ {trade.price?.toFixed(2) ?? '—'}</Typography>
+                      <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', fontFamily: '"Roboto Mono",monospace' }}>@ {trade.price?.toFixed(2) ?? 'â€”'}</Typography>
                     </Grid>
 
                     {/* Type */}
                     <Grid item xs={1.5}>
                       <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, px: 1.5, py: 0.5, borderRadius: '8px', background: isBuy ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${isBuy ? 'rgba(34,197,94,0.35)' : 'rgba(239,68,68,0.35)'}` }}>
                         <Typography sx={{ fontSize: '11px', fontWeight: 800, color: isBuy ? '#22c55e' : '#ef4444', letterSpacing: '0.05em' }}>
-                          {isBuy ? '▲' : '▼'} {trade.type}
+                          {isBuy ? 'â–²' : 'â–¼'} {trade.type}
                         </Typography>
                       </Box>
                     </Grid>
@@ -398,7 +398,7 @@ const HistoryView: React.FC = () => {
                       </Typography>
                       <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.4, mt: 0.5, px: 1.2, py: 0.3, borderRadius: '6px', background: isWin ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)' }}>
                         <Typography sx={{ fontSize: '9px', fontWeight: 800, color: isWin ? '#22c55e' : '#ef4444', letterSpacing: '0.08em' }}>
-                          {isWin ? '▲ WIN' : '▼ LOSS'}
+                          {isWin ? 'â–² WIN' : 'â–¼ LOSS'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -444,6 +444,7 @@ const HistoryView: React.FC = () => {
 };
 
 export default HistoryView;
+
 
 
 

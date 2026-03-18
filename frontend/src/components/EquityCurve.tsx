@@ -1,13 +1,13 @@
-import React from 'react';
+﻿import React from 'react';
 import { Box } from '@mui/material';
 
 interface Props {
-  data?: number[]; // ← optional now
+  data?: number[]; // â† optional now
 }
 
 const EquityCurve: React.FC<Props> = ({ data }) => {
 
-  // ✅ Safety guard — always fallback to empty array
+  // âœ… Safety guard â€” always fallback to empty array
   const safeData = Array.isArray(data) ? data : [];
 
   if (safeData.length < 2) {
@@ -22,7 +22,7 @@ const EquityCurve: React.FC<Props> = ({ data }) => {
         opacity: 0.5,
         fontSize: 12
       }}>
-        Waiting for equity data…
+        Waiting for equity dataâ€¦
       </Box>
     );
   }
@@ -54,4 +54,5 @@ const EquityCurve: React.FC<Props> = ({ data }) => {
 };
 
 export default EquityCurve;
+
 

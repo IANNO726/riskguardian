@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Box, Typography, Chip, Avatar, Tabs, Tab, IconButton, CircularProgress } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -42,7 +42,7 @@ const MobileHistory: React.FC = () => {
 
   const fetchTrades = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/v1/trades/history');
+      const response = await axios.get('https://riskguardian.onrender.com/api/v1/trades/history');
       console.log('API Response:', response.data);
       setTrades(response.data.trades || []);
       setLoading(false);
@@ -281,7 +281,7 @@ const MobileHistory: React.FC = () => {
         <AnimatePresence mode="popLayout">
           {filteredTrades.length === 0 ? (
             <Box sx={{ py: 8, textAlign: 'center' }}>
-              <Typography sx={{ fontSize: '48px', opacity: 0.2, mb: 2 }}>📊</Typography>
+              <Typography sx={{ fontSize: '48px', opacity: 0.2, mb: 2 }}>ðŸ“Š</Typography>
               <Typography sx={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>
                 No trades found
               </Typography>
@@ -439,3 +439,4 @@ const MobileHistory: React.FC = () => {
 };
 
 export default MobileHistory;
+

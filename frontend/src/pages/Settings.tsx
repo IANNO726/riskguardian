@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+﻿import React, { useState, useEffect, useCallback } from "react";
 import {
   Box, Typography, TextField, Button, Switch, Grid,
   Alert, Snackbar, CircularProgress, Slide,
@@ -13,22 +13,22 @@ import {
 import { usePlan, startCheckout } from '../hooks/usePlan';
 import axios from 'axios';
 
-const API = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API = process.env.REACT_APP_API_URL || 'https://riskguardian.onrender.com';
 
 const PLAN_CONFIG = {
-  free:       { label: 'Free Trial',  color: '#9aa4b2', emoji: '🎁', next: 'starter' },
-  starter:    { label: 'Starter',     color: '#38bdf8', emoji: '🚀', next: 'pro'     },
-  pro:        { label: 'Pro',         color: '#a855f7', emoji: '⚡', next: 'enterprise' },
-  enterprise: { label: 'Enterprise',  color: '#f59e0b', emoji: '👑', next: null      },
+  free:       { label: 'Free Trial',  color: '#9aa4b2', emoji: 'ðŸŽ', next: 'starter' },
+  starter:    { label: 'Starter',     color: '#38bdf8', emoji: 'ðŸš€', next: 'pro'     },
+  pro:        { label: 'Pro',         color: '#a855f7', emoji: 'âš¡', next: 'enterprise' },
+  enterprise: { label: 'Enterprise',  color: '#f59e0b', emoji: 'ðŸ‘‘', next: null      },
 };
 
 const PLAN_PRICES: Record<string, string> = {
   free: '$0/mo', starter: '$19/mo', pro: '$49/mo', enterprise: '$149/mo',
 };
 
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // TELEGRAM CONNECT PANEL  (self-contained, drop-in)
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const TelegramPanel: React.FC = () => {
   const [status,  setStatus]  = useState<'loading' | 'connected' | 'disconnected'>('loading');
   const [chatId,  setChatId]  = useState<string | null>(null);
@@ -87,9 +87,9 @@ const TelegramPanel: React.FC = () => {
         headers: { Authorization: `Bearer ${token()}` },
       });
       const data = await res.json();
-      showFlash(data.message ? `✅ ${data.message}` : '✅ Test alert sent! Check Telegram.', true);
+      showFlash(data.message ? `âœ… ${data.message}` : 'âœ… Test alert sent! Check Telegram.', true);
     } catch {
-      showFlash('❌ Could not reach server', false);
+      showFlash('âŒ Could not reach server', false);
     } finally {
       setTesting(false);
     }
@@ -102,9 +102,9 @@ const TelegramPanel: React.FC = () => {
   };
 
   const badge = {
-    loading:      { bg: 'rgba(100,116,139,0.12)', color: '#64748b', border: 'rgba(100,116,139,0.3)', label: '◌ Checking...' },
-    connected:    { bg: 'rgba(34,197,94,0.12)',   color: '#22c55e', border: 'rgba(34,197,94,0.3)',   label: '● Connected'    },
-    disconnected: { bg: 'rgba(245,158,11,0.12)',  color: '#f59e0b', border: 'rgba(245,158,11,0.3)',  label: '○ Not connected' },
+    loading:      { bg: 'rgba(100,116,139,0.12)', color: '#64748b', border: 'rgba(100,116,139,0.3)', label: 'â—Œ Checking...' },
+    connected:    { bg: 'rgba(34,197,94,0.12)',   color: '#22c55e', border: 'rgba(34,197,94,0.3)',   label: 'â— Connected'    },
+    disconnected: { bg: 'rgba(245,158,11,0.12)',  color: '#f59e0b', border: 'rgba(245,158,11,0.3)',  label: 'â—‹ Not connected' },
   }[status];
 
   return (
@@ -139,14 +139,14 @@ const TelegramPanel: React.FC = () => {
           background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.2)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px',
         }}>
-          ✈️
+          âœˆï¸
         </Box>
         <Box sx={{ flex: 1 }}>
           <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '15px' }}>
             Telegram Connection
           </Typography>
           <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', mt: 0.3 }}>
-            One-click setup · Instant risk warnings on your phone
+            One-click setup Â· Instant risk warnings on your phone
           </Typography>
         </Box>
         {/* Status badge */}
@@ -157,7 +157,7 @@ const TelegramPanel: React.FC = () => {
         </Box>
       </Box>
 
-      {/* ── CONNECTED STATE ── */}
+      {/* â”€â”€ CONNECTED STATE â”€â”€ */}
       {status === 'connected' && (
         <Box sx={{ p: 3 }}>
           {/* Connected banner */}
@@ -169,10 +169,10 @@ const TelegramPanel: React.FC = () => {
               width: 38, height: 38, borderRadius: '10px', flexShrink: 0,
               background: 'rgba(34,197,94,0.15)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',
-            }}>🛡️</Box>
+            }}>ðŸ›¡ï¸</Box>
             <Box>
               <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '14px' }}>
-                Telegram is active — alerts are live
+                Telegram is active â€” alerts are live
               </Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', mt: 0.2 }}>
                 Chat ID: {chatId}
@@ -183,12 +183,12 @@ const TelegramPanel: React.FC = () => {
           {/* Alert types list */}
           <Box sx={{ borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden', mb: 2.5 }}>
             {[
-              { icon: '🔴', label: 'Kill switch fired',          color: '#ef4444' },
-              { icon: '⚠️',  label: '80% daily limit warning',   color: '#f59e0b' },
-              { icon: '🟡', label: '50% daily limit warning',    color: '#eab308' },
-              { icon: '🔄', label: 'Consecutive loss cooldown',  color: '#38bdf8' },
-              { icon: '📊', label: 'Trade closed P&L update',    color: '#a855f7' },
-              { icon: '📅', label: 'Daily trading summary',      color: '#22c55e' },
+              { icon: 'ðŸ”´', label: 'Kill switch fired',          color: '#ef4444' },
+              { icon: 'âš ï¸',  label: '80% daily limit warning',   color: '#f59e0b' },
+              { icon: 'ðŸŸ¡', label: '50% daily limit warning',    color: '#eab308' },
+              { icon: 'ðŸ”„', label: 'Consecutive loss cooldown',  color: '#38bdf8' },
+              { icon: 'ðŸ“Š', label: 'Trade closed P&L update',    color: '#a855f7' },
+              { icon: 'ðŸ“…', label: 'Daily trading summary',      color: '#22c55e' },
             ].map((a, i, arr) => (
               <Box key={a.label} sx={{
                 display: 'flex', alignItems: 'center', gap: 1.5, px: 2, py: 1.2,
@@ -218,7 +218,7 @@ const TelegramPanel: React.FC = () => {
                 '&:disabled': { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.3)' },
               }}
             >
-              {testing ? '⏳ Sending...' : '📨 Send Test Alert'}
+              {testing ? 'â³ Sending...' : 'ðŸ“¨ Send Test Alert'}
             </Button>
             <Button
               onClick={handleDisconnect}
@@ -235,7 +235,7 @@ const TelegramPanel: React.FC = () => {
         </Box>
       )}
 
-      {/* ── DISCONNECTED STATE ── */}
+      {/* â”€â”€ DISCONNECTED STATE â”€â”€ */}
       {status === 'disconnected' && (
         <Box sx={{ p: 3 }}>
           {/* Warning */}
@@ -244,7 +244,7 @@ const TelegramPanel: React.FC = () => {
             background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.2)',
             borderLeft: '3px solid #f59e0b',
           }}>
-            <span style={{ fontSize: 18, flexShrink: 0, marginTop: 2 }}>⚠️</span>
+            <span style={{ fontSize: 18, flexShrink: 0, marginTop: 2 }}>âš ï¸</span>
             <Typography sx={{ color: 'rgba(245,158,11,0.9)', fontSize: '13px', lineHeight: 1.6 }}>
               <strong style={{ color: '#f59e0b' }}>Alerts not active.</strong> When your kill switch
               fires or daily limit is hit, you won't be notified in time. Connect Telegram to stay protected.
@@ -255,8 +255,8 @@ const TelegramPanel: React.FC = () => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mb: 2.5 }}>
             {[
               'Click the button below to open your personal Telegram link',
-              'Press START in Telegram — takes 2 seconds',
-              'Come back here and click "Refresh status" — you\'re done ✅',
+              'Press START in Telegram â€” takes 2 seconds',
+              'Come back here and click "Refresh status" â€” you\'re done âœ…',
             ].map((text, i) => (
               <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
                 <Box sx={{
@@ -290,7 +290,7 @@ const TelegramPanel: React.FC = () => {
                   boxShadow: '0 4px 20px rgba(0,136,204,0.4)', textDecoration: 'none',
                 }}
               >
-                ✈️ &nbsp; Connect Telegram — 10 seconds
+                âœˆï¸ &nbsp; Connect Telegram â€” 10 seconds
               </Button>
               <Tooltip title={copied ? 'Copied!' : 'Copy link'} placement="top">
                 <Button
@@ -301,7 +301,7 @@ const TelegramPanel: React.FC = () => {
                     color: copied ? '#22c55e' : 'rgba(255,255,255,0.5)', fontSize: '18px',
                   }}
                 >
-                  {copied ? '✓' : '⧉'}
+                  {copied ? 'âœ“' : 'â§‰'}
                 </Button>
               </Tooltip>
             </Box>
@@ -325,7 +325,7 @@ const TelegramPanel: React.FC = () => {
         </Box>
       )}
 
-      {/* ── LOADING STATE ── */}
+      {/* â”€â”€ LOADING STATE â”€â”€ */}
       {status === 'loading' && (
         <Box sx={{ p: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
           <CircularProgress size={20} sx={{ color: '#38bdf8' }} />
@@ -339,9 +339,9 @@ const TelegramPanel: React.FC = () => {
 };
 
 
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // MAIN SETTINGS COMPONENT
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const Settings: React.FC = () => {
   const theme    = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -384,12 +384,12 @@ const Settings: React.FC = () => {
       if (res.ok) {
         isMobile
           ? showToast('Settings saved!', 'success')
-          : setNotification({ open: true, message: 'Settings saved successfully! ✅', type: 'success' });
+          : setNotification({ open: true, message: 'Settings saved successfully! âœ…', type: 'success' });
       } else throw new Error();
     } catch {
       isMobile
         ? showToast('Failed to save', 'error')
-        : setNotification({ open: true, message: 'Failed to save settings ❌', type: 'error' });
+        : setNotification({ open: true, message: 'Failed to save settings âŒ', type: 'error' });
     } finally { setSaving(false); }
   };
 
@@ -404,12 +404,12 @@ const Settings: React.FC = () => {
       setConnectionStatus('connected');
       isMobile
         ? showToast(data.message || 'Reconnected!', 'success')
-        : setNotification({ open: true, message: data.message || 'Reconnected! 🔗', type: 'success' });
+        : setNotification({ open: true, message: data.message || 'Reconnected! ðŸ”—', type: 'success' });
     } catch {
       setConnectionStatus('disconnected');
       isMobile
         ? showToast('Reconnection failed', 'error')
-        : setNotification({ open: true, message: 'Reconnection failed ⚠️', type: 'error' });
+        : setNotification({ open: true, message: 'Reconnection failed âš ï¸', type: 'error' });
     }
   };
 
@@ -437,7 +437,7 @@ const Settings: React.FC = () => {
   const planCfg = PLAN_CONFIG[plan as keyof typeof PLAN_CONFIG] || PLAN_CONFIG.free;
   const nextPlan = planCfg.next ? PLAN_CONFIG[planCfg.next as keyof typeof PLAN_CONFIG] : null;
 
-  // ── Shared styles ──────────────────────────────────────────
+  // â”€â”€ Shared styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const si = (accent = '#38bdf8') => ({
     '& .MuiOutlinedInput-root': {
       color: 'white', borderRadius: '14px', background: 'rgba(255,255,255,0.04)',
@@ -451,7 +451,7 @@ const Settings: React.FC = () => {
     '& .MuiInputAdornment-root svg': { fontSize: '22px' },
   });
 
-  // ── Sub-components ─────────────────────────────────────────
+  // â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const ToggleRow: React.FC<{
     icon: string; label: string; desc: string;
     checked: boolean; onChange: (v: boolean) => void; color: string;
@@ -493,7 +493,7 @@ const Settings: React.FC = () => {
     <Tooltip
       title={
         <Box sx={{ p: 0.5 }}>
-          <Box sx={{ fontSize: '14px', fontWeight: 700, mb: 0.5 }}>🔒 Pro Plan Required</Box>
+          <Box sx={{ fontSize: '14px', fontWeight: 700, mb: 0.5 }}>ðŸ”’ Pro Plan Required</Box>
           <Box sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>
             Upgrade to <span style={{ color: '#a855f7', fontWeight: 700 }}>Pro</span> to unlock.
           </Box>
@@ -537,9 +537,9 @@ const Settings: React.FC = () => {
 
   const ConnBadge = () => {
     const map: Record<string, string[]> = {
-      connected:    ['rgba(34,197,94,0.12)',  '#22c55e', 'rgba(34,197,94,0.3)',  '● LIVE'],
-      connecting:   ['rgba(245,158,11,0.12)', '#f59e0b', 'rgba(245,158,11,0.3)', '◌ CONNECTING'],
-      disconnected: ['rgba(239,68,68,0.12)',  '#ef4444', 'rgba(239,68,68,0.3)',  '○ OFFLINE'],
+      connected:    ['rgba(34,197,94,0.12)',  '#22c55e', 'rgba(34,197,94,0.3)',  'â— LIVE'],
+      connecting:   ['rgba(245,158,11,0.12)', '#f59e0b', 'rgba(245,158,11,0.3)', 'â—Œ CONNECTING'],
+      disconnected: ['rgba(239,68,68,0.12)',  '#ef4444', 'rgba(239,68,68,0.3)',  'â—‹ OFFLINE'],
     };
     const [bg, color, border, label] = map[connectionStatus];
     return (
@@ -562,7 +562,7 @@ const Settings: React.FC = () => {
       background: 'radial-gradient(ellipse at 10% 0%,rgba(56,189,248,0.07),transparent 45%), radial-gradient(ellipse at 90% 10%,rgba(34,197,94,0.06),transparent 45%), radial-gradient(ellipse at 50% 100%,rgba(168,85,247,0.05),transparent 50%), #0b1120',
     }}>
 
-      {/* ── PAGE HEADER ── */}
+      {/* â”€â”€ PAGE HEADER â”€â”€ */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: { xs: 3, md: 4 }, flexWrap: 'wrap', gap: 2 }}>
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
@@ -596,7 +596,7 @@ const Settings: React.FC = () => {
         </Button>
       </Box>
 
-      {/* ── SUBSCRIPTION CARD ── */}
+      {/* â”€â”€ SUBSCRIPTION CARD â”€â”€ */}
       <Box sx={{
         borderRadius: '24px', background: 'rgba(255,255,255,0.025)',
         border: '1px solid rgba(255,255,255,0.07)', overflow: 'hidden', mb: 3, position: 'relative',
@@ -662,8 +662,8 @@ const Settings: React.FC = () => {
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>
                 {nextPlan && planCfg.next && (
                   <Box sx={{ p: 3, borderRadius: '16px', background: `${nextPlan.color}08`, border: `1px solid ${nextPlan.color}25` }}>
-                    <Typography sx={{ fontSize: '13px', fontWeight: 700, color: nextPlan.color, mb: 0.5, textTransform: 'uppercase', letterSpacing: '0.08em' }}>⚡ Upgrade Available</Typography>
-                    <Typography sx={{ fontSize: '15px', fontWeight: 700, color: 'white', mb: 0.5 }}>{nextPlan.emoji} {nextPlan.label} Plan — {PLAN_PRICES[planCfg.next]}</Typography>
+                    <Typography sx={{ fontSize: '13px', fontWeight: 700, color: nextPlan.color, mb: 0.5, textTransform: 'uppercase', letterSpacing: '0.08em' }}>âš¡ Upgrade Available</Typography>
+                    <Typography sx={{ fontSize: '15px', fontWeight: 700, color: 'white', mb: 0.5 }}>{nextPlan.emoji} {nextPlan.label} Plan â€” {PLAN_PRICES[planCfg.next]}</Typography>
                     <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', mb: 2 }}>
                       {planCfg.next === 'starter'    && 'Unlock Terminal, custom risk rules & 30-day history'}
                       {planCfg.next === 'pro'        && 'Unlock AI Journal, Telegram alerts & prop firm profiles'}
@@ -682,13 +682,13 @@ const Settings: React.FC = () => {
                         '&:disabled': { background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)' },
                       }}
                     >
-                      {upgradeLoading === planCfg.next ? 'Redirecting...' : `Upgrade to ${nextPlan.label} →`}
+                      {upgradeLoading === planCfg.next ? 'Redirecting...' : `Upgrade to ${nextPlan.label} â†’`}
                     </Button>
                   </Box>
                 )}
                 {plan !== 'free' && (
                   <Box sx={{ p: 3, borderRadius: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                    <Typography sx={{ fontSize: '15px', fontWeight: 700, color: 'white', mb: 0.5 }}>🏦 Manage Billing</Typography>
+                    <Typography sx={{ fontSize: '15px', fontWeight: 700, color: 'white', mb: 0.5 }}>ðŸ¦ Manage Billing</Typography>
                     <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', mb: 2 }}>Update payment method, view invoices, or cancel your subscription</Typography>
                     <Button
                       onClick={openBillingPortal}
@@ -709,12 +709,12 @@ const Settings: React.FC = () => {
                 )}
                 {plan === 'free' && (
                   <Box sx={{ p: 3, borderRadius: '16px', background: 'linear-gradient(135deg,rgba(56,189,248,0.08),rgba(34,197,94,0.06))', border: '1px solid rgba(56,189,248,0.2)', textAlign: 'center' }}>
-                    <Typography sx={{ fontSize: '24px', mb: 1 }}>🚀</Typography>
+                    <Typography sx={{ fontSize: '24px', mb: 1 }}>ðŸš€</Typography>
                     <Typography sx={{ fontSize: '16px', fontWeight: 700, color: 'white', mb: 0.5 }}>Ready to upgrade?</Typography>
                     <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', mb: 2 }}>Start with Starter at just $19/mo</Typography>
                     <Button onClick={() => handleUpgrade('starter')} fullWidth
                       sx={{ py: 1.4, borderRadius: '12px', background: 'linear-gradient(135deg,#38bdf8,#22c55e)', color: 'white', fontWeight: 700, textTransform: 'none' }}>
-                      Get Started →
+                      Get Started â†’
                     </Button>
                   </Box>
                 )}
@@ -724,7 +724,7 @@ const Settings: React.FC = () => {
         </Box>
       </Box>
 
-      {/* ── MT5 CONNECTION CARD ── */}
+      {/* â”€â”€ MT5 CONNECTION CARD â”€â”€ */}
       <Box sx={{
         borderRadius: '24px', background: 'rgba(255,255,255,0.025)',
         border: '1px solid rgba(255,255,255,0.07)', overflow: 'hidden', mb: 3, position: 'relative',
@@ -732,7 +732,7 @@ const Settings: React.FC = () => {
       }}>
         <Box sx={{ px: { xs: 2.5, md: 4 }, pt: 3, pb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2, borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(56,189,248,0.03)' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box sx={{ width: 54, height: 54, borderRadius: '16px', background: 'linear-gradient(135deg,#0ea5e9,#38bdf8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', boxShadow: '0 4px 20px rgba(14,165,233,0.35)', flexShrink: 0 }}>🔗</Box>
+            <Box sx={{ width: 54, height: 54, borderRadius: '16px', background: 'linear-gradient(135deg,#0ea5e9,#38bdf8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', boxShadow: '0 4px 20px rgba(14,165,233,0.35)', flexShrink: 0 }}>ðŸ”—</Box>
             <Box>
               <Typography sx={{ fontSize: '21px', fontWeight: 700, color: 'white' }}>MT5 Broker Connection</Typography>
               <Typography sx={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', mt: 0.4 }}>MetaTrader 5 platform credentials</Typography>
@@ -777,7 +777,7 @@ const Settings: React.FC = () => {
         </Box>
       </Box>
 
-      {/* ── RISK + NOTIFICATIONS ── */}
+      {/* â”€â”€ RISK + NOTIFICATIONS â”€â”€ */}
       <Grid container spacing={3}>
 
         {/* Risk Management */}
@@ -789,7 +789,7 @@ const Settings: React.FC = () => {
           }}>
             <Box sx={{ px: { xs: 2.5, md: 4 }, pt: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(239,68,68,0.03)' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Box sx={{ width: 54, height: 54, borderRadius: '16px', background: 'linear-gradient(135deg,#ef4444,#f87171)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', boxShadow: '0 4px 20px rgba(239,68,68,0.35)', flexShrink: 0 }}>🛡️</Box>
+                <Box sx={{ width: 54, height: 54, borderRadius: '16px', background: 'linear-gradient(135deg,#ef4444,#f87171)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', boxShadow: '0 4px 20px rgba(239,68,68,0.35)', flexShrink: 0 }}>ðŸ›¡ï¸</Box>
                 <Box>
                   <Typography sx={{ fontSize: '21px', fontWeight: 700, color: 'white' }}>Risk Management</Typography>
                   <Typography sx={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', mt: 0.4 }}>Protect your capital with smart limits</Typography>
@@ -798,10 +798,10 @@ const Settings: React.FC = () => {
             </Box>
             <Box sx={{ p: { xs: 2.5, md: 4 }, display: 'flex', flexDirection: 'column', gap: 2.5 }}>
               {[
-                { label: 'Daily Loss Limit', key: 'dailyLoss',    color: '#ef4444', emoji: '🔴', desc: '% of account balance' },
-                { label: 'Max Drawdown',     key: 'maxDD',        color: '#f97316', emoji: '🟠', desc: '% from peak equity'  },
-                { label: 'Risk Per Trade',   key: 'riskPerTrade', color: '#facc15', emoji: '🟡', desc: '% per position'      },
-                { label: 'Min Risk/Reward',  key: 'minRR',        color: '#22c55e', emoji: '🟢', desc: 'Minimum RR ratio'    },
+                { label: 'Daily Loss Limit', key: 'dailyLoss',    color: '#ef4444', emoji: 'ðŸ”´', desc: '% of account balance' },
+                { label: 'Max Drawdown',     key: 'maxDD',        color: '#f97316', emoji: 'ðŸŸ ', desc: '% from peak equity'  },
+                { label: 'Risk Per Trade',   key: 'riskPerTrade', color: '#facc15', emoji: 'ðŸŸ¡', desc: '% per position'      },
+                { label: 'Min Risk/Reward',  key: 'minRR',        color: '#22c55e', emoji: 'ðŸŸ¢', desc: 'Minimum RR ratio'    },
               ].map(f => (
                 <Box key={f.key} sx={{
                   display: 'flex', alignItems: 'center', gap: 2, p: 2.5, borderRadius: '16px',
@@ -845,7 +845,7 @@ const Settings: React.FC = () => {
           }}>
             <Box sx={{ px: { xs: 2.5, md: 4 }, pt: 3, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(168,85,247,0.03)' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Box sx={{ width: 54, height: 54, borderRadius: '16px', background: 'linear-gradient(135deg,#a855f7,#c084fc)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', boxShadow: '0 4px 20px rgba(168,85,247,0.35)', flexShrink: 0 }}>🔔</Box>
+                <Box sx={{ width: 54, height: 54, borderRadius: '16px', background: 'linear-gradient(135deg,#a855f7,#c084fc)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', boxShadow: '0 4px 20px rgba(168,85,247,0.35)', flexShrink: 0 }}>ðŸ””</Box>
                 <Box>
                   <Typography sx={{ fontSize: '21px', fontWeight: 700, color: 'white' }}>Alert Notifications</Typography>
                   <Typography sx={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', mt: 0.4 }}>Stay informed about critical events</Typography>
@@ -855,7 +855,7 @@ const Settings: React.FC = () => {
 
             <Box sx={{ p: { xs: 2.5, md: 4 }, display: 'flex', flexDirection: 'column', gap: 2 }}>
 
-              {/* Upgrade banner — only when Telegram locked */}
+              {/* Upgrade banner â€” only when Telegram locked */}
               {!features.telegram_alerts && (
                 <Box sx={{
                   p: 2.5, borderRadius: '16px',
@@ -864,7 +864,7 @@ const Settings: React.FC = () => {
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap',
                 }}>
                   <Box>
-                    <Typography sx={{ fontSize: '15px', fontWeight: 700, color: 'white', mb: 0.5 }}>🔒 Telegram & SMS alerts require Pro</Typography>
+                    <Typography sx={{ fontSize: '15px', fontWeight: 700, color: 'white', mb: 0.5 }}>ðŸ”’ Telegram & SMS alerts require Pro</Typography>
                     <Typography sx={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>Upgrade for instant push notifications</Typography>
                   </Box>
                   <Box
@@ -876,23 +876,23 @@ const Settings: React.FC = () => {
                       '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 6px 20px rgba(168,85,247,0.4)' },
                     }}
                   >
-                    Upgrade to Pro →
+                    Upgrade to Pro â†’
                   </Box>
                 </Box>
               )}
 
               {/* Toggle rows */}
-              <ToggleRow icon="📧" label="Email Alerts"    desc="Detailed trade reports & summaries" checked={settings?.email    || false} onChange={v => update('email',    v)} color="#22c55e" />
+              <ToggleRow icon="ðŸ“§" label="Email Alerts"    desc="Detailed trade reports & summaries" checked={settings?.email    || false} onChange={v => update('email',    v)} color="#22c55e" />
               {features.telegram_alerts
-                ? <ToggleRow icon="📱" label="Telegram Alerts" desc="Instant push notifications"  checked={settings?.telegram || false} onChange={v => update('telegram', v)} color="#38bdf8" />
-                : <LockedToggle label="Telegram Alerts" desc="Instant push notifications" icon="📱" />
+                ? <ToggleRow icon="ðŸ“±" label="Telegram Alerts" desc="Instant push notifications"  checked={settings?.telegram || false} onChange={v => update('telegram', v)} color="#38bdf8" />
+                : <LockedToggle label="Telegram Alerts" desc="Instant push notifications" icon="ðŸ“±" />
               }
               {features.sms_alerts
-                ? <ToggleRow icon="💬" label="SMS Alerts" desc="Critical SMS warnings"             checked={settings?.sms      || false} onChange={v => update('sms',      v)} color="#a855f7" />
-                : <LockedToggle label="SMS Alerts" desc="Critical SMS warnings" icon="💬" />
+                ? <ToggleRow icon="ðŸ’¬" label="SMS Alerts" desc="Critical SMS warnings"             checked={settings?.sms      || false} onChange={v => update('sms',      v)} color="#a855f7" />
+                : <LockedToggle label="SMS Alerts" desc="Critical SMS warnings" icon="ðŸ’¬" />
               }
 
-              {/* ── TELEGRAM CONNECT PANEL ── */}
+              {/* â”€â”€ TELEGRAM CONNECT PANEL â”€â”€ */}
               <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mt: 0.5 }} />
               <Box>
                 <Typography sx={{ fontSize: '11px', fontWeight: 800, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.15em', textTransform: 'uppercase', mb: 1.5 }}>
@@ -907,7 +907,7 @@ const Settings: React.FC = () => {
                     display: 'flex', alignItems: 'center', gap: 2, p: 2.5, borderRadius: '16px',
                     background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', opacity: 0.5,
                   }}>
-                    <Box sx={{ width: 40, height: 40, borderRadius: '11px', background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>✈️</Box>
+                    <Box sx={{ width: 40, height: 40, borderRadius: '11px', background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>âœˆï¸</Box>
                     <Box>
                       <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', fontWeight: 600 }}>Telegram Connect</Typography>
                       <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px', mt: 0.3 }}>Available on Pro plan and above</Typography>
@@ -964,3 +964,4 @@ const Settings: React.FC = () => {
 };
 
 export default Settings;
+

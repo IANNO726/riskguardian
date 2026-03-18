@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { Box, Avatar, Typography, Menu, MenuItem, Divider, CircularProgress } from '@mui/material';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useBranding } from '../hooks/useBranding';
@@ -16,7 +16,7 @@ import MobileNav from './MobileNav';
 import SupportWidget from './SupportWidget';
 import { usePlan, startCheckout } from '../hooks/usePlan';
 
-const API = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API = process.env.REACT_APP_API_URL || 'https://riskguardian.onrender.com';
 
 interface TradingAccount {
   id: number; account_name: string; platform: string;
@@ -33,14 +33,14 @@ const PLAN_CONFIG: Record<string, { label: string; color: string; color2: string
 };
 
 const NAV_ITEMS = [
-  { to: '/app',            label: 'Dashboard',  icon: '⬡', sub: 'Overview & stats',    end: true,  minPlan: null,      color: '#38bdf8', glow: '56,189,248'   },
-  { to: '/app/accounts',   label: 'Accounts',   icon: '⊞', sub: 'Multi-account view',  end: false, minPlan: 'starter', color: '#22c55e', glow: '34,197,94'    },
-  { to: '/app/terminal',   label: 'Terminal',   icon: '⌬', sub: 'Live MT5 positions',   end: false, minPlan: 'starter', color: '#22c55e', glow: '34,197,94'    },
-  { to: '/app/risk-check', label: 'Risk Check', icon: '🎯', sub: 'Pre-trade analysis',  end: false, minPlan: 'starter', color: '#f59e0b', glow: '245,158,11'   },
-  { to: '/app/simulator',  label: 'Simulator',  icon: '🏆', sub: 'Prop firm practice',  end: false, minPlan: 'starter', color: '#22c55e', glow: '34,197,94'    },
-  { to: '/app/analytics',  label: 'Analytics',  icon: '◈', sub: 'Performance data',     end: false, minPlan: 'pro',     color: '#a855f7', glow: '168,85,247'   },
-  { to: '/app/history',    label: 'History',    icon: '◷', sub: 'Past trades',           end: false, minPlan: null,      color: '#f59e0b', glow: '245,158,11'   },
-  { to: '/app/settings',   label: 'Settings',   icon: '◎', sub: 'Account & billing',    end: false, minPlan: null,      color: '#fb7185', glow: '251,113,133'  },
+  { to: '/app',            label: 'Dashboard',  icon: 'â¬¡', sub: 'Overview & stats',    end: true,  minPlan: null,      color: '#38bdf8', glow: '56,189,248'   },
+  { to: '/app/accounts',   label: 'Accounts',   icon: 'âŠž', sub: 'Multi-account view',  end: false, minPlan: 'starter', color: '#22c55e', glow: '34,197,94'    },
+  { to: '/app/terminal',   label: 'Terminal',   icon: 'âŒ¬', sub: 'Live MT5 positions',   end: false, minPlan: 'starter', color: '#22c55e', glow: '34,197,94'    },
+  { to: '/app/risk-check', label: 'Risk Check', icon: 'ðŸŽ¯', sub: 'Pre-trade analysis',  end: false, minPlan: 'starter', color: '#f59e0b', glow: '245,158,11'   },
+  { to: '/app/simulator',  label: 'Simulator',  icon: 'ðŸ†', sub: 'Prop firm practice',  end: false, minPlan: 'starter', color: '#22c55e', glow: '34,197,94'    },
+  { to: '/app/analytics',  label: 'Analytics',  icon: 'â—ˆ', sub: 'Performance data',     end: false, minPlan: 'pro',     color: '#a855f7', glow: '168,85,247'   },
+  { to: '/app/history',    label: 'History',    icon: 'â—·', sub: 'Past trades',           end: false, minPlan: null,      color: '#f59e0b', glow: '245,158,11'   },
+  { to: '/app/settings',   label: 'Settings',   icon: 'â—Ž', sub: 'Account & billing',    end: false, minPlan: null,      color: '#fb7185', glow: '251,113,133'  },
 ];
 
 const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -149,7 +149,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <Box sx={{ display: 'flex', minHeight: '100vh', background: '#050810', '@media (max-width: 768px)': { flexDirection: 'column' } }}>
         <MobileNav />
 
-        {/* ══ SIDEBAR ══ */}
+        {/* â•â• SIDEBAR â•â• */}
         <Box
           ref={sidebarRef}
           onMouseEnter={() => collapsed && setHovered(true)}
@@ -178,7 +178,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         >
           <Box sx={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
 
-            {/* ── LOGO ── */}
+            {/* â”€â”€ LOGO â”€â”€ */}
             <Box sx={{ px: 2, pt: 2.5, pb: 2, display: 'flex', alignItems: 'center', gap: 1.5, minHeight: 72 }}>
               <Box className="logo-float" sx={{
                 width: 40, height: 40, borderRadius: '13px', flexShrink: 0,
@@ -191,7 +191,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               }} onClick={() => setCollapsed(!collapsed)}>
                 <Box sx={{ position: 'absolute', inset: -4, borderRadius: '17px', border: '1px solid rgba(56,189,248,0.3)', animation: 'pulse-ring 2.5s ease-out infinite' }} />
                 <Box sx={{ position: 'absolute', inset: -1, borderRadius: '14px', background: 'linear-gradient(135deg, rgba(56,189,248,0.4), rgba(34,197,94,0.4))', filter: 'blur(8px)', opacity: 0.35, zIndex: 0 }} />
-                <Typography sx={{ fontSize: '20px', lineHeight: 1, position: 'relative', zIndex: 1, filter: 'drop-shadow(0 0 6px rgba(56,189,248,0.8))' }}>🛡️</Typography>
+                <Typography sx={{ fontSize: '20px', lineHeight: 1, position: 'relative', zIndex: 1, filter: 'drop-shadow(0 0 6px rgba(56,189,248,0.8))' }}>ðŸ›¡ï¸</Typography>
               </Box>
 
               {isExpanded && (
@@ -212,14 +212,14 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
               {isExpanded && (
                 <Box onClick={() => { setCollapsed(!collapsed); setHovered(false); }} sx={{ width: 24, height: 24, borderRadius: '8px', flexShrink: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', transition: 'all 0.2s', '&:hover': { background: 'rgba(255,255,255,0.09)', borderColor: 'rgba(255,255,255,0.15)' } }}>
-                  <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', lineHeight: 1, transform: collapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s', display: 'block' }}>‹</Typography>
+                  <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', lineHeight: 1, transform: collapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s', display: 'block' }}>â€¹</Typography>
                 </Box>
               )}
             </Box>
 
             <Box sx={{ mx: 2, mb: 2, height: '1px', background: `linear-gradient(90deg, transparent, rgba(${planCfg.glow},0.3), transparent)` }} />
 
-            {/* ── ACCOUNT CARD ── */}
+            {/* â”€â”€ ACCOUNT CARD â”€â”€ */}
             <Box sx={{ px: 1.5, mb: 2 }}>
               {loading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
@@ -249,7 +249,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             {currentAccount.account_name}
                           </Typography>
                           <Typography sx={{ fontSize: '11px', color: refreshing ? '#f59e0b' : '#22c55e', lineHeight: 1, fontFamily: 'JetBrains Mono, monospace', fontWeight: 500 }}>
-                            {refreshing ? '⟳ syncing...' : `$${currentAccount.last_balance.toLocaleString('en', { minimumFractionDigits: 2 })}`}
+                            {refreshing ? 'âŸ³ syncing...' : `$${currentAccount.last_balance.toLocaleString('en', { minimumFractionDigits: 2 })}`}
                           </Typography>
                         </Box>
                         <ArrowDownIcon sx={{ color: 'rgba(255,255,255,0.25)', fontSize: 15, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }} />
@@ -259,7 +259,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
                   <Menu anchorEl={anchorEl} open={open} onClose={() => setAnchorEl(null)} PaperProps={{ sx: { mt: 1, minWidth: 290, background: 'linear-gradient(160deg, #141928, #0a0d1a)', border: `1px solid rgba(${planCfg.glow}, 0.15)`, borderRadius: '16px', boxShadow: `0 24px 64px rgba(0,0,0,0.8), 0 0 0 1px rgba(${planCfg.glow},0.05)`, overflow: 'hidden' }}}>
                     <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                      <Typography sx={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Your Accounts · {accounts.length}</Typography>
+                      <Typography sx={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Your Accounts Â· {accounts.length}</Typography>
                     </Box>
                     {accounts.map((acc) => (
                       <MenuItem key={acc.id} onClick={() => switchAccount(acc.id)} sx={{ mx: 1, my: 0.5, borderRadius: '10px', py: 1.5, px: 1.5, background: acc.id === currentAccount.id ? `rgba(${planCfg.glow},0.1)` : 'transparent', border: acc.id === currentAccount.id ? `1px solid rgba(${planCfg.glow},0.25)` : '1px solid transparent', '&:hover': { background: 'rgba(255,255,255,0.05)' } }}>
@@ -272,7 +272,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                               <Typography sx={{ fontSize: '13px', fontWeight: 600, color: '#fff' }}>{acc.account_name}</Typography>
                               {acc.id === currentAccount.id && <CheckIcon sx={{ fontSize: 13, color: '#22c55e' }} />}
                             </Box>
-                            <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)' }}>{acc.platform} · {acc.broker_name}</Typography>
+                            <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)' }}>{acc.platform} Â· {acc.broker_name}</Typography>
                           </Box>
                           <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#22c55e', fontFamily: 'JetBrains Mono, monospace' }}>${acc.last_balance.toFixed(2)}</Typography>
                         </Box>
@@ -294,12 +294,12 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               )}
             </Box>
 
-            {/* ── NAV LABEL ── */}
+            {/* â”€â”€ NAV LABEL â”€â”€ */}
             {isExpanded && (
               <Typography sx={{ px: 2.5, mb: 1, fontSize: '10px', fontWeight: 800, color: `rgba(${planCfg.glow},0.7)`, letterSpacing: '0.14em', textTransform: 'uppercase' }}>Menu</Typography>
             )}
 
-            {/* ── NAV ITEMS ── */}
+            {/* â”€â”€ NAV ITEMS â”€â”€ */}
             <Box className="sidebar-scroll" sx={{ px: 1.5, flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
               {NAV_ITEMS.map(({ to, label, icon, sub, end, minPlan, color: itemColor, glow: itemGlow }) => {
                 const active = isActive(to, end);
@@ -332,7 +332,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                           <Typography sx={{ fontSize: '11px', color: active ? itemColor : 'rgba(255,255,255,0.55)', lineHeight: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', transition: 'all 0.2s' }}>{sub}</Typography>
                         </Box>
                       )}
-                      {isExpanded && locked && <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.2)', flexShrink: 0 }}>🔒</Typography>}
+                      {isExpanded && locked && <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.2)', flexShrink: 0 }}>ðŸ”’</Typography>}
                       {isExpanded && active && !locked && <Box sx={{ width: 7, height: 7, borderRadius: '50%', background: itemColor, boxShadow: `0 0 10px ${itemColor}, 0 0 4px ${itemColor}`, flexShrink: 0 }} />}
                     </Box>
                   </NavLink>
@@ -346,7 +346,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   <NavLink to="/app/journal" style={{ textDecoration: 'none' }}>
                     <Box className={`nav-item${active ? ' active-item' : ''}`} sx={{ display: 'flex', alignItems: 'center', gap: isExpanded ? 1.4 : 0, justifyContent: isExpanded ? 'flex-start' : 'center', px: isExpanded ? 1.4 : 0, py: isExpanded ? 1.2 : 1.3, mb: 0.6, borderRadius: '13px', cursor: 'pointer', position: 'relative', overflow: 'hidden', background: active ? `linear-gradient(135deg, rgba(${planCfg.glow},0.22), rgba(${planCfg.glow},0.08))` : `rgba(${planCfg.glow},0.03)`, border: active ? `1px solid rgba(${planCfg.glow},0.4)` : `1px solid rgba(${planCfg.glow},0.07)`, boxShadow: active ? `0 4px 24px rgba(${planCfg.glow},0.18), inset 0 1px 0 rgba(255,255,255,0.07)` : 'none', transition: 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)', '&:hover': { background: active ? undefined : 'rgba(255,255,255,0.05)' }, '&::before': active ? { content: '""', position: 'absolute', left: 0, top: '15%', bottom: '15%', width: '3px', borderRadius: '0 3px 3px 0', background: `linear-gradient(180deg,${planCfg.color},${planCfg.color2})`, boxShadow: `0 0 12px rgba(${planCfg.glow},0.8)` } : {} }}>
                       <Box sx={{ width: 38, height: 38, borderRadius: '11px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: active ? `linear-gradient(135deg,rgba(${planCfg.glow},0.3),rgba(${planCfg.glow},0.1))` : `rgba(${planCfg.glow},0.1)`, border: active ? `1px solid rgba(${planCfg.glow},0.45)` : `1px solid rgba(${planCfg.glow},0.2)`, boxShadow: active ? `0 0 20px rgba(${planCfg.glow},0.35), inset 0 1px 0 rgba(255,255,255,0.1)` : `0 0 8px rgba(${planCfg.glow},0.1)`, transition: 'all 0.25s' }}>
-                        <Typography sx={{ fontSize: '18px', lineHeight: 1, color: planCfg.color, opacity: active ? 1 : 0.7, filter: active ? `drop-shadow(0 0 10px rgba(${planCfg.glow},1))` : `drop-shadow(0 0 4px rgba(${planCfg.glow},0.4))` }}>◫</Typography>
+                        <Typography sx={{ fontSize: '18px', lineHeight: 1, color: planCfg.color, opacity: active ? 1 : 0.7, filter: active ? `drop-shadow(0 0 10px rgba(${planCfg.glow},1))` : `drop-shadow(0 0 4px rgba(${planCfg.glow},0.4))` }}>â—«</Typography>
                       </Box>
                       {isExpanded && (
                         <Box sx={{ flex: 1 }}>
@@ -370,7 +370,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   <NavLink to="/app/enterprise" style={{ textDecoration: 'none' }}>
                     <Box className={`nav-item${active ? ' active-item' : ''}`} sx={{ display: 'flex', alignItems: 'center', gap: isExpanded ? 1.4 : 0, justifyContent: isExpanded ? 'flex-start' : 'center', px: isExpanded ? 1.4 : 0, py: isExpanded ? 1.0 : 1.2, mb: 0.5, borderRadius: '12px', cursor: 'pointer', background: active ? 'rgba(245,158,11,0.12)' : 'transparent', border: active ? '1px solid rgba(245,158,11,0.3)' : '1px solid transparent', transition: 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)', '&:hover': { background: 'rgba(245,158,11,0.07)' } }}>
                       <Box sx={{ width: 34, height: 34, borderRadius: '10px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: active ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.04)', border: active ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(255,255,255,0.06)' }}>
-                        <Typography sx={{ fontSize: '16px', color: active ? '#f59e0b' : 'rgba(255,255,255,0.35)' }}>♛</Typography>
+                        <Typography sx={{ fontSize: '16px', color: active ? '#f59e0b' : 'rgba(255,255,255,0.35)' }}>â™›</Typography>
                       </Box>
                       {isExpanded && (
                         <Box>
@@ -384,7 +384,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               })()}
             </Box>
 
-            {/* ── BOTTOM ── */}
+            {/* â”€â”€ BOTTOM â”€â”€ */}
             <Box sx={{ px: 1.5, pb: 2.5, pt: 1.5 }}>
               {isExpanded && <TrialBanner plan={plan} />}
               {isExpanded && (plan === 'free' || plan === 'starter') && (
@@ -396,7 +396,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     </Box>
                   ) : (
                     <>
-                      <Typography sx={{ fontSize: '12px', fontWeight: 800, color: planCfg.color, mb: 0.3, letterSpacing: '-0.01em' }}>⚡ Upgrade to {plan === 'free' ? 'Starter' : 'Pro'}</Typography>
+                      <Typography sx={{ fontSize: '12px', fontWeight: 800, color: planCfg.color, mb: 0.3, letterSpacing: '-0.01em' }}>âš¡ Upgrade to {plan === 'free' ? 'Starter' : 'Pro'}</Typography>
                       <Typography sx={{ fontSize: '10px', color: `rgba(${planCfg.glow},0.5)` }}>Unlock all features</Typography>
                     </>
                   )}
@@ -409,7 +409,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </Box>
               {isExpanded && (
                 <Box sx={{ mt: 1.5, textAlign: 'center' }}>
-                  <Typography sx={{ fontSize: '9px', color: 'rgba(255,255,255,0.1)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>v1.0.0 · Beta</Typography>
+                  <Typography sx={{ fontSize: '9px', color: 'rgba(255,255,255,0.1)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>v1.0.0 Â· Beta</Typography>
                 </Box>
               )}
             </Box>
@@ -417,7 +417,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </Box>
         </Box>
 
-        {/* ── MAIN CONTENT ── */}
+        {/* â”€â”€ MAIN CONTENT â”€â”€ */}
         <Box sx={{ flex: 1, color: '#fff', overflow: 'auto', transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)', '@media (max-width: 768px)': { paddingTop: '60px', paddingBottom: '70px' } }}>
           {children}
         </Box>
@@ -429,3 +429,4 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 export default AppShell;
+

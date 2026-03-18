@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 interface TradingAccount {
@@ -33,7 +33,7 @@ export const AccountProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const token = localStorage.getItem('access_token');
       if (!token) return;
 
-      const response = await axios.get('http://localhost:8000/api/v1/accounts-multi/', {
+      const response = await axios.get('https://riskguardian.onrender.com/api/v1/accounts-multi/', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -63,7 +63,7 @@ export const AccountProvider: React.FC<{ children: React.ReactNode }> = ({ child
       try {
         const token = localStorage.getItem('access_token');
         await axios.post(
-          `http://localhost:8000/api/v1/accounts-multi/${accountId}/set-default`,
+          `https://riskguardian.onrender.com/api/v1/accounts-multi/${accountId}/set-default`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -97,3 +97,4 @@ export const useAccount = () => {
   }
   return context;
 };
+

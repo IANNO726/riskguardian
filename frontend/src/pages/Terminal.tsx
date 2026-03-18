@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Box, Typography, Grid, Chip } from "@mui/material";
 import { useLiveTrades } from "../hooks/useLiveTrades";
 import { TrendingUp, TrendingDown } from "@mui/icons-material";
@@ -25,7 +25,7 @@ const Terminal: React.FC = () => {
   const liveProfitPct = dailyPnlPct  ?? 0;
   const floatingPnl   = positions.reduce((s, p) => s + (p.profit ?? 0), 0);
 
-  // ── Floating P&L mini sparkline data (fake for display rhythm) ──
+  // â”€â”€ Floating P&L mini sparkline data (fake for display rhythm) â”€â”€
   const totalPositionProfit = positions.reduce((s, p) => s + Math.max(p.profit, 0), 0);
   const totalPositionLoss   = positions.reduce((s, p) => s + Math.min(p.profit, 0), 0);
 
@@ -37,7 +37,7 @@ const Terminal: React.FC = () => {
       color: 'white',
     }}>
 
-      {/* ── Header ── */}
+      {/* â”€â”€ Header â”€â”€ */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: { xs: 3, md: 4 }, flexWrap: 'wrap', gap: 2 }}>
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
@@ -65,7 +65,7 @@ const Terminal: React.FC = () => {
         </Box>
       </Box>
 
-      {/* ── KPI Cards ── */}
+      {/* â”€â”€ KPI Cards â”€â”€ */}
       <Grid container spacing={{ xs: 1.5, md: 2.5 }} sx={{ mb: { xs: 3, md: 4 } }}>
 
         {/* Balance */}
@@ -78,7 +78,7 @@ const Terminal: React.FC = () => {
                   ${liveBalance.toFixed(2)}
                 </Typography>
               </Box>
-              <Box sx={{ width: 38, height: 38, borderRadius: '11px', background: 'rgba(56,189,248,0.15)', border: '1px solid rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>💵</Box>
+              <Box sx={{ width: 38, height: 38, borderRadius: '11px', background: 'rgba(56,189,248,0.15)', border: '1px solid rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>ðŸ’µ</Box>
             </Box>
           </Box>
         </Grid>
@@ -96,7 +96,7 @@ const Terminal: React.FC = () => {
                   {liveEquity >= liveBalance ? '+' : ''}{(liveEquity - liveBalance).toFixed(2)} floating
                 </Typography>
               </Box>
-              <Box sx={{ width: 38, height: 38, borderRadius: '11px', background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>📊</Box>
+              <Box sx={{ width: 38, height: 38, borderRadius: '11px', background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>ðŸ“Š</Box>
             </Box>
           </Box>
         </Grid>
@@ -118,7 +118,7 @@ const Terminal: React.FC = () => {
                 </Box>
               </Box>
               <Box sx={{ width: 38, height: 38, borderRadius: '11px', background: liveProfit >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${liveProfit >= 0 ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>
-                {liveProfit >= 0 ? '🚀' : '⚡'}
+                {liveProfit >= 0 ? 'ðŸš€' : 'âš¡'}
               </Box>
             </Box>
           </Box>
@@ -139,19 +139,19 @@ const Terminal: React.FC = () => {
                   </Typography>
                 )}
               </Box>
-              <Box sx={{ width: 38, height: 38, borderRadius: '11px', background: 'rgba(251,191,36,0.12)', border: '1px solid rgba(251,191,36,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>📈</Box>
+              <Box sx={{ width: 38, height: 38, borderRadius: '11px', background: 'rgba(251,191,36,0.12)', border: '1px solid rgba(251,191,36,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>ðŸ“ˆ</Box>
             </Box>
           </Box>
         </Grid>
       </Grid>
 
-      {/* ── Positions Table ── */}
+      {/* â”€â”€ Positions Table â”€â”€ */}
       <Box sx={{ borderRadius: '24px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', overflow: 'hidden' }}>
 
         {/* Table header bar */}
         <Box sx={{ px: { xs: 2, md: 4 }, pt: 3, pb: 2.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2, borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(56,189,248,0.03)' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box sx={{ width: 36, height: 36, borderRadius: '10px', background: 'rgba(56,189,248,0.15)', border: '1px solid rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px' }}>🖥️</Box>
+            <Box sx={{ width: 36, height: 36, borderRadius: '10px', background: 'rgba(56,189,248,0.15)', border: '1px solid rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px' }}>ðŸ–¥ï¸</Box>
             <Box>
               <Typography sx={{ fontSize: '16px', fontWeight: 700 }}>Open Positions</Typography>
               <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>{positions.length} active trade{positions.length !== 1 ? 's' : ''}</Typography>
@@ -174,7 +174,7 @@ const Terminal: React.FC = () => {
 
         {positions.length === 0 ? (
           <Box sx={{ py: 12, textAlign: 'center' }}>
-            <Typography sx={{ fontSize: '56px', opacity: 0.1, mb: 2 }}>📊</Typography>
+            <Typography sx={{ fontSize: '56px', opacity: 0.1, mb: 2 }}>ðŸ“Š</Typography>
             <Typography sx={{ fontSize: '16px', color: 'rgba(255,255,255,0.35)', mb: 0.5 }}>No open positions</Typography>
             <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.2)' }}>Open trades in MT5 to see them here</Typography>
           </Box>
@@ -225,7 +225,7 @@ const Terminal: React.FC = () => {
                     <Grid item xs={1.5}>
                       <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, px: 1.5, py: 0.5, borderRadius: '8px', background: isBuy ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', border: `1px solid ${isBuy ? 'rgba(34,197,94,0.35)' : 'rgba(239,68,68,0.35)'}` }}>
                         <Typography sx={{ fontSize: '11px', fontWeight: 800, color: isBuy ? '#22c55e' : '#ef4444', letterSpacing: '0.04em' }}>
-                          {isBuy ? '▲' : '▼'} {position.type}
+                          {isBuy ? 'â–²' : 'â–¼'} {position.type}
                         </Typography>
                       </Box>
                     </Grid>
@@ -249,7 +249,7 @@ const Terminal: React.FC = () => {
                       </Typography>
                       <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.4, mt: 0.5, px: 1.2, py: 0.3, borderRadius: '6px', background: isProfit ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
                         <Typography sx={{ fontSize: '10px', fontWeight: 700, color: isProfit ? '#22c55e' : '#ef4444', fontFamily: '"Roboto Mono",monospace' }}>
-                          {isProfit ? '▲' : '▼'} {pct}%
+                          {isProfit ? 'â–²' : 'â–¼'} {pct}%
                         </Typography>
                       </Box>
                     </Grid>
@@ -292,6 +292,7 @@ const Terminal: React.FC = () => {
 };
 
 export default Terminal;
+
 
 
 
