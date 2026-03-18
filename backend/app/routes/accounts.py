@@ -8,6 +8,7 @@ from app.database.database import get_db
 
 router = APIRouter(tags=["Accounts"])
 
+
 # =========================
 # Request Model
 # =========================
@@ -17,12 +18,12 @@ class AccountCreate(BaseModel):
     password: str
     server: str
 
+
 # =========================
 # Get All Accounts
 # =========================
 @router.get("/")
 async def get_accounts(db: Session = Depends(get_db)):
-    """Get all trading accounts"""
     return {
         "accounts": [
             {
@@ -38,15 +39,12 @@ async def get_accounts(db: Session = Depends(get_db)):
         ]
     }
 
+
 # =========================
-# CREATE ACCOUNT (Wizard Uses This)
+# CREATE ACCOUNT
 # =========================
 @router.post("/create")
-async def create_account(
-    account: AccountCreate,
-    db: Session = Depends(get_db)
-):
-    """Create trading account from Setup Wizard"""
+async def create_account(account: AccountCreate, db: Session = Depends(get_db)):
     return {
         "message": "Account saved successfully",
         "account_number": account.account_number,
@@ -54,6 +52,7 @@ async def create_account(
         "server": account.server,
         "status": "connected"
     }
+
 
 # =========================
 # Connect Account
@@ -66,7 +65,6 @@ async def connect_account(
     platform: str = "MT5",
     db: Session = Depends(get_db)
 ):
-    """Connect to a trading account"""
     return {
         "message": "Account connected successfully",
         "account_number": account_number,
@@ -74,16 +72,28 @@ async def connect_account(
         "status": "connected"
     }
 
+
 # =========================
-# Get Account Info (for Terminal)
+# Get Account Info
 # =========================
 @router.get("/info")
 async def get_account_info():
-    """Get live MT5 account information"""
     from app.services.mt5_wrapper import get_mt5
-mt5 = get_mt5()
-    
+    mt5 = get_mt5()   # ✅ NOW CORRECTLY INDENTED
+
     try:
+        # ✅ If MT5 not available (Render), return safe mock
+        if mt5 is None:
+            return {
+                "balance": 10000.00,
+                "equity": 10000.00,
+                "margin": 0.00,
+                "free_margin": 10000.00,
+                "margin_level": 0.00,
+                "profit": 0.00,
+                "note": "MT5 not available (cloud mode)"
+            }
+
         if not mt5.initialize():
             return {
                 "balance": 10000.00,
@@ -94,9 +104,9 @@ mt5 = get_mt5()
                 "profit": 0.00,
                 "error": "MT5 not initialized"
             }
-        
+
         account_info = mt5.account_info()
-        
+
         if account_info is None:
             return {
                 "balance": 10000.00,
@@ -107,7 +117,7 @@ mt5 = get_mt5()
                 "profit": 0.00,
                 "error": "Failed to get account info"
             }
-        
+
         return {
             "balance": account_info.balance,
             "equity": account_info.equity,
@@ -116,7 +126,7 @@ mt5 = get_mt5()
             "margin_level": account_info.margin_level if account_info.margin > 0 else 0,
             "profit": account_info.profit,
         }
-        
+
     except Exception as e:
         return {
             "balance": 10000.00,
@@ -128,15 +138,12 @@ mt5 = get_mt5()
             "error": str(e)
         }
 
+
 # =========================
 # Get Single Account
 # =========================
 @router.get("/{account_id}")
-async def get_account(
-    account_id: int,
-    db: Session = Depends(get_db)
-):
-    """Get specific account details"""
+async def get_account(account_id: int, db: Session = Depends(get_db)):
     return {
         "id": account_id,
         "account_number": "6009324",
