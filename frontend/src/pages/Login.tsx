@@ -36,7 +36,7 @@ const Login: React.FC = () => {
       formBody.append('password', formData.password);
 
       const response = await axios.post(
-        'http://localhost:8000/api/v1/auth-multi/login',
+  `${process.env.REACT_APP_API_URL || 'https://riskguardian.onrender.com'}/api/v1/auth-multi/login`,
         formBody,
         { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
       );

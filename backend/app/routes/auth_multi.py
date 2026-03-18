@@ -2,8 +2,8 @@
 Multi-User Authentication Routes
 JWT-based authentication with user registration and login
 """
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
@@ -84,24 +84,20 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
 async def register(user_data: UserCreate, db: Session = Depends(get_db)):
     """
     Register a new user
-    
     Returns JWT token for immediate login
     """
-    # Check if username exists
     if db.query(User).filter(User.username == user_data.username).first():
         raise HTTPException(
             status_code=400, 
             detail="Username already exists. Please choose a different username."
         )
     
-    # Check if email exists
     if db.query(User).filter(User.email == user_data.email).first():
         raise HTTPException(
             status_code=400, 
             detail="Email already registered. Please use a different email or login."
         )
     
-    # Create user
     hashed_password = hash_user_password(user_data.password)
     user = User(
         username=user_data.username,
@@ -115,7 +111,6 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
     
-    # Create token
     access_token = create_access_token(data={"sub": user.username})
     
     return {
@@ -124,16 +119,37 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
         "user": user
     }
 
+# 🔥 FIXED LOGIN (supports JSON + form)
 @router.post("/login", response_model=Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+async def login(request: Request, db: Session = Depends(get_db)):
     """
-    Login user with username and password
-    
-    Returns JWT token for authentication
+    Login user (supports BOTH JSON and form-data)
     """
-    user = db.query(User).filter(User.username == form_data.username).first()
-    
-    if not user or not verify_user_password(form_data.password, user.hashed_password):
+
+    content_type = request.headers.get("content-type", "")
+
+    # ===== JSON (React) =====
+    if "application/json" in content_type:
+        data = await request.json()
+        username = data.get("username")
+        password = data.get("password")
+
+    # ===== FORM (Swagger) =====
+    else:
+        form = await request.form()
+        username = form.get("username")
+        password = form.get("password")
+
+    # ===== VALIDATION =====
+    if not username or not password:
+        raise HTTPException(
+            status_code=400,
+            detail="Username and password are required"
+        )
+
+    user = db.query(User).filter(User.username == username).first()
+
+    if not user or not verify_user_password(password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
@@ -146,11 +162,9 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
             detail="Account is inactive. Please contact support."
         )
     
-    # Update last login
     user.last_login = datetime.utcnow()
     db.commit()
     
-    # Create token
     access_token = create_access_token(data={"sub": user.username})
     
     return {
@@ -161,14 +175,10 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_info(current_user: User = Depends(get_current_user)):
-    """Get current user information"""
     return current_user
 
 @router.post("/logout")
 async def logout():
-    """
-    Logout user (client should delete token)
-    """
     return {"message": "Successfully logged out. Please delete your access token."}
 
 
