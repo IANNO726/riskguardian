@@ -7,7 +7,8 @@ from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.models.risk_rule import RiskRule
 
-from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5
+mt5 = get_mt5()
 
 router = APIRouter(tags=["Settings"])
 

@@ -61,7 +61,7 @@ def _find_terminal() -> Optional[str]:
 
 def _mt5_init() -> bool:
     try:
-        from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
+        from app.services.mt5_wrapper import get_mt5
         path = _find_terminal()
         if path:
             if mt5.initialize(path=path):
@@ -79,7 +79,7 @@ def _mt5_init() -> bool:
 def _mt5_connect(login: int, password: str, server: str) -> bool:
     """Connect to MT5 terminal. Reuses session if same account already active."""
     try:
-        from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
+        from app.services.mt5_wrapper import get_mt5
         # Reuse existing session
         if (
             _mt5_active.get("login") == login
@@ -353,7 +353,7 @@ class DerivAdapter:
         # ── MT5 terminal (primary) ─────────────────────────────
         if self._connected_mt5 and self._mt5_login:
             try:
-                from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
+                from app.services.mt5_wrapper import get_mt5
                 with _mt5_lock:
                     if not _mt5_connect(self._mt5_login, self._mt5_password, self._mt5_server):
                         raise Exception("MT5 reconnect failed")
@@ -429,7 +429,7 @@ class DerivAdapter:
         # ── MT5 terminal ──────────────────────────────────────
         if self._connected_mt5 and self._mt5_login:
             try:
-                from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
+                from app.services.mt5_wrapper import get_mt5
                 with _mt5_lock:
                     if not _mt5_connect(self._mt5_login, self._mt5_password, self._mt5_server):
                         raise Exception("MT5 reconnect failed")
@@ -472,7 +472,7 @@ class DerivAdapter:
         # ── MT5 terminal ──────────────────────────────────────
         if self._connected_mt5 and self._mt5_login:
             try:
-                from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
+                from app.services.mt5_wrapper import get_mt5
                 with _mt5_lock:
                     if not _mt5_connect(self._mt5_login, self._mt5_password, self._mt5_server):
                         raise Exception("MT5 reconnect failed")
@@ -512,7 +512,7 @@ class DerivAdapter:
     async def get_orders(self) -> List[Dict[str, Any]]:
         if self._connected_mt5 and self._mt5_login:
             try:
-                from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
+                from app.services.mt5_wrapper import get_mt5
                 with _mt5_lock:
                     _mt5_connect(self._mt5_login, self._mt5_password, self._mt5_server)
                     orders = mt5.orders_get()

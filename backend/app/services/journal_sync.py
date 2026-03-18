@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
-from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
 from sqlalchemy.orm import Session
+from app.services.mt5_wrapper import get_mt5
+mt5 = get_mt5()
 
 from app.models.journal import JournalEntry
 from app.database.database import SessionLocal

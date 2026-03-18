@@ -1,4 +1,5 @@
-from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5
+mt5 = get_mt5()
 
 
 class MT5Verifier:

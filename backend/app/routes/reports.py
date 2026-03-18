@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Response
 from datetime import datetime, timedelta
-from app.services.mt5_wrapper import get_mt5`r`nmt5 = get_mt5()
+from app.services.mt5_wrapper import get_mt5
+mt5 = get_mt5()
 from io import BytesIO
 import logging
 
