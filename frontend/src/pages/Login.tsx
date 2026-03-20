@@ -6,12 +6,14 @@ import {
 import { Visibility, VisibilityOff, Login as LoginIcon } from '@mui/icons-material';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/axiosConfig';
 
 const PLAN_CONFIG: Record<string, { label: string; color: string; emoji: string }> = {
-  free:       { label: 'Free Trial',  color: '#a855f7', emoji: 'ðŸŽ' },
-  starter:    { label: 'Starter',     color: '#38bdf8', emoji: 'ðŸš€' },
-  pro:        { label: 'Pro',         color: '#22c55e', emoji: 'âš¡' },
-  enterprise: { label: 'Enterprise',  color: '#f97316', emoji: 'ðŸ¢' },
+  free:       { label: 'Free Trial',  color: '#a855f7', emoji: '🎁' },
+  starter:    { label: 'Starter',     color: '#38bdf8', emoji: '🚀' },
+  pro:        { label: 'Pro',         color: '#22c55e', emoji: '⚡' },
+  growth:     { label: 'Growth',      color: '#f97316', emoji: '📈' },
+  enterprise: { label: 'Enterprise',  color: '#ef4444', emoji: '🏢' },
 };
 
 const Login: React.FC = () => {
@@ -35,8 +37,9 @@ const Login: React.FC = () => {
       formBody.append('username', formData.username);
       formBody.append('password', formData.password);
 
+      // ✅ Uses API_BASE_URL from axiosConfig — never hardcoded
       const response = await axios.post(
-  `${process.env.REACT_APP_API_URL || 'https://riskguardian.onrender.com'}/api/v1/auth-multi/login`,
+        `${API_BASE_URL}/api/v1/auth-multi/login`,
         formBody,
         { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
       );
@@ -47,18 +50,16 @@ const Login: React.FC = () => {
       const setupDone = response.data.user?.setup_complete;
 
       if (plan) {
-        // Coming from pricing page â€” send to setup/checkout with plan
         localStorage.setItem('selected_plan', plan);
         navigate(setupDone ? `/checkout?plan=${plan}` : `/setup?plan=${plan}`);
       } else {
-        // âœ… Restore the page they were trying to visit before being sent to login
         const redirectTo = localStorage.getItem('redirect_after_login');
         localStorage.removeItem('redirect_after_login');
         navigate(setupDone ? (redirectTo || '/app') : '/setup');
       }
 
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Login failed. Please check your credentials.');
+      setError(err.response?.data?.detail || 'Incorrect username or password.');
     } finally {
       setLoading(false);
     }
@@ -136,7 +137,11 @@ const Login: React.FC = () => {
                 : 'Login to access your trading accounts'}
             </Typography>
 
-            {error && <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>{error}</Alert>}
+            {error && (
+              <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>
+                {error}
+              </Alert>
+            )}
 
             <form onSubmit={handleSubmit}>
               <TextField fullWidth required label="Username"
@@ -171,7 +176,7 @@ const Login: React.FC = () => {
                   '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 30px rgba(37,99,235,0.4)' },
                   '&:disabled': { background: 'rgba(255,255,255,0.1)' },
                 }}>
-                {loading ? 'Logging in...' : planInfo ? `Login & Activate ${planInfo.label} â†’` : 'Login'}
+                {loading ? 'Logging in...' : planInfo ? `Login & Activate ${planInfo.label} →` : 'Login →'}
               </Button>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>

@@ -6,13 +6,14 @@ import {
 import { Visibility, VisibilityOff, PersonAdd as RegisterIcon } from '@mui/icons-material';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/axiosConfig';
 
-// Plan display config
 const PLAN_CONFIG: Record<string, { label: string; color: string; emoji: string }> = {
-  free:       { label: 'Free Trial',  color: '#a855f7', emoji: 'ðŸŽ' },
-  starter:    { label: 'Starter',     color: '#38bdf8', emoji: 'ðŸš€' },
-  pro:        { label: 'Pro',         color: '#22c55e', emoji: 'âš¡' },
-  enterprise: { label: 'Enterprise',  color: '#f97316', emoji: 'ðŸ¢' },
+  free:       { label: 'Free Trial',  color: '#a855f7', emoji: '🎁' },
+  starter:    { label: 'Starter',     color: '#38bdf8', emoji: '🚀' },
+  pro:        { label: 'Pro',         color: '#22c55e', emoji: '⚡' },
+  growth:     { label: 'Growth',      color: '#f97316', emoji: '📈' },
+  enterprise: { label: 'Enterprise',  color: '#ef4444', emoji: '🏢' },
 };
 
 const Register: React.FC = () => {
@@ -24,7 +25,9 @@ const Register: React.FC = () => {
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData]         = useState({ username: '', email: '', password: '', full_name: '' });
+  const [formData, setFormData]         = useState({
+    username: '', email: '', password: '', full_name: '',
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,20 +35,30 @@ const Register: React.FC = () => {
     setError('');
 
     try {
+      // ✅ Uses API_BASE_URL from axiosConfig — reads REACT_APP_API_URL from .env
+      // Never hardcoded — works on localhost AND production automatically
       const response = await axios.post(
-        'https://riskguardian.onrender.com/api/v1/auth-multi/register',
+        `${API_BASE_URL}/api/v1/auth-multi/register`,
         formData
       );
 
       localStorage.setItem('access_token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-      localStorage.setItem('selected_plan', plan); // âœ… Save plan for setup wizard
+      localStorage.setItem('selected_plan', plan);
 
-      // New users go to setup wizard, carrying the plan
+      // New users go to setup wizard with their selected plan
       navigate(`/setup?plan=${plan}`);
 
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+      const detail = err.response?.data?.detail;
+      if (typeof detail === 'string') {
+        setError(detail);
+      } else if (Array.isArray(detail)) {
+        // Pydantic validation errors come as array
+        setError(detail.map((d: any) => d.msg).join(', '));
+      } else {
+        setError('Registration failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -79,6 +92,7 @@ const Register: React.FC = () => {
       p: 2,
     }}>
       <Box sx={{ width: '100%', maxWidth: 450 }}>
+
         <Box sx={{ textAlign: 'center', mb: 5 }}>
           <Typography sx={{
             fontSize: '42px', fontWeight: 800,
@@ -91,7 +105,6 @@ const Register: React.FC = () => {
           </Typography>
         </Box>
 
-        {/* â”€â”€ Selected Plan Badge â”€â”€ */}
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Chip
             label={`${planInfo.emoji} ${planInfo.label} Plan Selected`}
@@ -111,11 +124,15 @@ const Register: React.FC = () => {
             </Typography>
             <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', mb: 4 }}>
               {plan === 'free'
-                ? 'Start your 14-day free trial â€” no card needed'
+                ? 'Start your 14-day free trial — no card needed'
                 : `Set up your ${planInfo.label} plan account`}
             </Typography>
 
-            {error && <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>{error}</Alert>}
+            {error && (
+              <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>
+                {error}
+              </Alert>
+            )}
 
             <form onSubmit={handleSubmit}>
               <TextField fullWidth required label="Full Name"
@@ -145,6 +162,7 @@ const Register: React.FC = () => {
                   ),
                 }}
                 sx={{ ...inputStyles, mb: 4 }} />
+
               <Button type="submit" fullWidth disabled={loading}
                 startIcon={loading ? <CircularProgress size={20} /> : <RegisterIcon />}
                 sx={{
@@ -154,12 +172,14 @@ const Register: React.FC = () => {
                   '&:hover': { transform: 'translateY(-2px)', boxShadow: `0 8px 30px ${planInfo.color}40` },
                   '&:disabled': { background: 'rgba(255,255,255,0.1)' },
                 }}>
-                {loading ? 'Creating Account...' : `Create Account & Continue â†’`}
+                {loading ? 'Creating Account...' : 'Create Account & Continue →'}
               </Button>
+
               <Box sx={{ textAlign: 'center' }}>
                 <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>
                   Already have an account?{' '}
-                  <Link to={`/login?plan=${plan}`} style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 600 }}>
+                  <Link to={`/login?plan=${plan}`}
+                    style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 600 }}>
                     Login here
                   </Link>
                 </Typography>
