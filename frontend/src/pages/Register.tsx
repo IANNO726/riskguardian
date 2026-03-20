@@ -6,7 +6,7 @@ import {
 import { Visibility, VisibilityOff, PersonAdd as RegisterIcon } from '@mui/icons-material';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import { API_BASE_URL } from '../config/axiosConfig';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://riskguardian.onrender.com';
 
 const PLAN_CONFIG: Record<string, { label: string; color: string; emoji: string }> = {
   free:       { label: 'Free Trial',  color: '#a855f7', emoji: '🎁' },
