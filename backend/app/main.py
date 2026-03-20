@@ -214,33 +214,16 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 # ─────────────────────────────────────────────────────────────────
-# FIX #3 — CORS
-# allow_credentials=True + allow_origins=["*"] is illegal —
-# browsers reject it on every authenticated request.
-# You MUST list exact origins when credentials are used.
+# CORS — allow_origins=["*"] with allow_credentials=False
+# This is the correct combination for token-based auth (Bearer).
+# Cookies are NOT used — tokens are in Authorization header.
+# So allow_credentials=False + allow_origins=["*"] is legal
+# and works from ANY origin including localhost and production.
 # ─────────────────────────────────────────────────────────────────
-ALLOWED_ORIGINS = [
-    # ── Production ──────────────────────────────────
-    "https://getriskguardian.com",
-    "https://www.getriskguardian.com",
-    "https://app.getriskguardian.com",
-    # ── Vercel preview branches ──────────────────────
-    # (covers any *.vercel.app preview URL automatically
-    #  via allow_origin_regex below — see note)
-    "https://risk-guardian-agent.vercel.app",
-    # ── Local development ───────────────────────────
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://127.0.0.1:3000",
-    # ── LAN / phone testing ─────────────────────────
-    "http://192.168.43.131:3000",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=r"https://.*\.vercel\.app",   # covers all Vercel previews
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -345,4 +328,3 @@ if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
 
 
-"# redeploy" 
