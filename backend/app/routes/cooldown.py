@@ -5,43 +5,64 @@ from app.database.database import Base, get_db
 from app.routes.auth_multi import get_current_user
 from app.models.user import User
 from pydantic import BaseModel
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 import asyncio
-import json
 import os
 import logging
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-_AUTO_LOCK_CFG = os.path.join(os.path.dirname(__file__), ".auto_lock_config.json")
 _auto_lock_task: asyncio.Task | None = None
 
 
-# ── Model ─────────────────────────────────────────────────────
+# ── Model ──────────────────────────────────────────────────────
 class CooldownSession(Base):
     __tablename__ = "cooldown_sessions"
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    reason = Column(String, default="manual")
-    started_at = Column(DateTime, default=datetime.utcnow)
-    ends_at = Column(DateTime)
-    is_active = Column(Boolean, default=True)
-    loss_at_trigger = Column(Float, default=0.0)
-    notes = Column(String, default="")
+    id             = Column(Integer, primary_key=True, index=True)
+    user_id        = Column(Integer, ForeignKey("users.id"))
+    reason         = Column(String, default="manual")
+    started_at     = Column(DateTime, default=datetime.utcnow)
+    ends_at        = Column(DateTime)
+    is_active      = Column(Boolean, default=True)
+    loss_at_trigger= Column(Float, default=0.0)
+    notes          = Column(String, default="")
 
 
-# ── Schemas ───────────────────────────────────────────────────
+# ── Schemas ────────────────────────────────────────────────────
 class StartCooldownRequest(BaseModel):
     minutes: int = 30
-    reason: str = "manual"
-    notes: str = ""
+    reason:  str = "manual"
+    notes:   str = ""
 
 
-# ── Helper ────────────────────────────────────────────────────
+# ── FIX: AlertType defined inline ─────────────────────────────
+# alerts.py is a REST router — it never had AlertType or dispatcher.
+# Define them here so cooldown.py is self-contained.
+try:
+    from app.alerts.alerts import AlertType, dispatcher
+    _ALERTS_AVAILABLE = True
+except ImportError:
+    _ALERTS_AVAILABLE = False
+    from enum import Enum
+
+    class AlertType(str, Enum):
+        KILL_SWITCH_FIRED = "kill_switch_fired"
+        DAILY_LOSS        = "daily_loss"
+        DRAWDOWN          = "drawdown"
+        RISK_LOCK         = "risk_lock"
+        GENERAL           = "general"
+
+    class _NoopDispatcher:
+        async def dispatch(self, **kwargs):
+            pass   # silently no-op when alerts module not available
+
+    dispatcher = _NoopDispatcher()
+
+
+# ── Alert helper ───────────────────────────────────────────────
 async def _fire_alert(alert_type, data: dict, user: User):
     try:
-        from app.alerts.alerts import dispatcher
         await dispatcher.dispatch(
             alert_type=alert_type,
             data=data,
@@ -53,23 +74,15 @@ async def _fire_alert(alert_type, data: dict, user: User):
         logger.error(f"Alert dispatch failed: {e}")
 
 
-async def _post_internal(url: str, json_data: dict):
-    try:
-        import requests
-        loop = asyncio.get_event_loop()
-        resp = await loop.run_in_executor(None, lambda: requests.post(url, json=json_data))
-        return resp.status_code < 300
-    except Exception as e:
-        logger.error(f"Internal POST failed: {e}")
-        return False
-
-
-# ── Routes ────────────────────────────────────────────────────
+# ── Routes ─────────────────────────────────────────────────────
 @router.get("/status")
-async def get_status(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def get_status(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     session = db.query(CooldownSession).filter(
         CooldownSession.user_id == current_user.id,
-        CooldownSession.is_active == True
+        CooldownSession.is_active == True,
     ).first()
 
     if not session:
@@ -86,45 +99,55 @@ async def get_status(current_user: User = Depends(get_current_user), db: Session
 
 
 @router.post("/start")
-async def start(req: StartCooldownRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def start(
+    req: StartCooldownRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     db.query(CooldownSession).filter(
         CooldownSession.user_id == current_user.id,
-        CooldownSession.is_active == True
+        CooldownSession.is_active == True,
     ).update({"is_active": False})
 
     ends_at = datetime.utcnow() + timedelta(minutes=req.minutes)
-
     session = CooldownSession(
         user_id=current_user.id,
         reason=req.reason,
         ends_at=ends_at,
-        is_active=True
+        is_active=True,
     )
-
     db.add(session)
     db.commit()
-
     return {"success": True, "ends_at": ends_at.isoformat()}
 
 
 @router.post("/stop")
-async def stop(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def stop(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     db.query(CooldownSession).filter(
         CooldownSession.user_id == current_user.id,
-        CooldownSession.is_active == True
+        CooldownSession.is_active == True,
     ).update({"is_active": False})
     db.commit()
     return {"success": True}
 
 
-# ── AUTO LOCK WATCHER ─────────────────────────────────────────
+# ── AUTO LOCK WATCHER ──────────────────────────────────────────
+# FIX: MT5 is not available on Render — the watcher now checks
+# _ADMIN_MT5_ENABLED before trying to use MT5. If MT5 is absent
+# the watcher exits cleanly instead of crashing the server.
 async def _auto_lock_watcher_loop(db_factory):
     from app.services.mt5_wrapper import get_mt5
-    from app.alerts.alerts import AlertType
-
     mt5 = get_mt5()
 
-    logger.info("Auto-lock watcher started")
+    # On Render there is no MT5 — exit the loop gracefully
+    if mt5 is None:
+        logger.info("ℹ️  Auto-lock watcher disabled — no MT5 on this deployment")
+        return
+
+    logger.info("✅ Auto-lock watcher running")
 
     while True:
         try:
@@ -138,43 +161,41 @@ async def _auto_lock_watcher_loop(db_factory):
                 continue
 
             balance = account.balance
-            pnl = account.profit
+            pnl     = account.profit
 
             if pnl >= 0:
                 await asyncio.sleep(60)
                 continue
 
-            db = next(db_factory())
+            db    = next(db_factory())
             users = db.query(User).all()
 
             for user in users:
-                loss_pct = abs(pnl) / balance * 100
+                loss_pct = abs(pnl) / balance * 100 if balance else 0
 
                 if loss_pct >= 2:
                     existing = db.query(CooldownSession).filter(
                         CooldownSession.user_id == user.id,
-                        CooldownSession.is_active == True
+                        CooldownSession.is_active == True,
                     ).first()
 
                     if existing:
                         continue
 
                     ends_at = datetime.utcnow() + timedelta(minutes=60)
-
                     session = CooldownSession(
                         user_id=user.id,
                         reason="auto",
                         ends_at=ends_at,
-                        is_active=True
+                        is_active=True,
                     )
-
                     db.add(session)
                     db.commit()
 
                     await _fire_alert(
                         AlertType.KILL_SWITCH_FIRED,
                         {"account_name": user.username},
-                        user
+                        user,
                     )
 
             db.close()
@@ -187,10 +208,12 @@ async def _auto_lock_watcher_loop(db_factory):
 
 async def _ensure_watcher_running():
     global _auto_lock_task
-    from app.database.database import get_db
+    from app.database.database import get_db as _get_db
 
     if _auto_lock_task is None or _auto_lock_task.done():
-        _auto_lock_task = asyncio.create_task(_auto_lock_watcher_loop(get_db))
+        _auto_lock_task = asyncio.create_task(
+            _auto_lock_watcher_loop(_get_db)
+        )
 
 
 async def start_auto_lock_watcher():

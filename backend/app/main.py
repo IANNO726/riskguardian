@@ -171,8 +171,16 @@ async def lifespan(app: FastAPI):
         threading.Thread(target=auto_reconnect_mt5, daemon=True).start()
         asyncio.create_task(journal_auto_sync())
 
-    await start_auto_lock_watcher()
-    asyncio.create_task(start_trial_scheduler())
+    try:
+        await start_auto_lock_watcher()
+        logger.info("✅ Auto-lock watcher started")
+    except Exception as e:
+        logger.warning(f"⚠️  Auto-lock watcher skipped: {e}")
+
+    try:
+        asyncio.create_task(start_trial_scheduler())
+    except Exception as e:
+        logger.warning(f"⚠️  Trial scheduler skipped: {e}")
 
     if os.getenv("WEEKLY_REPORT_ENABLED", "true").lower() != "false":
         try:
