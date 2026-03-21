@@ -90,15 +90,10 @@ const SetupWizard: React.FC = () => {
           }),
         }),
         ...(plan !== 'free' && planInfo.monthlyPriceId ? [
-          fetch(`${API}/api/v1/billing/create-checkout-session`, {
+          fetch(`${API}/api/v1/billing/create-checkout`, {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            body: JSON.stringify({
-              plan,
-              price_id:    planInfo.monthlyPriceId,
-              success_url: `${window.location.origin}/#/app?payment=success&plan=${plan}`,
-              cancel_url:  `${window.location.origin}/#/setup?plan=${plan}`,
-            }),
+            body: JSON.stringify({ plan }),
           })
         ] : [])
       ]);
