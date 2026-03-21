@@ -20,23 +20,23 @@ const PLAN_CONFIG: Record<string, {
   },
   starter: {
     label: 'Starter', color: '#38bdf8', emoji: '🚀',
-    monthlyPriceId: 'price_1T65ru6JfXB9ffkPoNcx8gEI',
-    annualPriceId:  'price_1T65ru6JfXB9ffkPoNcx8gEI',
+    monthlyPriceId: 'price_1TDPhq6JfXB9ffkP38i9ULEn',
+    annualPriceId:  'price_1TDPhq6JfXB9ffkP38i9ULEn',
   },
   pro: {
     label: 'Pro', color: '#22c55e', emoji: '⚡',
-    monthlyPriceId: 'price_1T65rv6JfXB9ffkPxiCNxwRb',
-    annualPriceId:  'price_1T65rv6JfXB9ffkPxiCNxwRb',
+    monthlyPriceId: 'price_1TDPde6JfXB9ffkPxRCQBNx5',
+    annualPriceId:  'price_1TDPde6JfXB9ffkPxRCQBNx5',
   },
   growth: {
     label: 'Growth', color: '#f97316', emoji: '📈',
-    monthlyPriceId: 'price_U9PzhC6Lwa4fzY',
-    annualPriceId:  'price_U9PzhC6Lwa4fzY',
+    monthlyPriceId: 'price_1TDPfG6JfXB9ffkPrcZMjF6K',
+    annualPriceId:  'price_1TDPfG6JfXB9ffkPrcZMjF6K',
   },
   enterprise: {
     label: 'Enterprise', color: '#ef4444', emoji: '🏢',
-    monthlyPriceId: 'price_1T65rw6JfXB9ffkPJkN5jn0m',
-    annualPriceId:  'price_1T65rw6JfXB9ffkPJkN5jn0m',
+    monthlyPriceId: 'price_1TDPgk6JfXB9ffkPQURl7vi4',
+    annualPriceId:  'price_1TDPgk6JfXB9ffkPQURl7vi4',
   },
 };
 
@@ -136,9 +136,9 @@ const SetupWizard: React.FC = () => {
       '&:hover fieldset': { borderColor: `${accent}66` },
       '&.Mui-focused fieldset': { borderColor: accent, borderWidth: '1.5px' },
     },
-    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.45)', fontSize: '14px' },
+    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.45)', fontSize: { xs: '14px', sm: '16px' } },
     '& .MuiInputLabel-root.Mui-focused': { color: accent },
-    '& input': { fontFamily: '"Roboto Mono",monospace', fontSize: '14px', color: 'white', padding: '14px 12px 14px 0', background: 'transparent' },
+    '& input': { fontFamily: '"Roboto Mono",monospace', fontSize: { xs: '14px', sm: '17px' }, color: 'white', padding: { xs: '12px 10px 12px 0', sm: '16px 14px 16px 0' }, background: 'transparent' },
     '& input:-webkit-autofill': { WebkitBoxShadow: '0 0 0 1000px #111827 inset', WebkitTextFillColor: '#ffffff', caretColor: '#ffffff' },
   });
 
@@ -288,7 +288,7 @@ const SetupWizard: React.FC = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
               <Box sx={{ width: 4, height: 32, borderRadius: 2, background: 'linear-gradient(180deg,#38bdf8,#a855f7)' }} />
-              <Typography sx={{ fontSize: { xs: '22px', sm: '28px' }, fontWeight: 800, background: 'linear-gradient(90deg,#38bdf8,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>
+              <Typography sx={{ fontSize: { xs: '22px', sm: '28px' }, fontWeight: 800, background: 'linear-gradient(90deg,#38bdf8,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em', whiteSpace: { xs: 'nowrap', sm: 'normal' } }}>
                 RiskGuardian Setup
               </Typography>
             </Box>
@@ -301,7 +301,7 @@ const SetupWizard: React.FC = () => {
         </Box>
 
         {/* Step progress */}
-        <Box sx={{ px: { xs: 2, md: 4 }, pt: 3, pb: 2 }}>
+        <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, pt: 3, pb: 2 }}>
           <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
             {steps.map((s, i) => {
               const done   = i < activeStep;
@@ -324,34 +324,34 @@ const SetupWizard: React.FC = () => {
         </Box>
 
         {/* Step header */}
-        <Box sx={{ px: { xs: 2, md: 4 }, pb: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 2, borderRadius: '16px', background: `${current.color}08`, border: `1px solid ${current.color}20` }}>
-            <Box sx={{ width: 44, height: 44, borderRadius: '13px', background: `linear-gradient(135deg,${current.color}40,${current.color}20)`, border: `1px solid ${current.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0, boxShadow: `0 4px 16px ${current.color}30` }}>
+        <Box sx={{ px: { xs: 2, md: 4 }, pb: { xs: 2, sm: 2.5 } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 }, p: { xs: 2, sm: 2.5 }, borderRadius: '18px', background: `${current.color}08`, border: `1px solid ${current.color}20` }}>
+            <Box sx={{ width: { xs: 44, sm: 52 }, height: { xs: 44, sm: 52 }, borderRadius: { xs: '13px', sm: '15px' }, background: `linear-gradient(135deg,${current.color}40,${current.color}20)`, border: `1px solid ${current.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: { xs: '20px', sm: '24px' }, flexShrink: 0, boxShadow: `0 4px 16px ${current.color}30` }}>
               {current.icon}
             </Box>
             <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography sx={{ fontSize: { xs: '15px', sm: '18px' }, fontWeight: 800, color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <Typography sx={{ fontSize: { xs: '15px', sm: '20px' }, fontWeight: 800, color: 'white', whiteSpace: { xs: 'nowrap', sm: 'normal' }, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {['Broker Connection','Risk Management','Alert Notifications','AI Monitoring'][activeStep]}
               </Typography>
-              <Typography sx={{ fontSize: { xs: '11px', sm: '13px' }, color: 'rgba(255,255,255,0.45)', mt: 0.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <Typography sx={{ fontSize: { xs: '11px', sm: '15px' }, color: 'rgba(255,255,255,0.45)', mt: 0.3, whiteSpace: { xs: 'nowrap', sm: 'normal' }, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {['Connect your MetaTrader 5 account','Set your trading risk limits','Choose how you want to be notified','Enable intelligent trade monitoring'][activeStep]}
               </Typography>
             </Box>
-            <Box sx={{ flexShrink: 0, px: 1.5, py: 0.6, borderRadius: '10px', background: `${current.color}15`, border: `1px solid ${current.color}30`, display: 'flex', alignItems: 'center' }}>
-              <Typography sx={{ fontSize: '13px', fontWeight: 800, color: current.color, whiteSpace: 'nowrap' }}>{activeStep + 1}/{steps.length}</Typography>
+            <Box sx={{ flexShrink: 0, px: { xs: 1.5, sm: 2 }, py: { xs: 0.6, sm: 0.8 }, borderRadius: '10px', background: `${current.color}15`, border: `1px solid ${current.color}30` }}>
+              <Typography sx={{ fontSize: { xs: '12px', sm: '14px' }, fontWeight: 800, color: current.color, whiteSpace: 'nowrap' }}>{activeStep + 1}/{steps.length}</Typography>
             </Box>
           </Box>
         </Box>
 
         {/* Step content */}
-        <Box sx={{ px: { xs: 2, md: 4 }, pb: 3 }}>
+        <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, pb: 3 }}>
           {renderStep()}
         </Box>
 
         {/* Footer navigation */}
-        <Box sx={{ px: { xs: 2, md: 4 }, pb: 4, pt: 1, display: 'flex', justifyContent: 'space-between', gap: 2, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, pb: 4, pt: 1, display: 'flex', justifyContent: 'space-between', gap: 2, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           <Button disabled={activeStep === 0 || loading} onClick={() => setActiveStep(p => p - 1)}
-            sx={{ px: 2.5, py: 1.3, borderRadius: '14px', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 600, fontSize: '14px', textTransform: 'none', whiteSpace: 'nowrap', '&:hover': { background: 'rgba(255,255,255,0.05)', color: 'white' }, '&:disabled': { color: 'rgba(255,255,255,0.2)', borderColor: 'rgba(255,255,255,0.05)' } }}>
+            sx={{ px: { xs: 2.5, sm: 3 }, py: 1.3, borderRadius: '14px', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 600, fontSize: { xs: '14px', sm: '15px' }, textTransform: 'none', whiteSpace: 'nowrap', '&:hover': { background: 'rgba(255,255,255,0.05)', color: 'white' }, '&:disabled': { color: 'rgba(255,255,255,0.2)', borderColor: 'rgba(255,255,255,0.05)' } }}>
             ← Back
           </Button>
 
