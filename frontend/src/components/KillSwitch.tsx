@@ -17,7 +17,7 @@ const KillSwitch: React.FC<{ active: boolean }> = ({ active }) => {
       textAlign: 'center'
     }}>
       <Typography variant="h3">
-        ðŸ”’ TRADING LOCKED
+        🔒 TRADING LOCKED
         <br />
         Risk violation detected
       </Typography>

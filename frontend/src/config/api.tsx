@@ -3,7 +3,7 @@
 const API_BASE_URL =
   process.env.REACT_APP_API_URL || "https://riskguardian.onrender.com";
 
-// ðŸ”¥ Universal API helper
+// 🔥 Universal API helper
 export const api = (path: string) => `${API_BASE_URL}${path}`;
 
 export const API_ENDPOINTS = {
