@@ -176,8 +176,22 @@ const Register: React.FC = () => {
                 sx={{ ...inputStyles(), mb: 4 }} />
 
               <Button type="submit" fullWidth disabled={loading}
-                startIcon={loading ? <CircularProgress size={20} /> : <RegisterIcon />}
-                sx={{ py: 2, borderRadius: '12px', background: `linear-gradient(90deg, ${planInfo.color}, #2563eb)`, fontSize: '16px', fontWeight: 700, textTransform: 'none', color: 'white', mb: 3, '&:hover': { transform: 'translateY(-2px)', boxShadow: `0 8px 30px ${planInfo.color}40` }, '&:disabled': { background: 'rgba(255,255,255,0.1)' } }}>
+                startIcon={loading ? <CircularProgress size={18} sx={{ color: 'white' }} /> : <RegisterIcon sx={{ fontSize: 18 }} />}
+                sx={{
+                  py: 1.6,
+                  borderRadius: '12px',
+                  background: `linear-gradient(90deg, ${planInfo.color}, #2563eb)`,
+                  fontSize: { xs: '14px', sm: '15px' },
+                  fontWeight: 700,
+                  textTransform: 'none',
+                  color: 'white',
+                  mb: 3,
+                  whiteSpace: 'nowrap',
+                  minHeight: '48px',
+                  '& .MuiButton-startIcon': { marginRight: '8px' },
+                  '&:hover': { transform: 'translateY(-2px)', boxShadow: `0 8px 30px ${planInfo.color}40` },
+                  '&:disabled': { background: 'rgba(255,255,255,0.1)' },
+                }}>
                 {loading ? 'Creating Account...' : 'Create Account & Continue →'}
               </Button>
 
