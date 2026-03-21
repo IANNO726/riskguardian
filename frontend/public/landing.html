@@ -42,79 +42,104 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opa
 /* ── NAV ── */
 nav{
   position:fixed;top:26px;left:0;right:0;z-index:1000;
-  height:60px;
+  height:62px;
   display:flex;align-items:center;justify-content:space-between;
   padding:0 20px;
-  background:rgba(8,13,28,0.92);
+  background:rgba(8,13,28,0.93);
   backdrop-filter:blur(28px) saturate(180%);
   -webkit-backdrop-filter:blur(28px) saturate(180%);
   border-bottom:1px solid rgba(255,255,255,0.06);
   box-shadow:0 1px 40px rgba(0,0,0,0.4);
+  transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .3s ease;
+  will-change:transform;
 }
+nav.nav-hidden{transform:translateY(-100%);opacity:0;}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
 .logo-mark{
-  width:34px;height:34px;border-radius:10px;
+  width:36px;height:36px;border-radius:11px;
   background:linear-gradient(135deg,rgba(56,189,248,0.25),rgba(34,197,94,0.2));
   border:1px solid rgba(56,189,248,0.35);
-  display:flex;align-items:center;justify-content:center;font-size:16px;
-  box-shadow:0 0 16px rgba(56,189,248,0.15);
+  display:flex;align-items:center;justify-content:center;font-size:17px;
+  box-shadow:0 0 20px rgba(56,189,248,0.15);
 }
-.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;background:linear-gradient(90deg,#38bdf8,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;background:linear-gradient(90deg,#38bdf8,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-right{display:flex;align-items:center;}
 
-/* Nav right — hamburger only on mobile, hidden Login/CTA */
-.nav-right{display:flex;align-items:center;gap:10px;}
-
-/* Login pill — subtle */
-.nav-login{
-  display:flex;align-items:center;gap:5px;
-  padding:7px 14px;border-radius:20px;
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.1);
-  color:rgba(255,255,255,0.65);
-  font-size:12px;font-weight:600;
-  text-decoration:none;transition:all .2s;
-  white-space:nowrap;
-}
-.nav-login:hover{background:rgba(255,255,255,0.1);color:white;border-color:rgba(255,255,255,0.22);}
-
-/* CTA pill — glowing gradient */
-.nav-cta{
-  display:flex;align-items:center;gap:5px;
-  padding:8px 16px;border-radius:20px;
-  background:linear-gradient(135deg,#38bdf8,#22c55e);
-  color:#020d0a;font-size:12px;font-weight:800;
-  text-decoration:none;transition:all .25s;
-  white-space:nowrap;
-  box-shadow:0 0 0 1px rgba(34,197,94,0.3),0 4px 18px rgba(34,197,94,0.3);
-  letter-spacing:.01em;
-}
-.nav-cta:hover{
-  box-shadow:0 0 0 1px rgba(56,189,248,0.5),0 6px 28px rgba(34,197,94,0.45);
-  filter:brightness(1.07);
-}
-
-/* Hamburger — clean icon button */
+/* Hamburger — clean 3-line menu */
 .hamburger{
   display:flex;flex-direction:column;justify-content:center;gap:5px;
-  cursor:pointer;padding:8px;border:none;background:rgba(255,255,255,0.05);
-  border-radius:10px;border:1px solid rgba(255,255,255,0.08);
-  width:38px;height:38px;transition:.2s;
+  cursor:pointer;padding:0;border:none;
+  background:rgba(255,255,255,0.06);
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.1);
+  width:42px;height:42px;
+  transition:all .2s;
+  flex-shrink:0;
 }
-.hamburger:hover{background:rgba(255,255,255,0.1);}
-.hamburger span{width:18px;height:1.5px;background:rgba(255,255,255,0.75);border-radius:2px;transition:.3s;display:block;margin:0 auto;}
-.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(4.5px,4.5px);}
+.hamburger:hover{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.2);}
+.hamburger span{
+  width:18px;height:1.5px;
+  background:rgba(255,255,255,0.8);
+  border-radius:2px;transition:.3s;
+  display:block;margin:0 auto;
+}
+.hamburger.open{background:rgba(56,189,248,0.1);border-color:rgba(56,189,248,0.3);}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(4.5px,4.5px);background:#38bdf8;}
 .hamburger.open span:nth-child(2){opacity:0;transform:translateX(-6px);}
-.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(4.5px,-4.5px);}
-
-/* On very small screens, hide Login from nav to give CTA space */
-@media(max-width:380px){.nav-login{display:none;}}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(4.5px,-4.5px);background:#38bdf8;}
 
 /* ── Mobile drawer ── */
-.mob-drawer{position:fixed;top:86px;left:0;right:0;bottom:0;z-index:999;background:rgba(8,13,28,0.98);backdrop-filter:blur(28px);padding:16px 18px 40px;display:flex;flex-direction:column;gap:5px;transform:translateX(100%);transition:transform .35s cubic-bezier(.34,1.56,.64,1);overflow-y:auto;border-top:1px solid rgba(255,255,255,0.07);}
+.mob-drawer{
+  position:fixed;top:88px;left:0;right:0;bottom:0;z-index:999;
+  background:rgba(5,9,22,0.98);
+  backdrop-filter:blur(32px);
+  padding:20px 18px 40px;
+  display:flex;flex-direction:column;gap:6px;
+  transform:translateX(100%);
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  overflow-y:auto;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
 .mob-drawer.open{transform:translateX(0);}
-.mob-link{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:rgba(255,255,255,0.8);font-size:14px;font-weight:600;text-decoration:none;transition:.2s;}
-.mob-div{height:1px;background:var(--border);margin:6px 0;}
-.mob-cta-full{display:block;text-align:center;padding:15px;border-radius:14px;background:linear-gradient(130deg,#38bdf8,#22c55e);color:white;font-size:15px;font-weight:800;text-decoration:none;margin-top:6px;box-shadow:0 4px 20px rgba(34,197,94,0.25);}
+
+/* Top auth row inside drawer */
+.mob-auth-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.mob-auth-login{
+  display:flex;align-items:center;justify-content:center;
+  padding:13px;border-radius:14px;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
+  color:rgba(255,255,255,0.75);font-size:14px;font-weight:700;
+  text-decoration:none;transition:.2s;
+}
+.mob-auth-login:hover{background:rgba(255,255,255,0.1);color:white;}
+.mob-auth-cta{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:13px;border-radius:14px;
+  background:linear-gradient(135deg,#38bdf8,#22c55e);
+  color:#020d0a;font-size:14px;font-weight:800;
+  text-decoration:none;transition:.2s;
+  box-shadow:0 4px 20px rgba(34,197,94,0.35);
+}
+.mob-auth-cta:hover{filter:brightness(1.07);}
+
+.mob-link{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-radius:14px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.07);
+  color:rgba(255,255,255,0.75);font-size:14px;font-weight:600;
+  text-decoration:none;transition:.2s;
+}
+.mob-link:hover{background:rgba(255,255,255,0.05);color:white;border-color:rgba(255,255,255,0.14);}
+.mob-div{height:1px;background:rgba(255,255,255,0.06);margin:8px 0;}
+.mob-cta-full{
+  display:block;text-align:center;padding:16px;border-radius:16px;
+  background:linear-gradient(135deg,rgba(56,189,248,0.15),rgba(34,197,94,0.12));
+  border:1px solid rgba(56,189,248,0.3);
+  color:white;font-size:15px;font-weight:800;
+  text-decoration:none;margin-top:8px;
+  box-shadow:0 4px 24px rgba(56,189,248,0.15);
+}
 
 /* ── HERO ── */
 .hero{position:relative;z-index:1;padding:96px 18px 60px;text-align:center;}
@@ -193,9 +218,9 @@ h1 .h1-line2{background:linear-gradient(90deg,#38bdf8,#22c55e,#a855f7);-webkit-b
 
 /* ── SHARED SECTION ── */
 section{position:relative;z-index:1;padding:56px 18px;}
-.eyebrow{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:100px;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;}
-h2{font-family:'Syne',sans-serif;font-size:clamp(26px,8vw,38px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;margin-bottom:12px;}
-.sec-sub{font-size:14px;color:var(--muted2);line-height:1.8;margin-bottom:36px;}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:100px;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;}
+h2{font-family:'Syne',sans-serif;font-size:clamp(28px,8.5vw,42px);font-weight:800;letter-spacing:-0.025em;line-height:1.08;margin-bottom:14px;}
+.sec-sub{font-size:14px;color:var(--muted2);line-height:1.8;margin-bottom:32px;max-width:480px;}
 
 /* ── PROBLEM PAIN CARDS ── */
 .pain-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
@@ -465,8 +490,6 @@ footer{background:rgba(10,14,26,0.8);border-top:1px solid var(--border);padding:
     <span class="logo-text">RiskGuardian</span>
   </a>
   <div class="nav-right">
-    <a href="/#/login" class="nav-login">Log In</a>
-    <a href="/#/register" class="nav-cta">Start Free →</a>
     <button class="hamburger" id="hambBtn" onclick="toggleDrawer()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
@@ -475,14 +498,16 @@ footer{background:rgba(10,14,26,0.8);border-top:1px solid var(--border);padding:
 
 <!-- Mobile Drawer -->
 <div class="mob-drawer" id="mobDrawer">
+  <div class="mob-auth-row">
+    <a class="mob-auth-login" href="/#/login" onclick="closeDrawer()">Log In</a>
+    <a class="mob-auth-cta" href="/#/register" onclick="closeDrawer()">🛡️ Start Free</a>
+  </div>
+  <div class="mob-div"></div>
   <a class="mob-link" href="#features"   onclick="closeDrawer()">✦ Features <span style="color:var(--muted)">→</span></a>
   <a class="mob-link" href="#simulator"  onclick="closeDrawer()">🏆 Simulator <span style="color:var(--muted)">→</span></a>
   <a class="mob-link" href="#ai"         onclick="closeDrawer()">🤖 AI Intelligence <span style="color:var(--muted)">→</span></a>
   <a class="mob-link" href="#pricing"    onclick="closeDrawer()">💎 Pricing <span style="color:var(--muted)">→</span></a>
-  <a class="mob-link" href="#preview"    onclick="closeDrawer()">▶ Live Demo <span style="color:var(--muted)">→</span></a>
-  <div class="mob-div"></div>
-  <a class="mob-link" href="/#/login"    onclick="closeDrawer()" style="color:rgba(255,255,255,0.5);">Log In</a>
-  <a class="mob-cta-full" href="/#/register" onclick="closeDrawer()">Start Free Trial — No Card →</a>
+  <a class="mob-link" href="#preview"    onclick="closeDrawer()">▶ See It Live <span style="color:var(--muted)">→</span></a>
 </div>
 
 <!-- ════ HERO ════ -->
@@ -601,10 +626,10 @@ footer{background:rgba(10,14,26,0.8);border-top:1px solid var(--border);padding:
 
 <!-- ════ PROBLEM / SOLUTION ════ -->
 <section>
-  <div style="text-align:center;margin-bottom:32px;">
+  <div style="margin-bottom:32px;">
     <div class="eyebrow reveal">⚡ The Problem</div>
-    <h2 class="reveal">Every Trader Knows<br>This Pain</h2>
-    <p class="sec-sub reveal" style="margin:0 auto 32px">You have the rules. You know the limits. Emotions override logic — and accounts get blown. RiskGuardian makes it impossible to break your own rules.</p>
+    <h2 class="reveal">Every Trader Knows<br><span style="background:linear-gradient(90deg,#ef4444,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent">This Pain.</span></h2>
+    <p class="sec-sub reveal">You have the rules. You know the limits. Emotions override logic — and accounts get blown. RiskGuardian makes it impossible to break your own rules.</p>
   </div>
   <div class="pain-grid reveal">
     <div class="pain-card"><div class="pain-icon">😤</div><div class="pain-title">Overtrading</div><div class="pain-desc">Exceed your daily loss then keep trading to recover. Every. Single. Time.</div></div>
@@ -623,10 +648,10 @@ footer{background:rgba(10,14,26,0.8);border-top:1px solid var(--border);padding:
 
 <!-- ════ FEATURES ════ -->
 <section id="features" style="background:radial-gradient(ellipse at 10% 0%,rgba(56,189,248,0.05),transparent 55%)">
-  <div style="text-align:center;margin-bottom:28px;">
+  <div style="margin-bottom:28px;">
     <div class="eyebrow reveal">✦ Full Feature Suite</div>
-    <h2 class="reveal">4 Phases. 12 Tools.<br>One Mission.</h2>
-    <p class="sec-sub reveal" style="margin:0 auto 28px">Every feature was designed to keep funded traders profitable and disciplined.</p>
+    <h2 class="reveal">4 Phases. 12 Tools.<br><span style="background:linear-gradient(90deg,#38bdf8,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">One Mission.</span></h2>
+    <p class="sec-sub reveal">Every feature was designed to keep funded traders profitable and disciplined.</p>
   </div>
   <div class="features-grid">
     <div class="feat-card fc-sky reveal"><div class="feat-inner"><div class="feat-icon fi-sky">🛡️</div><div class="feat-text"><div class="feat-t">Auto Kill Switch</div><div class="feat-d">The moment your daily loss or max drawdown is breached, all trading halts instantly. No exceptions.</div></div></div></div>
@@ -754,9 +779,9 @@ footer{background:rgba(10,14,26,0.8);border-top:1px solid var(--border);padding:
 
 <!-- ════ HOW IT WORKS ════ -->
 <section>
-  <div style="text-align:center;margin-bottom:28px">
+  <div style="margin-bottom:28px">
     <div class="eyebrow reveal">⚙️ How It Works</div>
-    <h2 class="reveal">Up and Running<br>in 3 Steps</h2>
+    <h2 class="reveal">Up and Running<br><span style="background:linear-gradient(90deg,#22c55e,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent">in 3 Steps.</span></h2>
   </div>
   <div class="steps-list">
     <div class="step-card reveal">
@@ -864,14 +889,14 @@ footer{background:rgba(10,14,26,0.8);border-top:1px solid var(--border);padding:
 </style>
 
 <section id="preview" style="background:radial-gradient(ellipse at 50% 0%,rgba(56,189,248,0.06),transparent 60%);padding:56px 18px 72px;">
-  <div style="text-align:center;margin-bottom:28px">
+  <div style="margin-bottom:28px">
     <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.18);border-radius:40px;padding:5px 14px;margin-bottom:14px;" class="reveal">
       <div class="sil-counter-dot"></div>
       <span class="sil-counter-num" id="silCount">1,047</span>
       <span class="sil-counter-txt">traders protected right now</span>
     </div>
-    <h2 class="reveal">Watch RiskGuardian <span style="background:linear-gradient(90deg,#38bdf8,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Save An Account</span></h2>
-    <p class="sec-sub reveal" style="margin:8px auto 0;max-width:340px">Follow a live session — from setup to crisis to AI coaching. Auto-plays every 5 seconds.</p>
+    <h2 class="reveal">Watch RiskGuardian<br><span style="background:linear-gradient(90deg,#38bdf8,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Save An Account.</span></h2>
+    <p class="sec-sub reveal" style="max-width:340px">Follow a live session — from setup to crisis to AI coaching. Auto-plays every 5 seconds.</p>
   </div>
 
   <div class="sil-acts reveal" id="silActBtns">
@@ -1069,10 +1094,10 @@ if(cntEl){setInterval(function(){var v=parseInt(cntEl.textContent.replace(/,/g,'
 
 <!-- ════ PRICING ════ -->
 <section id="pricing" class="pricing-section">
-  <div style="text-align:center;margin-bottom:24px">
+  <div style="margin-bottom:24px">
     <div class="eyebrow reveal">💎 Pricing</div>
-    <h2 class="reveal">One Platform.<br>Every Tool You Need.</h2>
-    <p class="sec-sub reveal" style="margin:0 auto 24px">Start free for 7 days. No card needed. Every plan includes the kill switch, live dashboard, and MT5 connection.</p>
+    <h2 class="reveal">One Platform.<br><span style="background:linear-gradient(90deg,#a855f7,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Every Tool You Need.</span></h2>
+    <p class="sec-sub reveal">Start free for 7 days. No card needed. Every plan includes the kill switch, live dashboard, and MT5 connection.</p>
   </div>
 
   <div class="val-banner reveal">
@@ -1196,10 +1221,10 @@ if(cntEl){setInterval(function(){var v=parseInt(cntEl.textContent.replace(/,/g,'
 
 <!-- ════ SECURITY ════ -->
 <section style="background:radial-gradient(ellipse at 50% 50%,rgba(34,197,94,0.05),transparent 65%)">
-  <div style="text-align:center;margin-bottom:28px">
+  <div style="margin-bottom:28px">
     <div class="eyebrow reveal">🔒 Bank-Grade Security</div>
     <h2 class="reveal">Your Data Is<br><span style="background:linear-gradient(90deg,var(--sky),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Fort Knox</span> Secure.</h2>
-    <p class="sec-sub reveal" style="margin:0 auto 28px">Your broker credentials are encrypted, never stored in plain text, and accessed read-only. We cannot place trades.</p>
+    <p class="sec-sub reveal">Your broker credentials are encrypted, never stored in plain text, and accessed read-only. We cannot place trades.</p>
   </div>
   <div class="sec-visual reveal">
     <div class="sec-rings"><div class="sring sring1"></div><div class="sring sring2"></div><div class="sring sring3"></div></div>
@@ -1224,9 +1249,9 @@ if(cntEl){setInterval(function(){var v=parseInt(cntEl.textContent.replace(/,/g,'
 
 <!-- ════ TESTIMONIALS ════ -->
 <section style="background:radial-gradient(ellipse at 50% 0%,rgba(168,85,247,0.05),transparent 55%)">
-  <div style="text-align:center;margin-bottom:28px">
+  <div style="margin-bottom:28px">
     <div class="eyebrow reveal">💬 Testimonials</div>
-    <h2 class="reveal">Traders Who<br>Stopped Blowing Accounts</h2>
+    <h2 class="reveal">Traders Who Stopped<br><span style="background:linear-gradient(90deg,#22c55e,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Blowing Accounts.</span></h2>
   </div>
   <div class="testi-grid">
     <div class="testi-card reveal">
@@ -1249,9 +1274,9 @@ if(cntEl){setInterval(function(){var v=parseInt(cntEl.textContent.replace(/,/g,'
 
 <!-- ════ FAQ ════ -->
 <section>
-  <div style="text-align:center;margin-bottom:28px">
+  <div style="margin-bottom:28px">
     <div class="eyebrow reveal">❓ FAQ</div>
-    <h2 class="reveal">Common Questions</h2>
+    <h2 class="reveal">Common <span style="background:linear-gradient(90deg,#fbbf24,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Questions.</span></h2>
   </div>
   <div class="faq-list">
     <div class="faq-item reveal">
@@ -1401,6 +1426,29 @@ function closeDrawer(){
   document.getElementById('mobDrawer').classList.remove('open');
   document.getElementById('hambBtn').classList.remove('open');
 }
+
+/* ── Nav hide on scroll down, show on scroll up ── */
+(function(){
+  var nav=document.getElementById('mainNav');
+  var lastY=0,ticking=false,drawerOpen=false;
+  function updateNav(){
+    var y=window.scrollY;
+    var drawer=document.getElementById('mobDrawer');
+    drawerOpen=drawer.classList.contains('open');
+    if(!drawerOpen){
+      if(y>lastY&&y>120){
+        nav.classList.add('nav-hidden');
+      }else{
+        nav.classList.remove('nav-hidden');
+      }
+    }
+    lastY=y;
+    ticking=false;
+  }
+  window.addEventListener('scroll',function(){
+    if(!ticking){requestAnimationFrame(updateNav);ticking=true;}
+  },{passive:true});
+})();
 
 /* ── Scroll reveal ── */
 var revEls=document.querySelectorAll('.reveal');
