@@ -136,9 +136,9 @@ const SetupWizard: React.FC = () => {
       '&:hover fieldset': { borderColor: `${accent}66` },
       '&.Mui-focused fieldset': { borderColor: accent, borderWidth: '1.5px' },
     },
-    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.45)', fontSize: '16px' },
+    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.45)', fontSize: '14px' },
     '& .MuiInputLabel-root.Mui-focused': { color: accent },
-    '& input': { fontFamily: '"Roboto Mono",monospace', fontSize: '17px', color: 'white', padding: '16px 14px 16px 0', background: 'transparent' },
+    '& input': { fontFamily: '"Roboto Mono",monospace', fontSize: '14px', color: 'white', padding: '14px 12px 14px 0', background: 'transparent' },
     '& input:-webkit-autofill': { WebkitBoxShadow: '0 0 0 1000px #111827 inset', WebkitTextFillColor: '#ffffff', caretColor: '#ffffff' },
   });
 
@@ -288,20 +288,20 @@ const SetupWizard: React.FC = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
               <Box sx={{ width: 4, height: 32, borderRadius: 2, background: 'linear-gradient(180deg,#38bdf8,#a855f7)' }} />
-              <Typography sx={{ fontSize: '28px', fontWeight: 800, background: 'linear-gradient(90deg,#38bdf8,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em' }}>
+              <Typography sx={{ fontSize: { xs: '22px', sm: '28px' }, fontWeight: 800, background: 'linear-gradient(90deg,#38bdf8,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>
                 RiskGuardian Setup
               </Typography>
             </Box>
             <Chip label={`${planInfo.emoji} ${planInfo.label}`} size="small"
               sx={{ background: `${planInfo.color}18`, border: `1px solid ${planInfo.color}40`, color: planInfo.color, fontWeight: 700, fontSize: '12px' }} />
           </Box>
-          <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '16px', ml: '20px' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: { xs: '13px', sm: '16px' }, ml: '20px' }}>
             Let's get your trading platform configured
           </Typography>
         </Box>
 
         {/* Step progress */}
-        <Box sx={{ px: { xs: 3, md: 4 }, pt: 3, pb: 2 }}>
+        <Box sx={{ px: { xs: 2, md: 4 }, pt: 3, pb: 2 }}>
           <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
             {steps.map((s, i) => {
               const done   = i < activeStep;
@@ -324,40 +324,40 @@ const SetupWizard: React.FC = () => {
         </Box>
 
         {/* Step header */}
-        <Box sx={{ px: { xs: 3, md: 4 }, pb: 2.5 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2.5, borderRadius: '18px', background: `${current.color}08`, border: `1px solid ${current.color}20` }}>
-            <Box sx={{ width: 52, height: 52, borderRadius: '15px', background: `linear-gradient(135deg,${current.color}40,${current.color}20)`, border: `1px solid ${current.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0, boxShadow: `0 4px 16px ${current.color}30` }}>
+        <Box sx={{ px: { xs: 2, md: 4 }, pb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 2, borderRadius: '16px', background: `${current.color}08`, border: `1px solid ${current.color}20` }}>
+            <Box sx={{ width: 44, height: 44, borderRadius: '13px', background: `linear-gradient(135deg,${current.color}40,${current.color}20)`, border: `1px solid ${current.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0, boxShadow: `0 4px 16px ${current.color}30` }}>
               {current.icon}
             </Box>
-            <Box>
-              <Typography sx={{ fontSize: '20px', fontWeight: 800, color: 'white' }}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography sx={{ fontSize: { xs: '15px', sm: '18px' }, fontWeight: 800, color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {['Broker Connection','Risk Management','Alert Notifications','AI Monitoring'][activeStep]}
               </Typography>
-              <Typography sx={{ fontSize: '15px', color: 'rgba(255,255,255,0.45)', mt: 0.3 }}>
+              <Typography sx={{ fontSize: { xs: '11px', sm: '13px' }, color: 'rgba(255,255,255,0.45)', mt: 0.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {['Connect your MetaTrader 5 account','Set your trading risk limits','Choose how you want to be notified','Enable intelligent trade monitoring'][activeStep]}
               </Typography>
             </Box>
-            <Box sx={{ ml: 'auto', px: 2, py: 0.8, borderRadius: '10px', background: `${current.color}15`, border: `1px solid ${current.color}30` }}>
-              <Typography sx={{ fontSize: '14px', fontWeight: 800, color: current.color }}>{activeStep + 1} / {steps.length}</Typography>
+            <Box sx={{ flexShrink: 0, px: 1.5, py: 0.6, borderRadius: '10px', background: `${current.color}15`, border: `1px solid ${current.color}30`, display: 'flex', alignItems: 'center' }}>
+              <Typography sx={{ fontSize: '13px', fontWeight: 800, color: current.color, whiteSpace: 'nowrap' }}>{activeStep + 1}/{steps.length}</Typography>
             </Box>
           </Box>
         </Box>
 
         {/* Step content */}
-        <Box sx={{ px: { xs: 3, md: 4 }, pb: 3 }}>
+        <Box sx={{ px: { xs: 2, md: 4 }, pb: 3 }}>
           {renderStep()}
         </Box>
 
         {/* Footer navigation */}
-        <Box sx={{ px: { xs: 3, md: 4 }, pb: 4, pt: 1, display: 'flex', justifyContent: 'space-between', gap: 2, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <Box sx={{ px: { xs: 2, md: 4 }, pb: 4, pt: 1, display: 'flex', justifyContent: 'space-between', gap: 2, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           <Button disabled={activeStep === 0 || loading} onClick={() => setActiveStep(p => p - 1)}
-            sx={{ px: 3, py: 1.3, borderRadius: '14px', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 600, fontSize: '15px', textTransform: 'none', '&:hover': { background: 'rgba(255,255,255,0.05)', color: 'white' }, '&:disabled': { color: 'rgba(255,255,255,0.2)', borderColor: 'rgba(255,255,255,0.05)' } }}>
+            sx={{ px: 2.5, py: 1.3, borderRadius: '14px', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 600, fontSize: '14px', textTransform: 'none', whiteSpace: 'nowrap', '&:hover': { background: 'rgba(255,255,255,0.05)', color: 'white' }, '&:disabled': { color: 'rgba(255,255,255,0.2)', borderColor: 'rgba(255,255,255,0.05)' } }}>
             ← Back
           </Button>
 
           {activeStep === steps.length - 1 ? (
             <Button onClick={handleFinish} disabled={loading}
-              sx={{ flex: 1, py: 1.4, borderRadius: '14px', background: `linear-gradient(135deg,${planInfo.color},#2563eb)`, color: 'white', fontWeight: 800, fontSize: '16px', textTransform: 'none', boxShadow: `0 6px 24px ${planInfo.color}40`, '&:hover': { transform: 'translateY(-2px)', boxShadow: `0 10px 32px ${planInfo.color}50` }, '&:disabled': { background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)', transform: 'none' } }}>
+              sx={{ flex: 1, py: 1.4, borderRadius: '14px', background: `linear-gradient(135deg,${planInfo.color},#2563eb)`, color: 'white', fontWeight: 800, fontSize: { xs: '14px', sm: '16px' }, textTransform: 'none', whiteSpace: 'nowrap', boxShadow: `0 6px 24px ${planInfo.color}40`, '&:hover': { transform: 'translateY(-2px)', boxShadow: `0 10px 32px ${planInfo.color}50` }, '&:disabled': { background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)', transform: 'none' } }}>
               {loading ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                   <CircularProgress size={18} sx={{ color: 'white' }} />
@@ -367,7 +367,7 @@ const SetupWizard: React.FC = () => {
             </Button>
           ) : (
             <Button onClick={() => setActiveStep(p => p + 1)}
-              sx={{ flex: 1, py: 1.4, borderRadius: '14px', background: `linear-gradient(135deg,${current.color}cc,${current.color}88)`, color: 'white', fontWeight: 800, fontSize: '16px', textTransform: 'none', boxShadow: `0 6px 20px ${current.color}30`, '&:hover': { transform: 'translateY(-2px)', boxShadow: `0 10px 28px ${current.color}45`, background: `linear-gradient(135deg,${current.color},${current.color}cc)` } }}>
+              sx={{ flex: 1, py: 1.4, borderRadius: '14px', background: `linear-gradient(135deg,${current.color}cc,${current.color}88)`, color: 'white', fontWeight: 800, fontSize: { xs: '14px', sm: '16px' }, textTransform: 'none', whiteSpace: 'nowrap', boxShadow: `0 6px 20px ${current.color}30`, '&:hover': { transform: 'translateY(-2px)', boxShadow: `0 10px 28px ${current.color}45`, background: `linear-gradient(135deg,${current.color},${current.color}cc)` } }}>
               Continue →
             </Button>
           )}
