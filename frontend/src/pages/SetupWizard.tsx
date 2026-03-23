@@ -76,30 +76,27 @@ const SetupWizard: React.FC = () => {
       const token = localStorage.getItem("access_token");
       if (!token) { navigate("/login"); return; }
 
-      setLoadingMsg('Saving your configuration...');
-      const responses = await Promise.all([
-        fetch(`${API}/api/v1/setup/complete`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({
-            broker:  { broker_name: form.broker, account_number: form.account, password: form.password, server: form.server },
-            risk:    { daily_loss: Number(form.dailyLoss), max_dd: Number(form.maxDD), risk_per_trade: Number(form.riskPerTrade), min_rr: Number(form.minRR) },
-            alerts:  { telegram: form.telegram, email: form.email, sms: form.sms },
-            ai:      { emotional: form.emotionalAI, predictive: form.predictiveAI, optimizer: form.optimizerAI },
-            plan,
-          }),
-        }),
-        ...(plan !== 'free' && planInfo.monthlyPriceId ? [
-          fetch(`${API}/api/v1/billing/create-checkout`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ plan }),
-          })
-        ] : [])
-      ]);
+      // Wake the backend first (Render free tier sleeps after inactivity)
+      setLoadingMsg('Waking up server...');
+      try {
+        await fetch(`${API}/`, { method: 'GET', signal: AbortSignal.timeout(8000) });
+      } catch { /* ignore — just a wake ping */ }
 
-      const setupData = await responses[0].json();
-      const setupOk = responses[0].ok || setupData.detail === "Setup already completed";
+      setLoadingMsg('Saving your configuration...');
+      const setupRes = await fetch(`${API}/api/v1/setup/complete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          broker:  { broker_name: form.broker, account_number: form.account, password: form.password, server: form.server },
+          risk:    { daily_loss: Number(form.dailyLoss), max_dd: Number(form.maxDD), risk_per_trade: Number(form.riskPerTrade), min_rr: Number(form.minRR) },
+          alerts:  { telegram: form.telegram, email: form.email, sms: form.sms },
+          ai:      { emotional: form.emotionalAI, predictive: form.predictiveAI, optimizer: form.optimizerAI },
+          plan,
+        }),
+      });
+
+      const setupData = await setupRes.json();
+      const setupOk = setupRes.ok || setupData.detail === "Setup already completed";
       if (!setupOk) { alert(setupData.detail || "Setup failed"); return; }
 
       if (plan === 'free' || !planInfo.monthlyPriceId) {
@@ -108,16 +105,26 @@ const SetupWizard: React.FC = () => {
       }
 
       setLoadingMsg('Redirecting to secure payment...');
-      const checkoutData = await (responses[1] as Response).json();
+      const checkoutRes = await fetch(`${API}/api/v1/billing/create-checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ plan }),
+      });
+
+      const checkoutData = await checkoutRes.json();
       if (checkoutData.checkout_url) {
         window.top!.location.href = checkoutData.checkout_url;
       } else {
         alert('Payment setup failed. Please try again.');
       }
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Setup error — check your connection");
+      if (err?.name === 'TypeError' && err?.message?.includes('fetch')) {
+        alert("Server is starting up — please wait 30 seconds and try again. Render's free tier may be waking up.");
+      } else {
+        alert("Setup error — check your connection and try again.");
+      }
     } finally {
       setLoading(false);
       setLoadingMsg('');
