@@ -234,7 +234,8 @@ const TelegramPanel: React.FC = () => {
 const Settings: React.FC = () => {
   const theme    = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const { plan, features, expiresAt } = usePlan();
+  const { plan, features: rawFeatures, expiresAt } = usePlan();
+  const features = rawFeatures || {};
 
   const [settings,         setSettings]         = useState<any>(null);
   const [loading,          setLoading]          = useState(true);

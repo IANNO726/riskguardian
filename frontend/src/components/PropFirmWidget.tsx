@@ -21,7 +21,8 @@ interface ActiveProfile {
 }
 
 const PropFirmWidget: React.FC = () => {
-  const { features } = usePlan();
+  const { features: rawFeatures } = usePlan();
+  const features = rawFeatures || {};
   const [active, setActive]       = useState<ActiveProfile>({ active: false });
   const [presets, setPresets]     = useState<Record<string, Preset>>({});
   const [dialogOpen, setDialogOpen] = useState(false);
