@@ -1,15 +1,25 @@
 """
 billing.py — Stripe payment integration for RiskGuardian
 Place in: backend/app/routes/billing.py
-
-Then in main.py add these two lines with your other routers:
-    from routes.billing import router as billing_router
-    app.include_router(billing_router, prefix="/api/v1/billing", tags=["billing"])
 """
 
 import os
 import json
+import types
+import logging
+
+# ── Patch broken stripe submodule init ─────────────────────────────────────
+# On some Render deployments stripe 11.x+ installs with stripe.apps = None,
+# causing AttributeError: 'NoneType' object has no attribute 'Secret'
+# in stripe._object_classes. Stub it before any stripe usage.
+import stripe as _s
+if getattr(_s, 'apps', None) is None:
+    _s.apps = types.SimpleNamespace(
+        Secret=type('Secret', (), {'OBJECT_NAME': 'apps.secret'})()
+    )
 import stripe
+# ───────────────────────────────────────────────────────────────────────────
+
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Request, Header
 from fastapi.responses import JSONResponse
@@ -17,10 +27,12 @@ from pydantic import BaseModel
 from typing import Optional
 from sqlalchemy.orm import Session
 
+logger = logging.getLogger(__name__)
+
 # ── imports matching YOUR project structure ──────────────
 from app.database.database import get_db
 from app.models.user import User, Subscription
-from app.routes.auth_multi import get_current_user   # reuse your existing auth
+from app.routes.auth_multi import get_current_user
 
 # ── Stripe config ─────────────────────────────────────────
 stripe.api_key     = os.getenv("STRIPE_SECRET_KEY")
@@ -70,12 +82,9 @@ async def create_checkout_session(
     success_url = body.success_url or f"{FRONTEND_URL}/#/app?payment=success&plan={plan}"
     cancel_url  = body.cancel_url  or f"{FRONTEND_URL}/#/setup?plan={plan}"
 
-    import logging
-    logger = logging.getLogger(__name__)
     logger.info(f"🔵 Checkout: plan={plan}, price_id={price_id}, user={current_user.id}")
 
     try:
-        # Create Stripe customer if not exists
         customer_id = current_user.stripe_customer_id
         if not customer_id:
             customer = stripe.Customer.create(
@@ -84,17 +93,15 @@ async def create_checkout_session(
                 metadata={"user_id": str(current_user.id), "username": current_user.username},
             )
             customer_id = customer.id
-            # Save customer ID — isolated so a DB error doesn't kill checkout
             try:
                 current_user.stripe_customer_id = customer_id
                 db.commit()
             except Exception as db_err:
-                logger.warning(f"⚠️ Could not save customer_id to DB: {db_err}")
+                logger.warning(f"⚠️ Could not save customer_id: {db_err}")
                 db.rollback()
 
         logger.info(f"🔵 Creating Stripe session: customer={customer_id}, price={price_id}")
 
-        # Create Stripe Checkout Session
         session = stripe.checkout.Session.create(
             customer=customer_id,
             payment_method_types=["card"],
@@ -120,7 +127,6 @@ async def create_checkout_session(
 
 # ══════════════════════════════════════════════════════════
 #  POST /api/v1/billing/create-portal-session
-#  Lets users manage/cancel their subscription
 # ══════════════════════════════════════════════════════════
 @router.post("/create-portal-session")
 async def create_portal_session(
@@ -142,7 +148,6 @@ async def create_portal_session(
 
 # ══════════════════════════════════════════════════════════
 #  POST /api/v1/billing/webhook
-#  Stripe calls this after payment — updates plan in DB
 # ══════════════════════════════════════════════════════════
 @router.post("/webhook")
 async def stripe_webhook(
@@ -237,7 +242,6 @@ async def billing_status(current_user: User = Depends(get_current_user)):
 
 # ══════════════════════════════════════════════════════════
 #  POST /api/v1/billing/dev-set-plan  (DEVELOPMENT ONLY)
-#  Manually set your own plan without going through Stripe
 # ══════════════════════════════════════════════════════════
 @router.post("/dev-set-plan")
 async def dev_set_plan(
