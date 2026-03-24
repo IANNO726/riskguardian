@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
-import { Box, Avatar, Typography, Menu, MenuItem, Divider, CircularProgress } from '@mui/material';
+import { Box, Avatar, Typography, Menu, MenuItem, CircularProgress, Snackbar, Alert } from '@mui/material';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   KeyboardArrowDown as ArrowDownIcon,
@@ -45,30 +45,40 @@ const PLAN_CONFIG: Record<string, { label: string; color: string; color2: string
 };
 
 const NAV_ITEMS = [
-  { to: '/app',            label: 'Dashboard',  icon: '⬡', sub: 'Overview & stats',    end: true,  minPlan: null,      color: '#38bdf8', glow: '56,189,248'   },
-  { to: '/app/accounts',   label: 'Accounts',   icon: '⊞', sub: 'Multi-account view',  end: false, minPlan: 'starter', color: '#22c55e', glow: '34,197,94'    },
-  { to: '/app/terminal',   label: 'Terminal',   icon: '⌬', sub: 'Live MT5 positions',   end: false, minPlan: 'starter', color: '#22c55e', glow: '34,197,94'    },
-  { to: '/app/risk-check', label: 'Risk Check', icon: '🎯', sub: 'Pre-trade analysis',  end: false, minPlan: 'starter', color: '#f59e0b', glow: '245,158,11'   },
-  { to: '/app/simulator',  label: 'Simulator',  icon: '🏆', sub: 'Prop firm practice',  end: false, minPlan: 'starter', color: '#22c55e', glow: '34,197,94'    },
-  { to: '/app/analytics',  label: 'Analytics',  icon: '◈', sub: 'Performance data',     end: false, minPlan: 'pro',     color: '#a855f7', glow: '168,85,247'   },
-  { to: '/app/history',    label: 'History',    icon: '◷', sub: 'Past trades',           end: false, minPlan: null,      color: '#f59e0b', glow: '245,158,11'   },
-  { to: '/app/settings',   label: 'Settings',   icon: '◎', sub: 'Account & billing',    end: false, minPlan: null,      color: '#fb7185', glow: '251,113,133'  },
+  { to: '/app',            label: 'Dashboard',  icon: '\u2B21', sub: 'Overview & stats',    end: true,  minPlan: null,      color: '#38bdf8', glow: '56,189,248'   },
+  { to: '/app/accounts',   label: 'Accounts',   icon: '\u229E', sub: 'Multi-account view',  end: false, minPlan: 'starter', color: '#22c55e', glow: '34,197,94'    },
+  { to: '/app/terminal',   label: 'Terminal',   icon: '\u232C', sub: 'Live MT5 positions',  end: false, minPlan: 'starter', color: '#22c55e', glow: '34,197,94'    },
+  { to: '/app/risk-check', label: 'Risk Check', icon: '\uD83C\uDFAF', sub: 'Pre-trade analysis',  end: false, minPlan: 'starter', color: '#f59e0b', glow: '245,158,11'   },
+  { to: '/app/simulator',  label: 'Simulator',  icon: '\uD83C\uDFC6', sub: 'Prop firm practice',  end: false, minPlan: 'starter', color: '#22c55e', glow: '34,197,94'    },
+  { to: '/app/analytics',  label: 'Analytics',  icon: '\u25C8', sub: 'Performance data',    end: false, minPlan: 'pro',     color: '#a855f7', glow: '168,85,247'   },
+  { to: '/app/history',    label: 'History',    icon: '\u25F7', sub: 'Past trades',          end: false, minPlan: null,      color: '#f59e0b', glow: '245,158,11'   },
+  { to: '/app/settings',   label: 'Settings',   icon: '\u25CE', sub: 'Account & billing',   end: false, minPlan: null,      color: '#fb7185', glow: '251,113,133'  },
 ];
+
+const PLAN_LABELS: Record<string, string> = {
+  free: 'Free', starter: 'Starter', pro: 'Pro', growth: 'Growth', enterprise: 'Enterprise',
+};
 
 const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { branding }          = useBranding();
   const navigate              = useNavigate();
   const location              = useLocation();
   const { plan, refreshPlan } = usePlan();
-  const [anchorEl, setAnchorEl]               = useState<null | HTMLElement>(null);
-  const [accounts, setAccounts]               = useState<TradingAccount[]>([]);
-  const [currentAccount, setCurrentAccount]   = useState<TradingAccount | null>(null);
-  const [loading, setLoading]                 = useState(true);
-  const [refreshing, setRefreshing]           = useState(false);
-  const [upgradeLoading, setUpgradeLoading]   = useState(false);
-  const [collapsed, setCollapsed]             = useState(false);
-  const [hovered, setHovered]                 = useState(false);
-  const [mouseY, setMouseY]                   = useState(0);
+
+  const [anchorEl, setAnchorEl]             = useState<null | HTMLElement>(null);
+  const [accounts, setAccounts]             = useState<TradingAccount[]>([]);
+  const [currentAccount, setCurrentAccount] = useState<TradingAccount | null>(null);
+  const [loading, setLoading]               = useState(true);
+  const [refreshing, setRefreshing]         = useState(false);
+  const [upgradeLoading, setUpgradeLoading] = useState(false);
+  const [collapsed, setCollapsed]           = useState(false);
+  const [hovered, setHovered]               = useState(false);
+  const [mouseY, setMouseY]                 = useState(0);
+
+  // Payment success snackbar — shown after Stripe redirect
+  const [snackOpen, setSnackOpen]   = useState(false);
+  const [snackPlan, setSnackPlan]   = useState('pro');
+
   const sidebarRef = useRef<HTMLDivElement>(null);
   const open = Boolean(anchorEl);
 
@@ -78,6 +88,23 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isEnterprise = plan === 'enterprise';
   const isStarter    = plan === 'starter' || isPro;
   const planCfg      = PLAN_CONFIG[plan] || PLAN_CONFIG.free;
+
+  // Detect payment=success in URL — show banner and force plan refresh
+  useEffect(() => {
+    const hash   = window.location.hash;
+    const search = hash.includes('?') ? hash.split('?')[1] : window.location.search;
+    const params = new URLSearchParams(search);
+    if (params.get('payment') === 'success') {
+      const paidPlan = params.get('plan') || 'pro';
+      setSnackPlan(paidPlan);
+      setSnackOpen(true);
+      // Force refresh plan from API immediately and after webhook delay
+      refreshPlan?.();
+      setTimeout(() => refreshPlan?.(), 2000);
+      setTimeout(() => refreshPlan?.(), 5000);
+      setTimeout(() => refreshPlan?.(), 10000);
+    }
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = sidebarRef.current?.getBoundingClientRect();
@@ -137,6 +164,9 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     );
   }
 
+  const paidPlanLabel = PLAN_LABELS[snackPlan] || snackPlan;
+  const paidPlanColor = (PLAN_CONFIG[snackPlan] || PLAN_CONFIG.pro).color;
+
   return (
     <>
       <style>{`
@@ -154,6 +184,31 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
       `}</style>
+
+      {/* Payment success banner — proper Unicode emojis, no encoding issues */}
+      <Snackbar
+        open={snackOpen}
+        autoHideDuration={8000}
+        onClose={() => setSnackOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ top: '16px !important' }}
+      >
+        <Alert
+          onClose={() => setSnackOpen(false)}
+          severity="success"
+          sx={{
+            background: `linear-gradient(135deg, #0d1f0d, #0a1a14)`,
+            border: `1px solid ${paidPlanColor}50`,
+            color: 'white',
+            fontWeight: 700,
+            fontSize: '14px',
+            '& .MuiAlert-icon': { color: '#22c55e' },
+            '& .MuiAlert-action': { color: 'rgba(255,255,255,0.5)' },
+          }}
+        >
+          {'\uD83C\uDF89'} <strong style={{ color: paidPlanColor }}>{paidPlanLabel} Plan</strong> activated! All features unlocked.
+        </Alert>
+      </Snackbar>
 
       <Box sx={{ display: 'flex', minHeight: '100vh', background: '#050810', '@media (max-width: 768px)': { flexDirection: 'column' } }}>
         <MobileNav />
@@ -182,7 +237,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <Box sx={{ px: 2, pt: 2.5, pb: 2, display: 'flex', alignItems: 'center', gap: 1.5, minHeight: 72 }}>
               <Box className="logo-float" onClick={() => setCollapsed(!collapsed)} sx={{ width: 40, height: 40, borderRadius: '13px', flexShrink: 0, background: 'linear-gradient(135deg, rgba(56,189,248,0.25) 0%, rgba(34,197,94,0.15) 100%)', border: '1px solid rgba(56,189,248,0.4)', boxShadow: '0 0 0 1px rgba(56,189,248,0.1), 0 8px 32px rgba(56,189,248,0.2), inset 0 1px 0 rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', cursor: 'pointer', transition: 'all 0.3s', '&:hover': { transform: 'scale(1.08) rotate(-5deg)' } }}>
                 <Box sx={{ position: 'absolute', inset: -4, borderRadius: '17px', border: '1px solid rgba(56,189,248,0.3)', animation: 'pulse-ring 2.5s ease-out infinite' }} />
-                <Typography sx={{ fontSize: '20px', lineHeight: 1, position: 'relative', zIndex: 1, filter: 'drop-shadow(0 0 6px rgba(56,189,248,0.8))' }}>🛡️</Typography>
+                <Typography sx={{ fontSize: '20px', lineHeight: 1, position: 'relative', zIndex: 1, filter: 'drop-shadow(0 0 6px rgba(56,189,248,0.8))' }}>{'\uD83D\uDEE1\uFE0F'}</Typography>
               </Box>
 
               {isExpanded && (
@@ -200,7 +255,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
               {isExpanded && (
                 <Box onClick={() => { setCollapsed(!collapsed); setHovered(false); }} sx={{ width: 24, height: 24, borderRadius: '8px', flexShrink: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', '&:hover': { background: 'rgba(255,255,255,0.09)' } }}>
-                  <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', lineHeight: 1, transform: collapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }}>‹</Typography>
+                  <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', lineHeight: 1, transform: collapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }}>{'\u2039'}</Typography>
                 </Box>
               )}
             </Box>
@@ -229,7 +284,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             {currentAccount.account_name}
                           </Typography>
                           <Typography sx={{ fontSize: '11px', color: refreshing ? '#f59e0b' : '#22c55e', lineHeight: 1, fontFamily: 'JetBrains Mono, monospace', fontWeight: 500 }}>
-                            {refreshing ? '⟳ syncing...' : `$${currentAccount.last_balance.toLocaleString('en', { minimumFractionDigits: 2 })}`}
+                            {refreshing ? '\u27F3 syncing...' : `$${currentAccount.last_balance.toLocaleString('en', { minimumFractionDigits: 2 })}`}
                           </Typography>
                         </Box>
                         <ArrowDownIcon sx={{ color: 'rgba(255,255,255,0.25)', fontSize: 15, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }} />
@@ -298,7 +353,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                           <Typography sx={{ fontSize: '11px', color: active ? itemColor : 'rgba(255,255,255,0.55)', lineHeight: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sub}</Typography>
                         </Box>
                       )}
-                      {isExpanded && locked && <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.2)', flexShrink: 0 }}>🔒</Typography>}
+                      {isExpanded && locked && <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.2)', flexShrink: 0 }}>{'\uD83D\uDD12'}</Typography>}
                       {isExpanded && active && !locked && <Box sx={{ width: 7, height: 7, borderRadius: '50%', background: itemColor, boxShadow: `0 0 10px ${itemColor}`, flexShrink: 0 }} />}
                     </Box>
                   </NavLink>
@@ -312,7 +367,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   <NavLink to="/app/journal" style={{ textDecoration: 'none' }}>
                     <Box className={`nav-item${active ? ' active-item' : ''}`} sx={{ display: 'flex', alignItems: 'center', gap: isExpanded ? 1.4 : 0, justifyContent: isExpanded ? 'flex-start' : 'center', px: isExpanded ? 1.4 : 0, py: isExpanded ? 1.2 : 1.3, mb: 0.6, borderRadius: '13px', cursor: 'pointer', position: 'relative', overflow: 'hidden', background: active ? `linear-gradient(135deg, rgba(${planCfg.glow},0.22), rgba(${planCfg.glow},0.08))` : `rgba(${planCfg.glow},0.03)`, border: active ? `1px solid rgba(${planCfg.glow},0.4)` : `1px solid rgba(${planCfg.glow},0.07)`, transition: 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)', '&:hover': { background: active ? undefined : 'rgba(255,255,255,0.05)' }, '&::before': active ? { content: '""', position: 'absolute', left: 0, top: '15%', bottom: '15%', width: '3px', borderRadius: '0 3px 3px 0', background: `linear-gradient(180deg,${planCfg.color},${planCfg.color2})`, boxShadow: `0 0 12px rgba(${planCfg.glow},0.8)` } : {} }}>
                       <Box sx={{ width: 38, height: 38, borderRadius: '11px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: active ? `linear-gradient(135deg,rgba(${planCfg.glow},0.3),rgba(${planCfg.glow},0.1))` : `rgba(${planCfg.glow},0.1)`, border: active ? `1px solid rgba(${planCfg.glow},0.45)` : `1px solid rgba(${planCfg.glow},0.2)`, transition: 'all 0.25s' }}>
-                        <Typography sx={{ fontSize: '18px', lineHeight: 1, color: planCfg.color, opacity: active ? 1 : 0.7 }}>◫</Typography>
+                        <Typography sx={{ fontSize: '18px', lineHeight: 1, color: planCfg.color, opacity: active ? 1 : 0.7 }}>{'\u25EB'}</Typography>
                       </Box>
                       {isExpanded && (
                         <Box sx={{ flex: 1 }}>
@@ -336,7 +391,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   <NavLink to="/app/enterprise" style={{ textDecoration: 'none' }}>
                     <Box className={`nav-item${active ? ' active-item' : ''}`} sx={{ display: 'flex', alignItems: 'center', gap: isExpanded ? 1.4 : 0, justifyContent: isExpanded ? 'flex-start' : 'center', px: isExpanded ? 1.4 : 0, py: isExpanded ? 1.0 : 1.2, mb: 0.5, borderRadius: '12px', cursor: 'pointer', background: active ? 'rgba(245,158,11,0.12)' : 'transparent', border: active ? '1px solid rgba(245,158,11,0.3)' : '1px solid transparent', '&:hover': { background: 'rgba(245,158,11,0.07)' } }}>
                       <Box sx={{ width: 34, height: 34, borderRadius: '10px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: active ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.04)', border: active ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(255,255,255,0.06)' }}>
-                        <Typography sx={{ fontSize: '16px', color: active ? '#f59e0b' : 'rgba(255,255,255,0.35)' }}>♛</Typography>
+                        <Typography sx={{ fontSize: '16px', color: active ? '#f59e0b' : 'rgba(255,255,255,0.35)' }}>{'\u265B'}</Typography>
                       </Box>
                       {isExpanded && (
                         <Box>
@@ -362,7 +417,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     </Box>
                   ) : (
                     <>
-                      <Typography sx={{ fontSize: '12px', fontWeight: 800, color: planCfg.color, mb: 0.3 }}>⚡ Upgrade to {plan === 'free' ? 'Starter' : 'Pro'}</Typography>
+                      <Typography sx={{ fontSize: '12px', fontWeight: 800, color: planCfg.color, mb: 0.3 }}>{'\u26A1'} Upgrade to {plan === 'free' ? 'Starter' : 'Pro'}</Typography>
                       <Typography sx={{ fontSize: '10px', color: `rgba(${planCfg.glow},0.5)` }}>Unlock all features</Typography>
                     </>
                   )}
