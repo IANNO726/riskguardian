@@ -105,10 +105,14 @@ const SetupWizard: React.FC = () => {
       }
 
       setLoadingMsg('Redirecting to secure payment...');
-      const checkoutRes = await fetch(`${API}/api/v1/billing/create-checkout`, {
+      const checkoutRes = await fetch(`${API}/api/v1/billing/create-checkout-session`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({
+          plan,
+          success_url: `${window.location.origin}/#/app?payment=success&plan=${plan}`,
+          cancel_url:  `${window.location.origin}/#/setup?plan=${plan}`,
+        }),
       });
 
       const checkoutData = await checkoutRes.json();

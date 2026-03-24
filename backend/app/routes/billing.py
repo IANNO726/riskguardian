@@ -29,9 +29,10 @@ FRONTEND_URL       = os.getenv("FRONTEND_URL", "http://localhost:3000")
 ENVIRONMENT        = os.getenv("ENVIRONMENT", "development")
 
 PLAN_PRICE_IDS = {
-    "starter":    os.getenv("STRIPE_STARTER_PRICE_ID",    "price_1T65ru6JfXB9ffkPoNcx8gEI"),
-    "pro":        os.getenv("STRIPE_PRO_PRICE_ID",        "price_1T65rv6JfXB9ffkPxiCNxwRb"),
-    "enterprise": os.getenv("STRIPE_ENTERPRISE_PRICE_ID", "price_1T65rw6JfXB9ffkPJkN5jn0m"),
+    "starter":    os.getenv("STRIPE_STARTER_PRICE_ID",    "price_1TDPhq6JfXB9ffkP38i9ULEn"),
+    "pro":        os.getenv("STRIPE_PRO_PRICE_ID",        "price_1TDPde6JfXB9ffkPxRCQBNx5"),
+    "growth":     os.getenv("STRIPE_GROWTH_PRICE_ID",     "price_1TDPfG6JfXB9ffkPrcZMjF6K"),
+    "enterprise": os.getenv("STRIPE_ENTERPRISE_PRICE_ID", "price_1TDPgk6JfXB9ffkPQURl7vi4"),
 }
 
 router = APIRouter()
@@ -140,7 +141,6 @@ async def stripe_webhook(
     try:
         event = stripe.Webhook.construct_event(payload, stripe_signature, WEBHOOK_SECRET)
     except stripe.error.SignatureVerificationError:
-        # ✅ FIX: In development mode, allow unsigned webhooks (e.g. from Stripe Workbench)
         if ENVIRONMENT == "development":
             try:
                 event = json.loads(payload)
@@ -166,7 +166,6 @@ async def stripe_webhook(
                 user.subscription_status    = "active"
                 user.stripe_subscription_id = sub_id
 
-                # Write to Subscription table
                 existing = db.query(Subscription).filter(Subscription.user_id == int(user_id)).first()
                 if existing:
                     existing.plan                   = plan
@@ -235,11 +234,11 @@ async def dev_set_plan(
     if ENVIRONMENT != "development":
         raise HTTPException(status_code=403, detail="Only available in development mode")
 
-    valid_plans = ["free", "starter", "pro", "enterprise"]
+    valid_plans = ["free", "starter", "pro", "growth", "enterprise"]
     if plan not in valid_plans:
         raise HTTPException(status_code=400, detail=f"Invalid plan. Choose from: {valid_plans}")
 
-    current_user.plan               = plan
+    current_user.plan                = plan
     current_user.subscription_status = "active" if plan != "free" else None
     db.commit()
 
