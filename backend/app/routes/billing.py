@@ -8,15 +8,60 @@ import json
 import types
 import logging
 
-# ── Patch broken stripe submodule init ─────────────────────────────────────
-# On some Render deployments stripe 11.x+ installs with stripe.apps = None,
-# causing AttributeError: 'NoneType' object has no attribute 'Secret'
-# in stripe._object_classes. Stub it before any stripe usage.
+# ── Patch ALL broken stripe submodules (stripe 11.x+ Render venv bug) ──────
+# When stripe installs without proper post-install hooks, multiple submodules
+# (stripe.apps, stripe.billing_portal, stripe.climate, stripe.financial_connections,
+#  stripe.identity, stripe.issuing, stripe.radar, stripe.reporting, stripe.sigma,
+#  stripe.tax, stripe.terminal, stripe.treasury, stripe.test_helpers)
+# are set to None, crashing _object_classes.py on import.
 import stripe as _s
+
+def _stub(name, attrs):
+    """Create a stub namespace with given attribute names as dummy classes."""
+    ns = types.SimpleNamespace()
+    for attr in attrs:
+        setattr(ns, attr, type(attr, (), {'OBJECT_NAME': f'{name}.{attr.lower()}', 'construct_from': classmethod(lambda cls, v, k: cls())})())
+    return ns
+
 if getattr(_s, 'apps', None) is None:
-    _s.apps = types.SimpleNamespace(
-        Secret=type('Secret', (), {'OBJECT_NAME': 'apps.secret'})()
-    )
+    _s.apps = _stub('apps', ['Secret'])
+
+if getattr(_s, 'billing_portal', None) is None:
+    _s.billing_portal = _stub('billing_portal', ['Configuration', 'Session'])
+
+if getattr(_s, 'climate', None) is None:
+    _s.climate = _stub('climate', ['Order', 'Product', 'Supplier'])
+
+if getattr(_s, 'financial_connections', None) is None:
+    _s.financial_connections = _stub('financial_connections', ['Account', 'Session', 'Transaction'])
+
+if getattr(_s, 'identity', None) is None:
+    _s.identity = _stub('identity', ['VerificationReport', 'VerificationSession'])
+
+if getattr(_s, 'issuing', None) is None:
+    _s.issuing = _stub('issuing', ['Authorization', 'Card', 'Cardholder', 'Dispute', 'Token', 'Transaction'])
+
+if getattr(_s, 'radar', None) is None:
+    _s.radar = _stub('radar', ['EarlyFraudWarning', 'ValueList', 'ValueListItem'])
+
+if getattr(_s, 'reporting', None) is None:
+    _s.reporting = _stub('reporting', ['ReportRun', 'ReportType'])
+
+if getattr(_s, 'sigma', None) is None:
+    _s.sigma = _stub('sigma', ['ScheduledQueryRun'])
+
+if getattr(_s, 'tax', None) is None:
+    _s.tax = _stub('tax', ['Calculation', 'CalculationLineItem', 'Registration', 'Settings', 'Transaction', 'TransactionLineItem'])
+
+if getattr(_s, 'terminal', None) is None:
+    _s.terminal = _stub('terminal', ['Configuration', 'ConnectionToken', 'Location', 'Reader'])
+
+if getattr(_s, 'treasury', None) is None:
+    _s.treasury = _stub('treasury', ['CreditReversal', 'DebitReversal', 'FinancialAccount', 'FinancialAccountFeatures', 'InboundTransfer', 'OutboundPayment', 'OutboundTransfer', 'ReceivedCredit', 'ReceivedDebit', 'Transaction', 'TransactionEntry'])
+
+if getattr(_s, 'test_helpers', None) is None:
+    _s.test_helpers = _stub('test_helpers', ['TestClock'])
+
 import stripe
 # ───────────────────────────────────────────────────────────────────────────
 
@@ -29,16 +74,14 @@ from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
-# ── imports matching YOUR project structure ──────────────
 from app.database.database import get_db
 from app.models.user import User, Subscription
 from app.routes.auth_multi import get_current_user
 
-# ── Stripe config ─────────────────────────────────────────
-stripe.api_key     = os.getenv("STRIPE_SECRET_KEY")
-WEBHOOK_SECRET     = os.getenv("STRIPE_WEBHOOK_SECRET")
-FRONTEND_URL       = os.getenv("FRONTEND_URL", "http://localhost:3000")
-ENVIRONMENT        = os.getenv("ENVIRONMENT", "development")
+stripe.api_key   = os.getenv("STRIPE_SECRET_KEY")
+WEBHOOK_SECRET   = os.getenv("STRIPE_WEBHOOK_SECRET")
+FRONTEND_URL     = os.getenv("FRONTEND_URL", "http://localhost:3000")
+ENVIRONMENT      = os.getenv("ENVIRONMENT", "development")
 
 PLAN_PRICE_IDS = {
     "starter":    os.getenv("STRIPE_STARTER_PRICE_ID",    "price_1TDPhq6JfXB9ffkP38i9ULEn"),
@@ -50,7 +93,6 @@ PLAN_PRICE_IDS = {
 router = APIRouter()
 
 
-# ── Schemas ───────────────────────────────────────────────
 class CreateCheckoutRequest(BaseModel):
     plan:        str
     price_id:    Optional[str] = None
@@ -61,9 +103,6 @@ class CreatePortalRequest(BaseModel):
     return_url: Optional[str] = None
 
 
-# ══════════════════════════════════════════════════════════
-#  POST /api/v1/billing/create-checkout-session
-# ══════════════════════════════════════════════════════════
 @router.post("/create-checkout-session")
 async def create_checkout_session(
     body: CreateCheckoutRequest,
@@ -100,7 +139,7 @@ async def create_checkout_session(
                 logger.warning(f"⚠️ Could not save customer_id: {db_err}")
                 db.rollback()
 
-        logger.info(f"🔵 Creating Stripe session: customer={customer_id}, price={price_id}")
+        logger.info(f"🔵 Creating session: customer={customer_id}, price={price_id}")
 
         session = stripe.checkout.Session.create(
             customer=customer_id,
@@ -114,7 +153,7 @@ async def create_checkout_session(
             allow_promotion_codes=True,
         )
 
-        logger.info(f"✅ Checkout session created: {session.id}")
+        logger.info(f"✅ Session created: {session.id}")
         return {"checkout_url": session.url, "session_id": session.id}
 
     except stripe.error.StripeError as e:
@@ -125,9 +164,6 @@ async def create_checkout_session(
         raise HTTPException(status_code=500, detail=f"Checkout failed: {type(e).__name__}: {str(e)}")
 
 
-# ══════════════════════════════════════════════════════════
-#  POST /api/v1/billing/create-portal-session
-# ══════════════════════════════════════════════════════════
 @router.post("/create-portal-session")
 async def create_portal_session(
     body: CreatePortalRequest,
@@ -135,7 +171,6 @@ async def create_portal_session(
 ):
     if not current_user.stripe_customer_id:
         raise HTTPException(status_code=400, detail="No Stripe customer found")
-
     try:
         session = stripe.billing_portal.Session.create(
             customer=current_user.stripe_customer_id,
@@ -146,9 +181,6 @@ async def create_portal_session(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-# ══════════════════════════════════════════════════════════
-#  POST /api/v1/billing/webhook
-# ══════════════════════════════════════════════════════════
 @router.post("/webhook")
 async def stripe_webhook(
     request: Request,
@@ -156,7 +188,6 @@ async def stripe_webhook(
     db: Session = Depends(get_db),
 ):
     payload = await request.body()
-
     try:
         event = stripe.Webhook.construct_event(payload, stripe_signature, WEBHOOK_SECRET)
     except stripe.error.SignatureVerificationError:
@@ -177,14 +208,12 @@ async def stripe_webhook(
         user_id = session.get("metadata", {}).get("user_id")
         plan    = session.get("metadata", {}).get("plan")
         sub_id  = session.get("subscription")
-
         if user_id and plan:
             user = db.query(User).filter(User.id == int(user_id)).first()
             if user:
                 user.plan                   = plan
                 user.subscription_status    = "active"
                 user.stripe_subscription_id = sub_id
-
                 existing = db.query(Subscription).filter(Subscription.user_id == int(user_id)).first()
                 if existing:
                     existing.plan                   = plan
@@ -193,11 +222,9 @@ async def stripe_webhook(
                     existing.updated_at             = datetime.utcnow()
                 else:
                     db.add(Subscription(
-                        user_id                = int(user_id),
-                        stripe_subscription_id = sub_id,
-                        stripe_customer_id     = user.stripe_customer_id or "",
-                        plan                   = plan,
-                        status                 = "active",
+                        user_id=int(user_id), stripe_subscription_id=sub_id,
+                        stripe_customer_id=user.stripe_customer_id or "",
+                        plan=plan, status="active",
                     ))
                 db.commit()
 
@@ -219,7 +246,7 @@ async def stripe_webhook(
         if user_id:
             user = db.query(User).filter(User.id == int(user_id)).first()
             if user:
-                user.plan                   = "free"
+                user.plan = "free"
                 user.subscription_status    = "canceled"
                 user.stripe_subscription_id = None
                 db.commit()
@@ -227,9 +254,6 @@ async def stripe_webhook(
     return JSONResponse({"status": "ok"})
 
 
-# ══════════════════════════════════════════════════════════
-#  GET /api/v1/billing/status
-# ══════════════════════════════════════════════════════════
 @router.get("/status")
 async def billing_status(current_user: User = Depends(get_current_user)):
     return {
@@ -240,9 +264,6 @@ async def billing_status(current_user: User = Depends(get_current_user)):
     }
 
 
-# ══════════════════════════════════════════════════════════
-#  POST /api/v1/billing/dev-set-plan  (DEVELOPMENT ONLY)
-# ══════════════════════════════════════════════════════════
 @router.post("/dev-set-plan")
 async def dev_set_plan(
     plan: str,
@@ -251,15 +272,12 @@ async def dev_set_plan(
 ):
     if ENVIRONMENT != "development":
         raise HTTPException(status_code=403, detail="Only available in development mode")
-
     valid_plans = ["free", "starter", "pro", "growth", "enterprise"]
     if plan not in valid_plans:
         raise HTTPException(status_code=400, detail=f"Invalid plan. Choose from: {valid_plans}")
-
     current_user.plan                = plan
     current_user.subscription_status = "active" if plan != "free" else None
     db.commit()
-
     return {"message": f"✅ Plan updated to '{plan}'", "plan": plan}
 
 
