@@ -3,7 +3,8 @@ import { Box, CircularProgress } from '@mui/material';
 import { usePlan, Plan, startCheckout } from '../hooks/usePlan';
 import { UpgradePrompt } from './FeatureGate';
 
-const PLAN_ORDER: Plan[] = ['free', 'starter', 'pro', 'enterprise'];
+// growth must be between pro and enterprise
+const PLAN_ORDER: Plan[] = ['free', 'starter', 'pro', 'growth', 'enterprise'];
 
 const PLAN_FEATURE_NAMES: Partial<Record<string, string>> = {
   '/app/journal':    'AI Trading Journal',
@@ -20,7 +21,8 @@ interface PlanRouteProps {
 
 const PlanRoute: React.FC<PlanRouteProps> = ({ requiredPlan, children, featureName }) => {
   const { plan, loading } = usePlan();
-  const [upgradeLoading, setUpgradeLoading] = useState(false); // âœ… NEW
+  const [upgradeLoading, setUpgradeLoading] = useState(false);
+
   const hasAccess = PLAN_ORDER.indexOf(plan) >= PLAN_ORDER.indexOf(requiredPlan);
 
   if (loading) {
@@ -38,7 +40,7 @@ const PlanRoute: React.FC<PlanRouteProps> = ({ requiredPlan, children, featureNa
         <UpgradePrompt
           requiredPlan={requiredPlan}
           featureName={name}
-          upgradeLoading={upgradeLoading} // âœ… NEW
+          upgradeLoading={upgradeLoading}
           onUpgrade={() => !upgradeLoading && startCheckout(requiredPlan, setUpgradeLoading)}
         />
       </Box>
