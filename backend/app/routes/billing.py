@@ -70,18 +70,29 @@ async def create_checkout_session(
     success_url = body.success_url or f"{FRONTEND_URL}/#/app?payment=success&plan={plan}"
     cancel_url  = body.cancel_url  or f"{FRONTEND_URL}/#/setup?plan={plan}"
 
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"🔵 Checkout: plan={plan}, price_id={price_id}, user={current_user.id}")
+
     try:
         # Create Stripe customer if not exists
         customer_id = current_user.stripe_customer_id
         if not customer_id:
             customer = stripe.Customer.create(
                 email=current_user.email,
-                name=current_user.full_name or current_user.username,
+                name=getattr(current_user, 'full_name', None) or current_user.username,
                 metadata={"user_id": str(current_user.id), "username": current_user.username},
             )
             customer_id = customer.id
-            current_user.stripe_customer_id = customer_id
-            db.commit()
+            # Save customer ID — isolated so a DB error doesn't kill checkout
+            try:
+                current_user.stripe_customer_id = customer_id
+                db.commit()
+            except Exception as db_err:
+                logger.warning(f"⚠️ Could not save customer_id to DB: {db_err}")
+                db.rollback()
+
+        logger.info(f"🔵 Creating Stripe session: customer={customer_id}, price={price_id}")
 
         # Create Stripe Checkout Session
         session = stripe.checkout.Session.create(
@@ -96,12 +107,15 @@ async def create_checkout_session(
             allow_promotion_codes=True,
         )
 
+        logger.info(f"✅ Checkout session created: {session.id}")
         return {"checkout_url": session.url, "session_id": session.id}
 
     except stripe.error.StripeError as e:
+        logger.error(f"❌ Stripe error: {str(e)}")
         raise HTTPException(status_code=400, detail=f"Stripe error: {str(e)}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Checkout failed: {str(e)}")
+        logger.error(f"❌ Checkout exception: {type(e).__name__}: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Checkout failed: {type(e).__name__}: {str(e)}")
 
 
 # ══════════════════════════════════════════════════════════
