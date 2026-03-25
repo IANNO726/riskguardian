@@ -122,7 +122,17 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       const def = res.data.find((a: TradingAccount) => a.is_default);
       setCurrentAccount(def || res.data[0] || null);
     } catch (err: any) {
-      if (err.response?.status === 401) { localStorage.clear(); navigate('/login'); }
+      if (err.response?.status === 401) {
+        // Only logout if NOT coming from a payment redirect
+        // Stripe redirect can cause a brief race condition where token
+        // appears missing but is actually valid — check before clearing
+        const hash = window.location.hash;
+        const isPaymentRedirect = hash.includes('payment=success');
+        if (!isPaymentRedirect && localStorage.getItem('access_token')) {
+          localStorage.clear();
+          navigate('/login');
+        }
+      }
     } finally { setLoading(false); }
   };
 

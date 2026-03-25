@@ -6,8 +6,9 @@ const ProtectedRoute: React.FC<{ children: any }> = ({ children }) => {
   const location = useLocation();
 
   if (!token) {
-    // Save where the user was trying to go
-    localStorage.setItem("redirect_after_login", location.pathname + location.search);
+    // With HashRouter, save the hash path for redirect after login
+    const redirectTo = location.pathname + location.search;
+    localStorage.setItem("redirect_after_login", redirectTo);
     return <Navigate to="/login" replace />;
   }
 
