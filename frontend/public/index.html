@@ -2,13 +2,48 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Risk Guardian Agent - Professional AI-powered risk management for traders"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+
+    <!-- ── PWA Meta Tags ─────────────────────────────────────────────────── -->
+    <meta name="theme-color" content="#38bdf8" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="RiskGuardian" />
+    <meta name="application-name" content="RiskGuardian" />
+    <meta name="msapplication-TileColor" content="#38bdf8" />
+    <meta name="msapplication-tap-highlight" content="no" />
+
+    <!-- ── SEO ───────────────────────────────────────────────────────────── -->
+    <meta name="description" content="AI-powered trading risk management for prop traders. Monitor your MT5 account, track drawdowns, and protect your funded account." />
+    <meta name="keywords" content="trading risk management, prop firm, MT5, drawdown, risk monitor" />
+
+    <!-- Open Graph -->
+    <meta property="og:title"       content="RiskGuardian — Trading Risk Management" />
+    <meta property="og:description" content="AI-powered risk management for prop traders" />
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content="https://getriskguardian.com" />
+    <meta property="og:image"       content="/icons/icon-512x512.png" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card"        content="summary" />
+    <meta name="twitter:title"       content="RiskGuardian" />
+    <meta name="twitter:description" content="AI-powered trading risk management" />
+    <meta name="twitter:image"       content="/icons/icon-512x512.png" />
+
+    <!-- ── Icons ─────────────────────────────────────────────────────────── -->
+    <link rel="icon"             type="image/png" sizes="32x32"  href="/icons/icon-96x96.png" />
+    <link rel="icon"             type="image/png" sizes="16x16"  href="/icons/icon-72x72.png" />
+    <link rel="apple-touch-icon"                  sizes="180x180" href="/icons/icon-192x192.png" />
+    <link rel="apple-touch-icon"                  sizes="152x152" href="/icons/icon-152x152.png" />
+    <link rel="apple-touch-icon"                  sizes="144x144" href="/icons/icon-144x144.png" />
+    <link rel="apple-touch-icon"                  sizes="120x120" href="/icons/icon-128x128.png" />
+
+    <!-- ── PWA Manifest ──────────────────────────────────────────────────── -->
+    <link rel="manifest" href="/manifest.json" />
+
     <title>Risk Guardian Agent - Trading Dashboard</title>
+
     <style>
       * {
         margin: 0;
@@ -21,7 +56,11 @@
           'Helvetica Neue', sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        background-color: #f5f5f5;
+        /* Dark background so no white flash on load */
+        background-color: #0b1120;
+        /* iOS safe area */
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
       }
       #root {
         min-height: 100vh;
@@ -32,7 +71,8 @@
         align-items: center;
         height: 100vh;
         font-size: 24px;
-        color: #333;
+        color: #38bdf8;
+        background-color: #0b1120;
       }
     </style>
   </head>
@@ -41,5 +81,20 @@
     <div id="root">
       <div class="loading">Loading Risk Guardian Agent...</div>
     </div>
+
+    <!-- ── Register Service Worker ───────────────────────────────────────── -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(function (reg) {
+              console.log('[PWA] Service worker registered:', reg.scope);
+            })
+            .catch(function (err) {
+              console.warn('[PWA] Service worker failed:', err);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

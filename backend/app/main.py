@@ -85,6 +85,7 @@ from app.routes.news_calendar import router as news_calendar_router
 from app.routes.weekly_report import router as weekly_report_router
 from app.routes.portfolio_tracker import router as portfolio_router
 from app.routes.weekly_report import start_scheduler as start_weekly_report_scheduler
+from app.routes.agent import router as agent_router   # ✅ Windows MT5 Agent
 from app.database.database import SessionLocal
 
 
@@ -160,6 +161,8 @@ async def run_migrations():
     migrations = [
         # CHANGE 9a: api_token for per-user Deriv API token storage
         "ALTER TABLE trading_accounts ADD COLUMN IF NOT EXISTS api_token VARCHAR",
+        # Agent tables — created by SQLAlchemy Base.metadata.create_all
+        # but listed here for reference
     ]
     try:
         with engine.connect() as conn:
@@ -304,6 +307,9 @@ app.include_router(admin_router,         prefix="/api/v1/admin",         tags=["
 app.include_router(admin_stream_router,  prefix="/api/v1/admin-stream",  tags=["Admin Stream"])
 app.include_router(founder_router,       prefix="/api/v1/founder",       tags=["Founder"])
 app.include_router(founder_users_router, prefix="/api/v1/founder-users", tags=["Founder Users"])
+
+# ── Windows MT5 Agent ─────────────────────────────────────────────
+app.include_router(agent_router, prefix="/api/v1/agent", tags=["Agent"])
 
 # ── WebSocket ─────────────────────────────────────────────────────
 app.include_router(ws_router)

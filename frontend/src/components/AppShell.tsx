@@ -52,6 +52,7 @@ const NAV_ITEMS = [
   { to: '/app/simulator',  label: 'Simulator',  icon: '\uD83C\uDFC6', sub: 'Prop firm practice',  end: false, minPlan: 'starter', color: '#22c55e', glow: '34,197,94'    },
   { to: '/app/analytics',  label: 'Analytics',  icon: '\u25C8', sub: 'Performance data',    end: false, minPlan: 'pro',     color: '#a855f7', glow: '168,85,247'   },
   { to: '/app/history',    label: 'History',    icon: '\u25F7', sub: 'Past trades',          end: false, minPlan: null,      color: '#f59e0b', glow: '245,158,11'   },
+  { to: '/app/agent',      label: 'MT5 Agent',  icon: '\uD83D\uDCBB', sub: 'Live data bridge',    end: false, minPlan: null,      color: '#22c55e', glow: '34,197,94'    },
   { to: '/app/settings',   label: 'Settings',   icon: '\u25CE', sub: 'Account & billing',   end: false, minPlan: null,      color: '#fb7185', glow: '251,113,133'  },
 ];
 
@@ -75,7 +76,6 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [hovered, setHovered]               = useState(false);
   const [mouseY, setMouseY]                 = useState(0);
 
-  // Payment success snackbar — shown after Stripe redirect
   const [snackOpen, setSnackOpen]   = useState(false);
   const [snackPlan, setSnackPlan]   = useState('pro');
 
@@ -89,7 +89,6 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isStarter    = plan === 'starter' || isPro;
   const planCfg      = PLAN_CONFIG[plan] || PLAN_CONFIG.free;
 
-  // Detect payment=success in URL — show banner and force plan refresh
   useEffect(() => {
     const hash   = window.location.hash;
     const search = hash.includes('?') ? hash.split('?')[1] : window.location.search;
@@ -98,7 +97,6 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       const paidPlan = params.get('plan') || 'pro';
       setSnackPlan(paidPlan);
       setSnackOpen(true);
-      // Force refresh plan from API immediately and after webhook delay
       refreshPlan?.();
       setTimeout(() => refreshPlan?.(), 2000);
       setTimeout(() => refreshPlan?.(), 5000);
@@ -123,9 +121,6 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       setCurrentAccount(def || res.data[0] || null);
     } catch (err: any) {
       if (err.response?.status === 401) {
-        // Only logout if NOT coming from a payment redirect
-        // Stripe redirect can cause a brief race condition where token
-        // appears missing but is actually valid — check before clearing
         const hash = window.location.hash;
         const isPaymentRedirect = hash.includes('payment=success');
         if (!isPaymentRedirect && localStorage.getItem('access_token')) {
@@ -195,7 +190,6 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
       `}</style>
 
-      {/* Payment success banner — proper Unicode emojis, no encoding issues */}
       <Snackbar
         open={snackOpen}
         autoHideDuration={8000}
