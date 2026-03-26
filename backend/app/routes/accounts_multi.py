@@ -15,7 +15,7 @@ from app.middleware.plan_gating — single source of truth for account limits.
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 from pydantic import BaseModel
 
 from app.database.database import get_db
@@ -28,11 +28,7 @@ from app.middleware.plan_gating import check_account_limit
 
 router = APIRouter(tags=["Multi-Account Management"])
 
-# ── ALL Deriv server/broker patterns ────────────────────────
-# Any account matching these goes to DerivAdapter (WebSocket)
-# and NEVER touches the MT5 terminal
 DERIV_PATTERNS = {
-    # Server name patterns
     "deriv-demo", "deriv-server", "deriv-real",
     "derivsvg-server", "derivsvg-demo",
     "derivmx-server", "derivmx-demo",
@@ -41,24 +37,16 @@ DERIV_PATTERNS = {
 
 
 def _is_deriv(account: TradingAccount) -> bool:
-    """
-    Returns True for ANY Deriv account — by server name or broker name.
-    These accounts use WebSocket API, not MT5 terminal.
-    """
     server = (account.server or "").lower().strip().replace(" ", "")
     broker = (account.broker_name or "").lower().strip()
-
-    # Match server patterns
     if any(p in server for p in DERIV_PATTERNS):
         return True
-    # Match broker name containing "deriv"
     if "deriv" in broker:
         return True
     return False
 
 
 def _is_deriv_from_form(broker_name: str, server: str) -> bool:
-    """Same check but from raw form strings (before DB save)."""
     s = server.lower().strip().replace(" ", "")
     b = broker_name.lower().strip()
     if any(p in s for p in DERIV_PATTERNS):
@@ -72,10 +60,10 @@ def _is_deriv_from_form(broker_name: str, server: str) -> bool:
 
 class AccountCreate(BaseModel):
     platform: str
-    account_number: str  # Deriv: loginid (CR/VRTC) | MT5: numeric login
+    account_number: str
     broker_name: str
     server: str
-    password: str        # Deriv: API token | MT5: password
+    password: str
     account_name: Optional[str] = None
 
 class AccountResponse(BaseModel):
@@ -101,11 +89,6 @@ class AccountUpdate(BaseModel):
 # ==================== ADAPTER FACTORY ====================
 
 def get_adapter(account: TradingAccount):
-    """
-    Routes to the correct adapter:
-    - Deriv accounts → DerivAdapter (WebSocket, no MT5 terminal needed)
-    - All others     → MT5Adapter
-    """
     creds = {
         "login":          account.account_number,
         "account_number": account.account_number,
@@ -129,8 +112,6 @@ async def add_trading_account(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # CHANGE 6: use check_account_limit() from plan_gating instead of
-    # the old inline PLAN_ACCOUNT_LIMITS dict — single source of truth.
     check_account_limit(current_user, db)
 
     try:
@@ -142,7 +123,6 @@ async def add_trading_account(
     last_balance, last_equity, currency, last_connected = 0.0, 0.0, "USD", None
 
     if is_deriv:
-        # Verify Deriv API token via WebSocket
         success, message, info = await DerivVerifier.verify(account_data.password)
         if not success:
             raise HTTPException(status_code=400, detail=f"Deriv verification failed: {message}")
@@ -151,12 +131,10 @@ async def add_trading_account(
             last_equity    = info.get("equity",   0.0)
             currency       = info.get("currency", "USD")
             last_connected = datetime.utcnow()
-            # Use the real loginid returned from Deriv
             if info.get("login"):
                 account_data.account_number = str(info["login"])
 
     elif platform_enum == PlatformType.MT5:
-        # Verify via MT5 terminal
         success, message, info = MT5Verifier.verify(
             account_number=int(account_data.account_number),
             password=account_data.password,
@@ -201,8 +179,6 @@ async def get_plan_limit(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # CHANGE 6: read limits from plan_gating's ACCOUNT_LIMITS dict
-    # so /plan-limit always reflects the same numbers as the enforcement.
     from app.middleware.plan_gating import ACCOUNT_LIMITS, get_user_plan
     user_plan    = get_user_plan(current_user)
     max_accounts = ACCOUNT_LIMITS.get(user_plan, 1)
@@ -284,6 +260,9 @@ async def get_account_live_data(
     ✅ Deriv accounts → Deriv WebSocket (instant, no MT5 terminal touched)
     ✅ MT5 accounts   → MT5 terminal (FTMO, Exness, EGM, IC Markets, etc.)
     No cross-account interference. No disconnections.
+
+    Returns account_info.profit as today's closed P&L for Deriv accounts
+    since Deriv WebSocket doesn't expose live margin/profit like MT5 does.
     """
     account = db.query(TradingAccount).filter(
         TradingAccount.id == account_id,
@@ -300,23 +279,53 @@ async def get_account_live_data(
         if not connected:
             raise HTTPException(status_code=503, detail=(
                 f"Could not connect to {'Deriv' if deriv else 'MT5'} "
-                f"for account {account.account_number}. "
-                + ("Check your Deriv API token (Read + Trading info scopes required)."
-                   if deriv else
-                   "Ensure MT5 is open and Tools → Options → Expert Advisors → "
-                   "uncheck 'Disable algo trading when account changed'.")
+                f"for account {account.account_number}."
             ))
 
         account_info = await adapter.get_account_info()
         positions    = await adapter.get_open_positions()
+
+        # ── Calculate today's P&L from trade history (Deriv WebSocket mode) ──
+        # In MT5 mode, account_info.profit already has live open P&L
+        # In Deriv WS mode, profit=0 so we calculate from today's closed trades
+        daily_pnl = float(account_info.get("profit", 0)) if account_info else 0.0
+
+        if deriv and daily_pnl == 0.0:
+            try:
+                history = await adapter.get_trade_history(days=1)
+                today   = datetime.utcnow().date()
+                for trade in history:
+                    trade_time = trade.get("time", 0)
+                    # Handle both unix timestamp and ISO string
+                    if isinstance(trade_time, (int, float)) and trade_time > 0:
+                        trade_date = datetime.utcfromtimestamp(trade_time).date()
+                    elif isinstance(trade_time, str):
+                        try:
+                            trade_date = datetime.fromisoformat(
+                                trade_time.replace("Z", "+00:00")
+                            ).date()
+                        except Exception:
+                            continue
+                    else:
+                        continue
+                    if trade_date == today:
+                        daily_pnl += float(trade.get("profit", 0))
+            except Exception as e:
+                logger.warning(f"Could not calculate daily P&L: {e}")
+
         await adapter.disconnect()
 
+        # ── Cache to DB ────────────────────────────────────────────────────
         if account_info:
             account.last_balance   = account_info.get("balance",  0)
             account.last_equity    = account_info.get("equity",   0)
             account.currency       = account_info.get("currency", "USD")
             account.last_connected = datetime.utcnow()
             db.commit()
+
+        # ── Inject daily_pnl into account_info so useLiveTrades picks it up ─
+        if account_info:
+            account_info["profit"] = daily_pnl
 
         return {
             "account_info":      account_info,
