@@ -16,8 +16,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app.core.auth import get_current_user
-from app.core.security import decrypt_password
+from app.routes.auth_multi import get_current_user
+from app.utils.encryption import decrypt_password
 from app.database.database import get_db
 from app.models.broker import BrokerConnection
 from app.models.user import User
@@ -155,7 +155,7 @@ async def get_accounts(
             "profit":         live["profit"],
             "currency":       live["currency"],
             "account_name":   live["account_name"],
-            "is_default":     i == 0,   # first account is default
+            "is_default":     i == 0,
             "status":         "connected" if live["connected"] else "disconnected",
             "connected":      live["connected"],
         })
@@ -182,7 +182,6 @@ async def get_live_data(
     _cache_to_db(broker, live, db)
 
     return {
-        # useLiveTrades reads: data.account_info.balance/equity/profit/currency
         "account_info": {
             "balance":  live["balance"],
             "equity":   live["equity"],
@@ -191,7 +190,6 @@ async def get_live_data(
             "name":     live["account_name"],
             "login":    broker.account_number,
         },
-        # useLiveTrades reads: data.positions
         "positions":       [],
         "positions_count": 0,
         "connected":       live["connected"],
