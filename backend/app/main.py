@@ -152,7 +152,7 @@ async def journal_auto_sync():
 
 # ─────────────────────────────────────────────────────────────────
 # AUTO-MIGRATION
-# Adds new columns to existing PostgreSQL tables without Alembic.
+# Adds new columns and tables to PostgreSQL without Alembic.
 # Safe to run on every startup — uses IF NOT EXISTS.
 # ─────────────────────────────────────────────────────────────────
 async def run_migrations():
@@ -161,15 +161,46 @@ async def run_migrations():
     migrations = [
         # CHANGE 9a: api_token for per-user Deriv API token storage
         "ALTER TABLE trading_accounts ADD COLUMN IF NOT EXISTS api_token VARCHAR",
-        # Agent tables — created by SQLAlchemy Base.metadata.create_all
-        # but listed here for reference
+
+        # Agent tokens table — stores per-user agent authentication tokens
+        """
+        CREATE TABLE IF NOT EXISTS agent_tokens (
+            id         SERIAL PRIMARY KEY,
+            user_id    INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            token      VARCHAR UNIQUE NOT NULL,
+            created_at TIMESTAMP DEFAULT NOW(),
+            last_used  TIMESTAMP,
+            is_active  BOOLEAN DEFAULT TRUE
+        )
+        """,
+
+        # Agent data table — stores latest MT5 data pushed by user's agent
+        """
+        CREATE TABLE IF NOT EXISTS agent_data (
+            id              SERIAL PRIMARY KEY,
+            user_id         INTEGER REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+            balance         FLOAT   DEFAULT 0.0,
+            equity          FLOAT   DEFAULT 0.0,
+            profit          FLOAT   DEFAULT 0.0,
+            today_pnl       FLOAT   DEFAULT 0.0,
+            margin          FLOAT   DEFAULT 0.0,
+            margin_free     FLOAT   DEFAULT 0.0,
+            currency        VARCHAR DEFAULT 'USD',
+            leverage        INTEGER DEFAULT 1000,
+            login           VARCHAR,
+            positions_json  TEXT    DEFAULT '[]',
+            positions_count INTEGER DEFAULT 0,
+            last_updated    TIMESTAMP,
+            agent_version   VARCHAR
+        )
+        """,
     ]
     try:
         with engine.connect() as conn:
             for sql in migrations:
                 conn.execute(text(sql))
             conn.commit()
-        logger.info("✅ DB migrations applied")
+        logger.info("✅ DB migrations applied (trading_accounts.api_token, agent_tokens, agent_data)")
     except Exception as e:
         logger.warning(f"Migration note: {e}")
 
