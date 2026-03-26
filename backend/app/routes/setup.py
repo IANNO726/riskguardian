@@ -171,6 +171,17 @@ async def complete_setup(
         "mt5_verified": verified,
         "mt5_message":  message,
     }
+@router.delete("/reset-my-account")
+async def reset_setup(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Temporary endpoint to reset setup so user can re-run wizard."""
+    from app.models.user import TradingAccount
+    deleted = db.query(TradingAccount).filter_by(user_id=current_user.id).delete()
+    current_user.setup_complete = False
+    db.commit()
+    return {"message": f"Reset complete. Deleted {deleted} accounts. Please run setup again."}
 
 
 
