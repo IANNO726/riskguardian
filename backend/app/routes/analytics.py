@@ -29,8 +29,8 @@ import websockets
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.core.auth import get_current_user
-from app.core.security import decrypt_password
+from app.routes.auth_multi import get_current_user
+from app.utils.encryption import decrypt_password
 from app.database.database import get_db
 from app.models.journal import JournalEntry
 from app.models.user import TradingAccount, User
@@ -43,41 +43,16 @@ _AUTO_LOCK_CFG = os.path.join(os.path.dirname(__file__), ".auto_lock_config.json
 # ─────────────────────────────────────────────────────────────────────────────
 # ENV
 # ─────────────────────────────────────────────────────────────────────────────
-DERIV_APP_ID   = os.getenv("DERIV_APP_ID", "1089")           # 1089 = Deriv public test app_id
+DERIV_APP_ID   = os.getenv("DERIV_APP_ID", "1089")
 OANDA_BASE_URL = os.getenv("OANDA_BASE_URL", "https://api-fxtrade.oanda.com")
-META_API_TOKEN = os.getenv("META_API_TOKEN", "")              # optional for now
+META_API_TOKEN = os.getenv("META_API_TOKEN", "")
 
 
 # ═════════════════════════════════════════════════════════════════════════════
 # BROKER PROVIDER LAYER
-# Each provider returns a normalised dict:
-#   {
-#     "balance":  float,
-#     "equity":   float,
-#     "profit":   float,
-#     "currency": str,
-#     "deals": [
-#       {
-#         "ticket": str, "time": float (posix), "symbol": str,
-#         "volume": float, "profit": float,
-#         "commission": float, "swap": float, "price": float,
-#       }, ...
-#     ]
-#   }
 # ═════════════════════════════════════════════════════════════════════════════
 
-# ─────────────────────────────────────────────────────────────────────────────
-# PROVIDER 1 — DERIV
-# ─────────────────────────────────────────────────────────────────────────────
 async def _fetch_deriv(account: TradingAccount, days: int = 90) -> dict:
-    """
-    Connects to Deriv WebSocket API using the user's API token.
-    User stores their Deriv API token in the `encrypted_password` field.
-
-    Users get their token at:
-      https://app.deriv.com → Account Settings → API Token
-      Required scopes: Read + Trading information
-    """
     token     = decrypt_password(account.encrypted_password)
     ws_url    = f"wss://ws.binaryws.com/websockets/v3?app_id={DERIV_APP_ID}"
     date_to   = int(datetime.utcnow().timestamp())
@@ -85,8 +60,6 @@ async def _fetch_deriv(account: TradingAccount, days: int = 90) -> dict:
 
     try:
         async with websockets.connect(ws_url) as ws:
-
-            # ── Authorise ──────────────────────────────────────────────────
             await ws.send(json.dumps({"authorize": token}))
             auth_resp = json.loads(await ws.recv())
 
@@ -99,9 +72,8 @@ async def _fetch_deriv(account: TradingAccount, days: int = 90) -> dict:
             auth_data = auth_resp["authorize"]
             balance   = float(auth_data.get("balance", 0))
             currency  = auth_data.get("currency", "USD")
-            equity    = balance   # Deriv doesn't expose equity separately
+            equity    = balance
 
-            # ── Profit table (closed trades) ───────────────────────────────
             await ws.send(json.dumps({
                 "profit_table": 1,
                 "description":  1,
@@ -118,7 +90,6 @@ async def _fetch_deriv(account: TradingAccount, days: int = 90) -> dict:
             else:
                 transactions = pt_resp.get("profit_table", {}).get("transactions", [])
 
-        # ── Normalise deals ────────────────────────────────────────────────
         deals = []
         for tx in transactions:
             profit = float(tx.get("sell_price", 0)) - float(tx.get("buy_price", 0))
@@ -148,20 +119,7 @@ async def _fetch_deriv(account: TradingAccount, days: int = 90) -> dict:
         raise HTTPException(status_code=503, detail=f"Deriv connection failed: {str(e)}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# PROVIDER 2 — OANDA
-# ─────────────────────────────────────────────────────────────────────────────
 async def _fetch_oanda(account: TradingAccount, days: int = 90) -> dict:
-    """
-    Connects to OANDA REST API v20.
-    User stores:
-      - OANDA API token  → encrypted_password field
-      - OANDA account ID → account_number field
-
-    Users get their token at:
-      OANDA Account Management → My Services → Manage API Access
-    Docs: https://developer.oanda.com/rest-live-v20/introduction/
-    """
     token      = decrypt_password(account.encrypted_password)
     account_id = account.account_number
     date_from  = (datetime.utcnow() - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -172,8 +130,6 @@ async def _fetch_oanda(account: TradingAccount, days: int = 90) -> dict:
     }
 
     async with httpx.AsyncClient(base_url=OANDA_BASE_URL, headers=headers, timeout=30) as client:
-
-        # ── Account summary ────────────────────────────────────────────────
         r = await client.get(f"/v3/accounts/{account_id}/summary")
         if r.status_code == 401:
             raise HTTPException(status_code=401, detail="OANDA API token is invalid")
@@ -186,7 +142,6 @@ async def _fetch_oanda(account: TradingAccount, days: int = 90) -> dict:
         profit   = float(acct.get("unrealizedPL", 0))
         currency = acct.get("currency", "USD")
 
-        # ── Closed trade transactions ──────────────────────────────────────
         r2 = await client.get(
             f"/v3/accounts/{account_id}/transactions",
             params={"from": date_from, "type": "ORDER_FILL"},
@@ -197,21 +152,17 @@ async def _fetch_oanda(account: TradingAccount, days: int = 90) -> dict:
         else:
             transactions = r2.json().get("transactions", [])
 
-    # ── Normalise deals ────────────────────────────────────────────────────
     deals = []
     for tx in transactions:
         pl = float(tx.get("pl", 0) or 0)
-        # Skip pure opening fills (no realizedPL)
         if pl == 0 and not tx.get("tradesClosed") and not tx.get("tradeReduced"):
             continue
-
         try:
             ts = datetime.fromisoformat(
                 tx.get("time", "").replace("Z", "+00:00")
             ).timestamp()
         except Exception:
             ts = 0.0
-
         deals.append({
             "ticket":     str(tx.get("id", "")),
             "time":       ts,
@@ -232,18 +183,7 @@ async def _fetch_oanda(account: TradingAccount, days: int = 90) -> dict:
     }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# PROVIDER 3 — MetaApi (stub — activate later)
-# ─────────────────────────────────────────────────────────────────────────────
 async def _fetch_metaapi(account: TradingAccount, days: int = 90) -> dict:
-    """
-    MetaApi fallback for any MT5 broker not natively supported.
-
-    To activate:
-      1. pip install metaapi-cloud-sdk
-      2. Set META_API_TOKEN in Render env vars
-      3. Uncomment the block below
-    """
     if not META_API_TOKEN:
         raise HTTPException(
             status_code=503,
@@ -252,22 +192,6 @@ async def _fetch_metaapi(account: TradingAccount, days: int = 90) -> dict:
                 "Please connect a Deriv or OANDA account, or contact support."
             ),
         )
-
-    # ── Uncomment when ready ───────────────────────────────────────────────
-    # from metaapi_cloud_sdk import MetaApi
-    # api = MetaApi(META_API_TOKEN)
-    # if account.metaapi_account_id:
-    #     ma_account = await api.metatrader_account_api.get_account(account.metaapi_account_id)
-    # else:
-    #     ma_account = await api.metatrader_account_api.create_account({...})
-    # await ma_account.wait_connected()
-    # connection = ma_account.get_rpc_connection()
-    # await connection.connect()
-    # await connection.wait_synchronized()
-    # info    = await connection.get_account_information()
-    # history = await connection.get_deals_by_time_range(date_from, date_to)
-    # ...normalise and return
-
     raise HTTPException(
         status_code=501,
         detail="MetaApi integration coming soon. Please use Deriv or OANDA for now.",
@@ -282,17 +206,13 @@ OANDA_BROKER_NAMES = {"oanda", "oanda.com"}
 
 
 async def _fetch_data(account: TradingAccount, days: int = 90) -> dict:
-    """Routes to the correct provider based on account.broker_name."""
     broker = (account.broker_name or "").lower().strip()
-
     if broker in DERIV_BROKER_NAMES:
         logger.info(f"🟢 Deriv provider → account {account.id}")
         return await _fetch_deriv(account, days)
-
     if broker in OANDA_BROKER_NAMES:
         logger.info(f"🟢 OANDA provider → account {account.id}")
         return await _fetch_oanda(account, days)
-
     logger.info(f"🔵 MetaApi provider → account {account.id} (broker: {broker})")
     return await _fetch_metaapi(account, days)
 
@@ -313,7 +233,7 @@ def _get_default_account(user: User, db: Session) -> TradingAccount:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# ANALYTICS MATH — 100% IDENTICAL TO ORIGINAL
+# ANALYTICS MATH
 # ═════════════════════════════════════════════════════════════════════════════
 def _compute_analytics(data: dict) -> dict:
     current_balance = data["balance"]
@@ -500,9 +420,6 @@ async def get_drawdown_stats(
         return {"error": str(e)}
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Lock history — no broker dependency
-# ─────────────────────────────────────────────────────────────────────────────
 @router.get("/lock-history")
 async def get_lock_history(
     current_user: User    = Depends(get_current_user),
@@ -593,9 +510,6 @@ async def get_lock_history(
     }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Auto-lock config — no broker dependency
-# ─────────────────────────────────────────────────────────────────────────────
 def _read_auto_lock_config() -> dict:
     try:
         with open(_AUTO_LOCK_CFG) as f:
@@ -617,10 +531,6 @@ async def save_auto_lock_config(config: dict):
     return {"success": True, "config": config}
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Broker onboarding helper
-# Tells the frontend setup wizard what fields + instructions to show per broker
-# ─────────────────────────────────────────────────────────────────────────────
 @router.get("/broker-config/{broker_name}")
 async def get_broker_config(broker_name: str):
     broker = broker_name.lower().strip()
