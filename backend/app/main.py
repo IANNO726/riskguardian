@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from sqlalchemy import text
 import logging
 import uvicorn
 import asyncio
@@ -26,7 +27,6 @@ from app.services.journal_sync import sync_mt5_trades
 # ─────────────────────────────────────────────────────────────────
 # FIX #5 — Render gives postgres:// URLs.
 # SQLAlchemy 1.4+ only accepts postgresql://.
-# Patch it before any DB import runs.
 # ─────────────────────────────────────────────────────────────────
 _db_url = os.getenv("DATABASE_URL", "")
 if _db_url.startswith("postgres://"):
@@ -62,7 +62,7 @@ from app.routes.trading import router as trading_router
 from app.routes.reports import router as reports_router
 from app.routes.alerts_live import router as alerts_live_router
 from app.routes.platforms import router as platforms_router
-from app.routes.auth_multi import router as auth_multi_router          # ✅ FIX #1 — was imported, never mounted
+from app.routes.auth_multi import router as auth_multi_router
 from app.routes.accounts_multi import router as accounts_multi_router
 from app.routes.admin import router as admin_router
 from app.routes.founder import router as founder_router
@@ -81,11 +81,9 @@ from app.routes.team_management import router as team_router
 from app.routes.integrations import router as integrations_router
 from app.routes.risk_engine import router as risk_engine_router
 from app.routes.simulator import router as simulator_router
-
 from app.routes.news_calendar import router as news_calendar_router
 from app.routes.weekly_report import router as weekly_report_router
 from app.routes.portfolio_tracker import router as portfolio_router
-
 from app.routes.weekly_report import start_scheduler as start_weekly_report_scheduler
 from app.database.database import SessionLocal
 
@@ -137,8 +135,6 @@ def auto_reconnect_mt5():
             time.sleep(30)
 
 
-# FIX #4 — Guard journal sync. mt5 is None on Render so this
-# would throw AttributeError every 60 seconds without the guard.
 async def journal_auto_sync():
     if not _ADMIN_MT5_ENABLED:
         logger.info("ℹ️  Journal auto-sync disabled (no MT5 on Render)")
@@ -153,6 +149,28 @@ async def journal_auto_sync():
         await asyncio.sleep(60)
 
 
+# ─────────────────────────────────────────────────────────────────
+# AUTO-MIGRATION
+# Adds new columns to existing PostgreSQL tables without Alembic.
+# Safe to run on every startup — uses IF NOT EXISTS.
+# ─────────────────────────────────────────────────────────────────
+async def run_migrations():
+    """Run any pending schema migrations safely on startup."""
+    from app.database.database import engine
+    migrations = [
+        # CHANGE 9a: api_token for per-user Deriv API token storage
+        "ALTER TABLE trading_accounts ADD COLUMN IF NOT EXISTS api_token VARCHAR",
+    ]
+    try:
+        with engine.connect() as conn:
+            for sql in migrations:
+                conn.execute(text(sql))
+            conn.commit()
+        logger.info("✅ DB migrations applied")
+    except Exception as e:
+        logger.warning(f"Migration note: {e}")
+
+
 # ================= LIFESPAN =================
 
 @asynccontextmanager
@@ -161,6 +179,9 @@ async def lifespan(app: FastAPI):
 
     await init_db()
     logger.info("✅ DB ready")
+
+    # ── Run schema migrations ─────────────────────────────────────
+    await run_migrations()
 
     try:
         create_stripe_products()
@@ -213,13 +234,6 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
-# ─────────────────────────────────────────────────────────────────
-# CORS — allow_origins=["*"] with allow_credentials=False
-# This is the correct combination for token-based auth (Bearer).
-# Cookies are NOT used — tokens are in Authorization header.
-# So allow_credentials=False + allow_origins=["*"] is legal
-# and works from ANY origin including localhost and production.
-# ─────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -229,19 +243,11 @@ app.add_middleware(
 )
 
 
-# ─────────────────────────────────────────────────────────────────
-# ====================== ROUTES ==================================
-#
-# FIX #1: auth_multi_router was imported but NEVER mounted.
-#         This was the cause of 404 on every login / register.
-#
-# FIX #2: All other routers that were imported but not mounted
-#         are now registered below.
-# ─────────────────────────────────────────────────────────────────
+# ================= ROUTES =================
 
 # ── Auth ──────────────────────────────────────────────────────────
 app.include_router(auth_router,       prefix="/api/v1/auth",       tags=["Auth (legacy)"])
-app.include_router(auth_multi_router, prefix="/api/v1/auth-multi", tags=["Auth"])   # ✅ FIX #1
+app.include_router(auth_multi_router, prefix="/api/v1/auth-multi", tags=["Auth"])
 
 # ── Accounts ──────────────────────────────────────────────────────
 app.include_router(accounts_router,       prefix="/api/v1/accounts",       tags=["Accounts"])
@@ -254,10 +260,10 @@ app.include_router(trades_router,      prefix="/api/v1/trades",      tags=["Trad
 app.include_router(rules_router,       prefix="/api/v1/rules",       tags=["Rules"])
 app.include_router(alerts_router,      prefix="/api/v1/alerts",      tags=["Alerts"])
 app.include_router(analytics_router,   prefix="/api/v1/analytics",   tags=["Analytics"])
-app.include_router(risk_status_router, prefix="/api/v1/risk-status", tags=["Risk Status"])  # ✅ FIX #6
+app.include_router(risk_status_router, prefix="/api/v1/risk-status", tags=["Risk Status"])
 app.include_router(trading_router,     prefix="/api/v1/trading",     tags=["Trading"])
 app.include_router(risk_engine_router, prefix="/api/v1/risk-engine", tags=["Risk Engine"])
-app.include_router(risk_rules_router,  prefix="/api/v1/risk-rules",  tags=["Risk Rules"])   # ✅ FIX #2
+app.include_router(risk_rules_router,  prefix="/api/v1/risk-rules",  tags=["Risk Rules"])
 
 # ── Journal, Reports & AI ─────────────────────────────────────────
 app.include_router(journal_router,       prefix="/api/v1/journal",   tags=["Journal"])
@@ -267,10 +273,10 @@ app.include_router(weekly_report_router, prefix="/api/v1/report",    tags=["Week
 app.include_router(portfolio_router,     prefix="/api/v1/portfolio", tags=["Portfolio"])
 
 # ── Prop Firm Simulator ───────────────────────────────────────────
-app.include_router(simulator_router, prefix="/api/v1/simulator", tags=["Simulator"])  # ✅ FIX #2
+app.include_router(simulator_router, prefix="/api/v1/simulator", tags=["Simulator"])
 
 # ── Billing & Subscriptions ───────────────────────────────────────
-app.include_router(subscription_router, prefix="/api/v1/subscriptions", tags=["Subscriptions"])  # ✅ FIX #7
+app.include_router(subscription_router, prefix="/api/v1/subscriptions", tags=["Subscriptions"])
 app.include_router(billing_router,      prefix="/api/v1/billing",       tags=["Billing"])
 app.include_router(trial_router,        prefix="/api/v1/trial",         tags=["Trial"])
 
@@ -281,17 +287,17 @@ app.include_router(setup_router,     prefix="/api/v1/setup",     tags=["Setup"])
 
 # ── Notifications & Automation ────────────────────────────────────
 app.include_router(alerts_live_router, prefix="/api/v1/alerts-live", tags=["Live Alerts"])
-app.include_router(telegram_router,    prefix="/api/v1/telegram",    tags=["Telegram"])    # ✅ FIX #2
-app.include_router(cooldown_router,    prefix="/api/v1/cooldown",    tags=["Cooldown"])    # ✅ FIX #2
+app.include_router(telegram_router,    prefix="/api/v1/telegram",    tags=["Telegram"])
+app.include_router(cooldown_router,    prefix="/api/v1/cooldown",    tags=["Cooldown"])
 
 # ── Prop Firms ────────────────────────────────────────────────────
-app.include_router(prop_firms_router, prefix="/api/v1/prop-firms", tags=["Prop Firms"])   # ✅ FIX #2
+app.include_router(prop_firms_router, prefix="/api/v1/prop-firms", tags=["Prop Firms"])
 
 # ── Enterprise / Team ─────────────────────────────────────────────
-app.include_router(team_router,         prefix="/api/v1/team",        tags=["Team"])
-app.include_router(white_label_router,  prefix="/api/v1/white-label", tags=["White Label"])
-app.include_router(api_webhooks_router, prefix="/api/v1/webhooks",    tags=["Webhooks"])
-app.include_router(integrations_router, prefix="/api/v1/integrations",tags=["Integrations"])
+app.include_router(team_router,         prefix="/api/v1/team",         tags=["Team"])
+app.include_router(white_label_router,  prefix="/api/v1/white-label",  tags=["White Label"])
+app.include_router(api_webhooks_router, prefix="/api/v1/webhooks",     tags=["Webhooks"])
+app.include_router(integrations_router, prefix="/api/v1/integrations", tags=["Integrations"])
 
 # ── Admin & Founder ───────────────────────────────────────────────
 app.include_router(admin_router,         prefix="/api/v1/admin",         tags=["Admin"])
@@ -299,7 +305,7 @@ app.include_router(admin_stream_router,  prefix="/api/v1/admin-stream",  tags=["
 app.include_router(founder_router,       prefix="/api/v1/founder",       tags=["Founder"])
 app.include_router(founder_users_router, prefix="/api/v1/founder-users", tags=["Founder Users"])
 
-# ── WebSocket (no prefix — has its own path) ──────────────────────
+# ── WebSocket ─────────────────────────────────────────────────────
 app.include_router(ws_router)
 
 
@@ -320,9 +326,6 @@ async def health():
 
 
 # ================= RUN =================
-# host="0.0.0.0" is required on Render —
-# "127.0.0.1" only accepts local connections
-# and will make the service unreachable.
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
