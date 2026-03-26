@@ -11,6 +11,9 @@ Smooth account switching:
 
 CHANGE 6 (plan_gating): PLAN_ACCOUNT_LIMITS replaced with check_account_limit()
 from app.middleware.plan_gating — single source of truth for account limits.
+
+CHANGE 9 (deriv_saas): get_adapter now uses build_deriv_credentials()
+so each user's own MT5 login/password/api_token are used — no shared env vars.
 """
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -23,7 +26,7 @@ from app.models.user import User, TradingAccount, PlatformType
 from app.routes.auth_multi import get_current_user
 from app.utils.encryption import encrypt_password, decrypt_password
 from app.platforms.mt5_adapter import MT5Adapter, MT5Verifier
-from app.platforms.deriv_adapter import DerivAdapter, DerivVerifier
+from app.platforms.deriv_adapter import DerivAdapter, DerivVerifier, build_deriv_credentials
 from app.middleware.plan_gating import check_account_limit
 
 router = APIRouter(tags=["Multi-Account Management"])
@@ -86,23 +89,34 @@ class AccountUpdate(BaseModel):
     account_name: Optional[str] = None
     is_active: Optional[bool] = None
 
+
 # ==================== ADAPTER FACTORY ====================
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 def get_adapter(account: TradingAccount):
+    """
+    Routes to the correct adapter per broker.
+    Deriv accounts use build_deriv_credentials() which reads
+    the user's own MT5 login + password + API token from DB.
+    No shared env vars for user credentials.
+    """
+    if _is_deriv(account):
+        logger.info(f"Routing account {account.account_number} → DerivAdapter (per-user creds)")
+        creds = build_deriv_credentials(account)
+        return DerivAdapter(creds)
+
+    logger.info(f"Routing account {account.account_number} → MT5Adapter")
     creds = {
         "login":          account.account_number,
         "account_number": account.account_number,
         "password":       decrypt_password(account.encrypted_password),
         "server":         account.server,
     }
-    if _is_deriv(account):
-        logger.info(f"Routing account {account.account_number} → DerivAdapter (WebSocket)")
-        return DerivAdapter(creds)
-    logger.info(f"Routing account {account.account_number} → MT5Adapter")
     return MT5Adapter(creds)
 
-import logging
-logger = logging.getLogger(__name__)
 
 # ==================== ROUTES ====================
 
@@ -180,8 +194,8 @@ async def get_plan_limit(
     db: Session = Depends(get_db)
 ):
     from app.middleware.plan_gating import ACCOUNT_LIMITS, get_user_plan
-    user_plan    = get_user_plan(current_user)
-    max_accounts = ACCOUNT_LIMITS.get(user_plan, 1)
+    user_plan     = get_user_plan(current_user)
+    max_accounts  = ACCOUNT_LIMITS.get(user_plan, 1)
     current_count = db.query(TradingAccount).filter(
         TradingAccount.user_id == current_user.id, TradingAccount.is_active == True
     ).count()
@@ -257,12 +271,9 @@ async def get_account_live_data(
     db: Session = Depends(get_db)
 ):
     """
-    ✅ Deriv accounts → Deriv WebSocket (instant, no MT5 terminal touched)
-    ✅ MT5 accounts   → MT5 terminal (FTMO, Exness, EGM, IC Markets, etc.)
-    No cross-account interference. No disconnections.
-
-    Returns account_info.profit as today's closed P&L for Deriv accounts
-    since Deriv WebSocket doesn't expose live margin/profit like MT5 does.
+    ✅ Deriv accounts → DerivAdapter with per-user MT5 + API token credentials
+    ✅ MT5 accounts   → MT5Adapter (FTMO, Exness, EGM, IC Markets, etc.)
+    No cross-account interference. No shared env vars.
     """
     account = db.query(TradingAccount).filter(
         TradingAccount.id == account_id,
@@ -285,9 +296,7 @@ async def get_account_live_data(
         account_info = await adapter.get_account_info()
         positions    = await adapter.get_open_positions()
 
-        # ── Calculate today's P&L from trade history (Deriv WebSocket mode) ──
-        # In MT5 mode, account_info.profit already has live open P&L
-        # In Deriv WS mode, profit=0 so we calculate from today's closed trades
+        # ── Calculate today's P&L from trade history for Deriv WS mode ───
         daily_pnl = float(account_info.get("profit", 0)) if account_info else 0.0
 
         if deriv and daily_pnl == 0.0:
@@ -296,7 +305,6 @@ async def get_account_live_data(
                 today   = datetime.utcnow().date()
                 for trade in history:
                     trade_time = trade.get("time", 0)
-                    # Handle both unix timestamp and ISO string
                     if isinstance(trade_time, (int, float)) and trade_time > 0:
                         trade_date = datetime.utcfromtimestamp(trade_time).date()
                     elif isinstance(trade_time, str):
@@ -315,7 +323,7 @@ async def get_account_live_data(
 
         await adapter.disconnect()
 
-        # ── Cache to DB ────────────────────────────────────────────────────
+        # ── Cache to DB ───────────────────────────────────────────────────
         if account_info:
             account.last_balance   = account_info.get("balance",  0)
             account.last_equity    = account_info.get("equity",   0)
@@ -323,7 +331,7 @@ async def get_account_live_data(
             account.last_connected = datetime.utcnow()
             db.commit()
 
-        # ── Inject daily_pnl into account_info so useLiveTrades picks it up ─
+        # ── Inject daily_pnl so useLiveTrades reads it ────────────────────
         if account_info:
             account_info["profit"] = daily_pnl
 
@@ -375,10 +383,13 @@ async def verify_account(
     if not account:
         raise HTTPException(status_code=404, detail="Account not found")
 
-    password = decrypt_password(account.encrypted_password)
     if _is_deriv(account):
-        success, message, info = await DerivVerifier.verify(password)
+        # Use the stored API token for verification
+        api_token = decrypt_password(account.api_token) if account.api_token else \
+                    decrypt_password(account.encrypted_password)
+        success, message, info = await DerivVerifier.verify(api_token)
     else:
+        password = decrypt_password(account.encrypted_password)
         success, message, info = MT5Verifier.verify(
             account_number=int(account.account_number),
             password=password,

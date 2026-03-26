@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+﻿import React, { useState } from "react";
 import {
   Typography, TextField, Button, CircularProgress, Box,
   InputAdornment, IconButton, Switch, Chip,
@@ -7,7 +7,8 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
   Lock as LockIcon, Person as PersonIcon, Dns as DnsIcon,
-  Check, Key as KeyIcon, OpenInNew as OpenInNewIcon,
+  Check, Key as KeyIcon, AccountCircle as AccountCircleIcon,
+  Badge as BadgeIcon,
 } from "@mui/icons-material";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -22,65 +23,32 @@ const PLAN_CONFIG: Record<string, {
   enterprise: { label: 'Enterprise',  color: '#ef4444', emoji: '🏢', monthlyPriceId: 'price_1TDPgk6JfXB9ffkPQURl7vi4', annualPriceId: 'price_1TDPgk6JfXB9ffkPQURl7vi4' },
 };
 
-const steps = [
-  { id: 0, label: "Broker",  icon: "🔗", color: "#38bdf8", desc: "Connect trading account"  },
-  { id: 1, label: "Risk",    icon: "🛡️", color: "#ef4444", desc: "Set risk limits"           },
-  { id: 2, label: "Alerts",  icon: "🔔", color: "#a855f7", desc: "Configure notifications"  },
-  { id: 3, label: "AI",      icon: "🤖", color: "#22c55e", desc: "Enable AI monitoring"      },
+const BROKERS = [
+  {
+    id: "deriv", label: "Deriv", logo: "🟢", color: "#e74c3c",
+    badge: "Recommended", badgeColor: "#22c55e", desc: "MT5 Forex & Options",
+  },
+  {
+    id: "oanda", label: "OANDA", logo: "🟡", color: "#f97316",
+    badge: "Free API", badgeColor: "#38bdf8", desc: "Forex & CFDs",
+  },
+  {
+    id: "other", label: "Other MT5", logo: "⚙️", color: "#6366f1",
+    badge: "MetaApi soon", badgeColor: "#a855f7", desc: "IC Markets, Pepperstone…",
+  },
 ];
 
-type BrokerMethod = "api_token" | "mt5_credentials";
-interface BrokerDef {
-  display: string; method: BrokerMethod; color: string; logo: string;
-  description: string; tokenUrl?: string; tokenLabel?: string;
-  accountLabel?: string; showServer: boolean; note?: string;
-}
-
-const BROKER_MAP: Record<string, BrokerDef> = {
-  deriv: {
-    display: "Deriv", method: "api_token", color: "#e84c4c", logo: "🔴",
-    description: "Connect via Deriv API Token — no MT5 terminal needed",
-    tokenUrl: "https://app.deriv.com/account/api-token",
-    tokenLabel: "Deriv API Token", accountLabel: "Deriv Login ID (optional)",
-    showServer: false, note: "Create a token with Read + Trading information scopes",
-  },
-  "deriv.com": {
-    display: "Deriv", method: "api_token", color: "#e84c4c", logo: "🔴",
-    description: "Connect via Deriv API Token — no MT5 terminal needed",
-    tokenUrl: "https://app.deriv.com/account/api-token",
-    tokenLabel: "Deriv API Token", accountLabel: "Deriv Login ID (optional)",
-    showServer: false, note: "Create a token with Read + Trading information scopes",
-  },
-  oanda: {
-    display: "OANDA", method: "api_token", color: "#f59e0b", logo: "🟡",
-    description: "Connect via OANDA REST API v20 — no MT5 terminal needed",
-    tokenUrl: "https://www.oanda.com/account/management-portal",
-    tokenLabel: "OANDA API Token", accountLabel: "OANDA Account ID",
-    showServer: false, note: "Go to OANDA → My Services → Manage API Access",
-  },
-  "oanda.com": {
-    display: "OANDA", method: "api_token", color: "#f59e0b", logo: "🟡",
-    description: "Connect via OANDA REST API v20 — no MT5 terminal needed",
-    tokenUrl: "https://www.oanda.com/account/management-portal",
-    tokenLabel: "OANDA API Token", accountLabel: "OANDA Account ID",
-    showServer: false, note: "Go to OANDA → My Services → Manage API Access",
-  },
-};
-
-function getBrokerDef(brokerName: string): BrokerDef {
-  const key = brokerName.toLowerCase().trim();
-  return BROKER_MAP[key] ?? {
-    display: brokerName || "MT5 Broker", method: "mt5_credentials",
-    color: "#38bdf8", logo: "📊",
-    description: "Connect via MT5 login, password & server",
-    showServer: true,
-    note: "MetaApi integration will be activated for cloud data access",
-  };
-}
+const steps = [
+  { id: 0, label: "Broker",  icon: "🔗", color: "#38bdf8" },
+  { id: 1, label: "Risk",    icon: "🛡️", color: "#ef4444" },
+  { id: 2, label: "Alerts",  icon: "🔔", color: "#a855f7" },
+  { id: 3, label: "AI",      icon: "🤖", color: "#22c55e" },
+];
 
 const SetupWizard: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
   const plan     = searchParams.get('plan') || localStorage.getItem('selected_plan') || 'free';
   const planInfo = PLAN_CONFIG[plan] || PLAN_CONFIG.free;
 
@@ -88,21 +56,78 @@ const SetupWizard: React.FC = () => {
   const [loading, setLoading]           = useState(false);
   const [loadingMsg, setLoadingMsg]     = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [brokerDef, setBrokerDef]       = useState<BrokerDef>(getBrokerDef(""));
+  const [showMt5Pass,  setShowMt5Pass]  = useState(false);
+  const [selectedBroker, setSelectedBroker] = useState("deriv");
 
   const API = process.env.REACT_APP_API_URL || 'https://riskguardian.onrender.com';
 
   const [form, setForm] = useState({
-    broker: "", account: "", password: "", server: "",
+    // Deriv fields
+    apiToken:    "",
+    mt5Login:    "",
+    mt5Password: "",
+    // OANDA fields
+    oandaAccountId: "",
+    oandaToken:     "",
+    // Other MT5 fields
+    brokerName: "",
+    account:    "",
+    password:   "",
+    server:     "",
+    // Risk
     dailyLoss: 5, maxDD: 10, riskPerTrade: 1, minRR: 2,
+    // Alerts
     telegram: true, email: true, sms: false,
+    // AI
     emotionalAI: true, predictiveAI: true, optimizerAI: true,
   });
 
-  useEffect(() => { setBrokerDef(getBrokerDef(form.broker)); }, [form.broker]);
-
   const update = (field: string, value: any) =>
-    setForm(prev => ({ ...prev, [field]: value }));
+    setForm(f => ({ ...f, [field]: value }));
+
+  const pickBroker = (id: string) => {
+    setSelectedBroker(id);
+    setForm(f => ({ ...f, apiToken: '', mt5Login: '', mt5Password: '', oandaAccountId: '', oandaToken: '', brokerName: '', account: '', password: '', server: '' }));
+  };
+
+  // Build broker payload for backend
+  const buildBrokerPayload = () => {
+    if (selectedBroker === "deriv") {
+      return {
+        broker_name:  "deriv",
+        api_token:    form.apiToken,
+        mt5_login:    form.mt5Login,
+        mt5_password: form.mt5Password,
+        server:       "Deriv-Demo",
+      };
+    }
+    if (selectedBroker === "oanda") {
+      return {
+        broker_name:    "oanda",
+        account_number: form.oandaAccountId,
+        api_token:      form.oandaToken,
+        password:       form.oandaToken,
+        server:         "oanda",
+      };
+    }
+    return {
+      broker_name:    form.brokerName,
+      account_number: form.account,
+      password:       form.password,
+      server:         form.server,
+    };
+  };
+
+  const step0Valid = () => {
+    if (selectedBroker === "deriv")
+      return form.apiToken.trim().length > 0 &&
+             form.mt5Login.trim().length > 0 &&
+             form.mt5Password.trim().length > 0;
+    if (selectedBroker === "oanda")
+      return form.oandaAccountId.trim().length > 0 &&
+             form.oandaToken.trim().length > 0;
+    return true;
+  };
 
   const handleFinish = async () => {
     try {
@@ -114,24 +139,20 @@ const SetupWizard: React.FC = () => {
       try { await fetch(`${API}/`, { method: 'GET', signal: AbortSignal.timeout(8000) }); } catch {}
 
       setLoadingMsg('Saving your configuration...');
-      const brokerPayload = brokerDef.method === "api_token"
-        ? { broker_name: form.broker, account_number: form.account, password: form.password, server: "" }
-        : { broker_name: form.broker, account_number: form.account, password: form.password, server: form.server };
-
       const setupRes = await fetch(`${API}/api/v1/setup/complete`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          broker: brokerPayload,
-          risk:   { daily_loss: Number(form.dailyLoss), max_dd: Number(form.maxDD), risk_per_trade: Number(form.riskPerTrade), min_rr: Number(form.minRR) },
-          alerts: { telegram: form.telegram, email: form.email, sms: form.sms },
-          ai:     { emotional: form.emotionalAI, predictive: form.predictiveAI, optimizer: form.optimizerAI },
+          broker:  buildBrokerPayload(),
+          risk:    { daily_loss: Number(form.dailyLoss), max_dd: Number(form.maxDD), risk_per_trade: Number(form.riskPerTrade), min_rr: Number(form.minRR) },
+          alerts:  { telegram: form.telegram, email: form.email, sms: form.sms },
+          ai:      { emotional: form.emotionalAI, predictive: form.predictiveAI, optimizer: form.optimizerAI },
           plan,
         }),
       });
 
       const setupData = await setupRes.json();
-      const setupOk   = setupRes.ok || setupData.detail === "Setup already completed";
+      const setupOk = setupRes.ok || setupData.detail === "Setup already completed";
       if (!setupOk) { alert(setupData.detail || "Setup failed"); return; }
 
       if (plan === 'free' || !planInfo.monthlyPriceId) { navigate('/app'); return; }
@@ -147,14 +168,18 @@ const SetupWizard: React.FC = () => {
         }),
       });
       const checkoutData = await checkoutRes.json();
-      if (checkoutData.checkout_url) { window.top!.location.href = checkoutData.checkout_url; }
-      else { alert('Payment setup failed. Please try again.'); }
-
+      if (checkoutData.checkout_url) {
+        window.top!.location.href = checkoutData.checkout_url;
+      } else {
+        alert('Payment setup failed. Please try again.');
+      }
     } catch (err: any) {
-      if (err?.name === 'TypeError' && err?.message?.includes('fetch'))
-        alert("Server is starting up — please wait 30 seconds and try again.");
-      else alert("Setup error — check your connection and try again.");
-    } finally { setLoading(false); setLoadingMsg(''); }
+      console.error(err);
+      alert("Setup error — check your connection and try again.");
+    } finally {
+      setLoading(false);
+      setLoadingMsg('');
+    }
   };
 
   const si = (accent = '#38bdf8') => ({
@@ -164,15 +189,24 @@ const SetupWizard: React.FC = () => {
       '&:hover fieldset': { borderColor: `${accent}66` },
       '&.Mui-focused fieldset': { borderColor: accent, borderWidth: '1.5px' },
     },
-    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.45)', fontSize: { xs: '14px', sm: '16px' } },
+    '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.45)' },
     '& .MuiInputLabel-root.Mui-focused': { color: accent },
-    '& input': { fontFamily: '"Roboto Mono",monospace', fontSize: { xs: '14px', sm: '17px' }, color: 'white', padding: { xs: '12px 10px 12px 0', sm: '16px 14px 16px 0' } },
+    '& input': { fontFamily: '"Roboto Mono",monospace', fontSize: '16px', color: 'white', padding: '14px 14px 14px 0', background: 'transparent' },
     '& input:-webkit-autofill': { WebkitBoxShadow: '0 0 0 1000px #111827 inset', WebkitTextFillColor: '#ffffff' },
   });
 
-  const ToggleRow: React.FC<{ icon: string; label: string; desc: string; checked: boolean; onChange: (v: boolean) => void; color: string; }> =
-    ({ icon, label, desc, checked, onChange, color }) => (
-    <Box onClick={() => onChange(!checked)} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2.5, borderRadius: '16px', cursor: 'pointer', background: checked ? `${color}10` : 'rgba(255,255,255,0.03)', border: `1px solid ${checked ? `${color}35` : 'rgba(255,255,255,0.07)'}`, transition: 'all 0.25s', '&:hover': { background: checked ? `${color}18` : 'rgba(255,255,255,0.05)' }, mb: 1.5 }}>
+  const ToggleRow: React.FC<{
+    icon: string; label: string; desc: string;
+    checked: boolean; onChange: (v: boolean) => void; color: string;
+  }> = ({ icon, label, desc, checked, onChange, color }) => (
+    <Box onClick={() => onChange(!checked)} sx={{
+      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      p: 2.5, borderRadius: '16px', cursor: 'pointer',
+      background: checked ? `${color}10` : 'rgba(255,255,255,0.03)',
+      border: `1px solid ${checked ? `${color}35` : 'rgba(255,255,255,0.07)'}`,
+      transition: 'all 0.25s', mb: 1.5,
+      '&:hover': { background: checked ? `${color}18` : 'rgba(255,255,255,0.05)' },
+    }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Box sx={{ width: 48, height: 48, borderRadius: '14px', background: checked ? `${color}20` : 'rgba(255,255,255,0.05)', border: `1px solid ${checked ? `${color}40` : 'rgba(255,255,255,0.08)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>{icon}</Box>
         <Box>
@@ -180,143 +214,168 @@ const SetupWizard: React.FC = () => {
           <Typography sx={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)' }}>{desc}</Typography>
         </Box>
       </Box>
-      <Switch checked={checked} onChange={e => { e.stopPropagation(); onChange(e.target.checked); }} sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: color } }} />
+      <Switch checked={checked} onChange={e => { e.stopPropagation(); onChange(e.target.checked); }}
+        sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: color } }} />
     </Box>
   );
 
-  const renderBrokerStep = () => {
-    const accent     = brokerDef.color;
-    const isApiToken = brokerDef.method === "api_token";
-    const isMT5      = brokerDef.method === "mt5_credentials";
-    const hasBroker  = form.broker.length > 0;
-
-    return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-        <TextField label="Broker Name" fullWidth autoComplete="off"
-          placeholder="e.g. deriv, oanda, ICMarkets..."
-          InputLabelProps={{ shrink: true }} value={form.broker}
-          onChange={e => update("broker", e.target.value)}
-          InputProps={{ startAdornment: <InputAdornment position="start"><DnsIcon sx={{ color: '#38bdf8', fontSize: 22 }} /></InputAdornment> }}
-          sx={si('#38bdf8')}
-          helperText={<Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', mt: 0.5 }}>Type your broker — the form adapts automatically</Typography>}
-        />
-
-        {hasBroker && (
-          <Box sx={{ p: 2, borderRadius: '14px', background: `${accent}10`, border: `1px solid ${accent}30`, display: 'flex', alignItems: 'flex-start', gap: 1.5, transition: 'all 0.3s' }}>
-            <Typography sx={{ fontSize: '22px', mt: 0.2 }}>{brokerDef.logo}</Typography>
-            <Box sx={{ flex: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.4 }}>
-                <Typography sx={{ fontSize: '15px', fontWeight: 800, color: accent }}>{brokerDef.display}</Typography>
-                <Chip label={isApiToken ? "✅ API Token" : "🔑 MT5 Credentials"} size="small"
-                  sx={{ background: `${accent}18`, border: `1px solid ${accent}35`, color: accent, fontWeight: 700, fontSize: '11px', height: 22 }} />
-              </Box>
-              <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>{brokerDef.description}</Typography>
-              {brokerDef.note && <Typography sx={{ fontSize: '12px', color: `${accent}cc`, mt: 0.5, fontStyle: 'italic' }}>💡 {brokerDef.note}</Typography>}
-            </Box>
-          </Box>
-        )}
-
-        {isApiToken && (
-          <>
-            {brokerDef.accountLabel && (
-              <TextField label={brokerDef.accountLabel} fullWidth autoComplete="off"
-                InputLabelProps={{ shrink: true }} value={form.account}
-                onChange={e => update("account", e.target.value)}
-                InputProps={{ startAdornment: <InputAdornment position="start"><PersonIcon sx={{ color: accent, fontSize: 22 }} /></InputAdornment> }}
-                sx={si(accent)} />
-            )}
-            <TextField label={brokerDef.tokenLabel || "API Token"} fullWidth autoComplete="new-password"
-              InputLabelProps={{ shrink: true }} value={form.password}
-              onChange={e => update("password", e.target.value)}
-              type={showPassword ? "text" : "password"}
-              InputProps={{
-                startAdornment: <InputAdornment position="start"><KeyIcon sx={{ color: accent, fontSize: 22 }} /></InputAdornment>,
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword(!showPassword)} sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: accent } }}>
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }} sx={si(accent)} />
-            {brokerDef.tokenUrl && (
-              <Button href={brokerDef.tokenUrl} target="_blank" rel="noopener noreferrer"
-                endIcon={<OpenInNewIcon sx={{ fontSize: '16px !important' }} />}
-                sx={{ py: 1.2, borderRadius: '12px', background: `${accent}15`, border: `1px solid ${accent}30`, color: accent, fontWeight: 700, fontSize: '14px', textTransform: 'none', '&:hover': { background: `${accent}25` } }}>
-                Get your {brokerDef.display} API Token →
-              </Button>
-            )}
-            <Box sx={{ p: 2, borderRadius: '12px', background: 'rgba(34,197,94,0.07)', border: '1px solid rgba(34,197,94,0.2)' }}>
-              <Typography sx={{ fontSize: '13px', color: 'rgba(34,197,94,0.9)', lineHeight: 1.6 }}>
-                ✅ <strong>No MT5 terminal needed.</strong> Data is fetched directly from {brokerDef.display}'s cloud API — works anywhere.
-              </Typography>
-            </Box>
-          </>
-        )}
-
-        {isMT5 && (
-          <>
-            <TextField label="MT5 Account Number" fullWidth autoComplete="off"
-              InputLabelProps={{ shrink: true }} value={form.account}
-              onChange={e => update("account", e.target.value)}
-              InputProps={{ startAdornment: <InputAdornment position="start"><PersonIcon sx={{ color: '#38bdf8', fontSize: 22 }} /></InputAdornment> }}
-              sx={si('#38bdf8')} />
-            <TextField label="MT5 Password" fullWidth autoComplete="new-password"
-              InputLabelProps={{ shrink: true }} value={form.password}
-              onChange={e => update("password", e.target.value)}
-              type={showPassword ? "text" : "password"}
-              InputProps={{
-                startAdornment: <InputAdornment position="start"><LockIcon sx={{ color: '#38bdf8', fontSize: 22 }} /></InputAdornment>,
-                endAdornment: <InputAdornment position="end"><IconButton onClick={() => setShowPassword(!showPassword)} sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#38bdf8' } }}>{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment>,
-              }} sx={si('#38bdf8')} />
-            <TextField label="MT5 Server" fullWidth autoComplete="off"
-              InputLabelProps={{ shrink: true }} value={form.server}
-              onChange={e => update("server", e.target.value)}
-              InputProps={{ startAdornment: <InputAdornment position="start"><DnsIcon sx={{ color: '#38bdf8', fontSize: 22 }} /></InputAdornment> }}
-              sx={si('#38bdf8')} />
-            <Box sx={{ p: 2, borderRadius: '12px', background: 'rgba(251,191,36,0.07)', border: '1px solid rgba(251,191,36,0.25)' }}>
-              <Typography sx={{ fontSize: '13px', color: 'rgba(251,191,36,0.9)', lineHeight: 1.6 }}>
-                ⚠️ <strong>MetaApi integration coming soon</strong> for non-Deriv/OANDA brokers. Credentials saved securely.
-                <br /><strong>Tip:</strong> Switch to Deriv or OANDA for instant live data right now.
-              </Typography>
-            </Box>
-          </>
-        )}
-
-        {!hasBroker && (
-          <Box sx={{ py: 1, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)', textAlign: 'center', mb: 0.5 }}>
-              Supported brokers with instant live data:
-            </Typography>
-            {[
-              { name: 'deriv', label: 'Deriv', color: '#e84c4c', logo: '🔴', note: 'Free API token' },
-              { name: 'oanda', label: 'OANDA', color: '#f59e0b', logo: '🟡', note: 'Free API token' },
-            ].map(b => (
-              <Box key={b.name} onClick={() => update("broker", b.name)} sx={{ p: 2, borderRadius: '14px', cursor: 'pointer', background: `${b.color}08`, border: `1px solid ${b.color}25`, display: 'flex', alignItems: 'center', gap: 2, transition: 'all 0.2s', '&:hover': { background: `${b.color}15`, transform: 'translateX(4px)' } }}>
-                <Typography sx={{ fontSize: '24px' }}>{b.logo}</Typography>
-                <Box sx={{ flex: 1 }}>
-                  <Typography sx={{ fontSize: '15px', fontWeight: 700, color: 'white' }}>{b.label}</Typography>
-                  <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{b.note}</Typography>
-                </Box>
-                <Typography sx={{ fontSize: '12px', color: b.color, fontWeight: 600 }}>Click to select →</Typography>
-              </Box>
-            ))}
-            <Box sx={{ p: 2, borderRadius: '14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography sx={{ fontSize: '22px' }}>📊</Typography>
-              <Box>
-                <Typography sx={{ fontSize: '15px', fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>Other MT5 Brokers</Typography>
-                <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>MetaApi integration — coming soon</Typography>
-              </Box>
-            </Box>
-          </Box>
-        )}
-      </Box>
-    );
-  };
-
   const renderStep = () => {
     switch (activeStep) {
-      case 0: return renderBrokerStep();
+      case 0: return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* Broker selector */}
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 1.5, mb: 1 }}>
+            {BROKERS.map(b => {
+              const active = selectedBroker === b.id;
+              return (
+                <Box key={b.id} onClick={() => pickBroker(b.id)} sx={{
+                  p: 2, borderRadius: '16px', cursor: 'pointer', textAlign: 'center',
+                  background: active ? `${b.color}18` : 'rgba(255,255,255,0.03)',
+                  border: `2px solid ${active ? b.color : 'rgba(255,255,255,0.08)'}`,
+                  transition: 'all 0.25s',
+                  boxShadow: active ? `0 0 20px ${b.color}30` : 'none',
+                  '&:hover': { background: `${b.color}12`, borderColor: `${b.color}60` },
+                }}>
+                  <Typography sx={{ fontSize: '26px', mb: 0.5 }}>{b.logo}</Typography>
+                  <Typography sx={{ fontSize: '13px', fontWeight: 800, color: active ? b.color : 'white', mb: 0.3 }}>{b.label}</Typography>
+                  <Typography sx={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.3 }}>{b.desc}</Typography>
+                  {active && (
+                    <Chip label={b.badge} size="small" sx={{ mt: 1, background: `${b.badgeColor}20`, color: b.badgeColor, border: `1px solid ${b.badgeColor}40`, fontSize: '10px', fontWeight: 700, height: 20 }} />
+                  )}
+                </Box>
+              );
+            })}
+          </Box>
+
+          {/* ── DERIV: 3 fields ── */}
+          {selectedBroker === "deriv" && (
+            <>
+              <Box sx={{ p: 2, borderRadius: '14px', background: '#e74c3c10', border: '1px solid #e74c3c30' }}>
+                <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', mb: 0.5 }}>
+                  🔑 Get your API token:
+                </Typography>
+                <Typography component="a" href="https://app.deriv.com/account/api-token" target="_blank" rel="noopener noreferrer"
+                  sx={{ fontSize: '13px', color: '#e74c3c', fontWeight: 700, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+                  app.deriv.com → Account Settings → API Token →
+                </Typography>
+                <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', mt: 0.5 }}>
+                  Required scopes: <strong style={{ color: 'rgba(255,255,255,0.7)' }}>Read</strong> + <strong style={{ color: 'rgba(255,255,255,0.7)' }}>Trade</strong> + <strong style={{ color: 'rgba(255,255,255,0.7)' }}>Trading information</strong>
+                </Typography>
+              </Box>
+
+              <TextField label="Deriv API Token" fullWidth autoComplete="off"
+                placeholder="e.g. bBmcP0RwuMjeu7t"
+                InputLabelProps={{ shrink: true }} value={form.apiToken}
+                onChange={e => update("apiToken", e.target.value)}
+                InputProps={{ startAdornment: <InputAdornment position="start"><KeyIcon sx={{ color: '#e74c3c', fontSize: 22 }} /></InputAdornment> }}
+                sx={si('#e74c3c')} />
+
+              <Box sx={{ p: 2, borderRadius: '14px', background: '#38bdf810', border: '1px solid #38bdf830', mt: 0.5 }}>
+                <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', mb: 0.3 }}>
+                  📱 Find your MT5 login in the Deriv MT5 app:
+                </Typography>
+                <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
+                  Open Deriv MT5 app → Trade tab → top number (e.g. <strong style={{ color: 'rgba(255,255,255,0.7)' }}>40979584</strong>)
+                </Typography>
+              </Box>
+
+              <TextField label="MT5 Login Number" fullWidth autoComplete="off"
+                placeholder="e.g. 40979584"
+                InputLabelProps={{ shrink: true }} value={form.mt5Login}
+                onChange={e => update("mt5Login", e.target.value)}
+                InputProps={{ startAdornment: <InputAdornment position="start"><BadgeIcon sx={{ color: '#38bdf8', fontSize: 22 }} /></InputAdornment> }}
+                sx={si('#38bdf8')} />
+
+              <TextField label="MT5 Password" fullWidth autoComplete="new-password"
+                placeholder="Your Deriv MT5 account password"
+                InputLabelProps={{ shrink: true }} value={form.mt5Password}
+                onChange={e => update("mt5Password", e.target.value)}
+                type={showMt5Pass ? "text" : "password"}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><LockIcon sx={{ color: '#38bdf8', fontSize: 22 }} /></InputAdornment>,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowMt5Pass(!showMt5Pass)} sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#38bdf8' } }}>
+                        {showMt5Pass ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }} sx={si('#38bdf8')} />
+            </>
+          )}
+
+          {/* ── OANDA: 2 fields ── */}
+          {selectedBroker === "oanda" && (
+            <>
+              <Box sx={{ p: 2, borderRadius: '14px', background: '#f9731610', border: '1px solid #f9731630' }}>
+                <Typography sx={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', mb: 0.5 }}>
+                  🔑 Get your token at:
+                </Typography>
+                <Typography component="a" href="https://www.oanda.com/account/management-portal" target="_blank" rel="noopener noreferrer"
+                  sx={{ fontSize: '13px', color: '#f97316', fontWeight: 700, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+                  OANDA Account → My Services → Manage API Access →
+                </Typography>
+              </Box>
+              <TextField label="OANDA Account ID" fullWidth autoComplete="off"
+                placeholder="e.g. 101-001-1234567-001"
+                InputLabelProps={{ shrink: true }} value={form.oandaAccountId}
+                onChange={e => update("oandaAccountId", e.target.value)}
+                InputProps={{ startAdornment: <InputAdornment position="start"><AccountCircleIcon sx={{ color: '#f97316', fontSize: 22 }} /></InputAdornment> }}
+                sx={si('#f97316')} />
+              <TextField label="OANDA API Token" fullWidth autoComplete="off"
+                placeholder="Paste your personal access token"
+                InputLabelProps={{ shrink: true }} value={form.oandaToken}
+                onChange={e => update("oandaToken", e.target.value)}
+                InputProps={{ startAdornment: <InputAdornment position="start"><KeyIcon sx={{ color: '#f97316', fontSize: 22 }} /></InputAdornment> }}
+                sx={si('#f97316')} />
+            </>
+          )}
+
+          {/* ── Other MT5 ── */}
+          {selectedBroker === "other" && (
+            <>
+              <Box sx={{ p: 2, borderRadius: '14px', background: '#6366f110', border: '1px solid #6366f130' }}>
+                <Typography sx={{ fontSize: '13px', color: '#a855f7', fontWeight: 700, mb: 0.3 }}>⚠️ MT5 broker — MetaApi coming soon</Typography>
+                <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.5 }}>
+                  Save your credentials now — live sync will be enabled soon. For immediate data, use Deriv or OANDA.
+                </Typography>
+              </Box>
+              <TextField label="Broker Name" fullWidth autoComplete="off"
+                placeholder="e.g. IC Markets, Pepperstone"
+                InputLabelProps={{ shrink: true }} value={form.brokerName}
+                onChange={e => update("brokerName", e.target.value)}
+                InputProps={{ startAdornment: <InputAdornment position="start"><DnsIcon sx={{ color: '#6366f1', fontSize: 22 }} /></InputAdornment> }}
+                sx={si('#6366f1')} />
+              <TextField label="MT5 Account Number" fullWidth autoComplete="off"
+                InputLabelProps={{ shrink: true }} value={form.account}
+                onChange={e => update("account", e.target.value)}
+                InputProps={{ startAdornment: <InputAdornment position="start"><PersonIcon sx={{ color: '#6366f1', fontSize: 22 }} /></InputAdornment> }}
+                sx={si('#6366f1')} />
+              <TextField label="MT5 Password" fullWidth autoComplete="new-password"
+                InputLabelProps={{ shrink: true }} value={form.password}
+                onChange={e => update("password", e.target.value)}
+                type={showPassword ? "text" : "password"}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><LockIcon sx={{ color: '#6366f1', fontSize: 22 }} /></InputAdornment>,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(!showPassword)} sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#6366f1' } }}>
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }} sx={si('#6366f1')} />
+              <TextField label="Server" fullWidth autoComplete="off"
+                placeholder="e.g. ICMarketsSC-Demo"
+                InputLabelProps={{ shrink: true }} value={form.server}
+                onChange={e => update("server", e.target.value)}
+                InputProps={{ startAdornment: <InputAdornment position="start"><DnsIcon sx={{ color: '#6366f1', fontSize: 22 }} /></InputAdornment> }}
+                sx={si('#6366f1')} />
+            </>
+          )}
+        </Box>
+      );
+
       case 1: return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {[
@@ -327,17 +386,19 @@ const SetupWizard: React.FC = () => {
           ].map(f => (
             <Box key={f.key} sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, borderRadius: '16px', background: `${f.color}08`, border: `1px solid ${f.color}20`, '&:hover': { background: `${f.color}12` } }}>
               <Box sx={{ width: 44, height: 44, borderRadius: '12px', background: `${f.color}15`, border: `1px solid ${f.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '20px' }}>{f.emoji}</Box>
-              <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Box sx={{ flex: 1 }}>
                 <Typography sx={{ fontSize: '16px', fontWeight: 700, color: 'white', mb: 0.2 }}>{f.label}</Typography>
                 <Typography sx={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>{f.desc}</Typography>
               </Box>
-              <TextField type="number" size="small" value={(form as any)[f.key]} onChange={e => update(f.key, e.target.value)}
+              <TextField type="number" size="small" value={(form as any)[f.key]}
+                onChange={e => update(f.key, e.target.value)}
                 InputProps={{ endAdornment: <InputAdornment position="end"><Typography sx={{ color: f.color, fontSize: '14px', fontWeight: 700 }}>%</Typography></InputAdornment> }}
                 sx={{ width: 100, '& .MuiOutlinedInput-root': { color: f.color, fontFamily: '"Roboto Mono",monospace', fontWeight: 800, fontSize: '18px', borderRadius: '12px', background: `${f.color}10`, '& fieldset': { borderColor: `${f.color}30` }, '&:hover fieldset': { borderColor: `${f.color}60` }, '&.Mui-focused fieldset': { borderColor: f.color } }, '& input': { textAlign: 'center', color: f.color, fontFamily: '"Roboto Mono",monospace', fontWeight: 800, padding: '9px 4px' } }} />
             </Box>
           ))}
         </Box>
       );
+
       case 2: return (
         <Box>
           <ToggleRow icon="📧" label="Email Alerts"    desc="Detailed trade reports & summaries"  checked={form.email}    onChange={v => update("email",    v)} color="#22c55e" />
@@ -345,6 +406,7 @@ const SetupWizard: React.FC = () => {
           <ToggleRow icon="💬" label="SMS Alerts"      desc="Critical SMS warnings on your phone" checked={form.sms}      onChange={v => update("sms",      v)} color="#a855f7" />
         </Box>
       );
+
       case 3: return (
         <Box>
           <Box sx={{ mb: 3, p: 2, borderRadius: '14px', background: `${planInfo.color}10`, border: `1px solid ${planInfo.color}30`, display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -356,11 +418,12 @@ const SetupWizard: React.FC = () => {
               </Typography>
             </Box>
           </Box>
-          <ToggleRow icon="🧠" label="Emotional Detection" desc="Detect overtrading & revenge trading patterns"    checked={form.emotionalAI}  onChange={v => update("emotionalAI",  v)} color="#22c55e" />
-          <ToggleRow icon="🔮" label="Predictive Alerts"   desc="AI-powered early warning signals"                checked={form.predictiveAI} onChange={v => update("predictiveAI", v)} color="#38bdf8" />
-          <ToggleRow icon="⚡" label="Risk Optimizer"      desc="Automatically suggest position size adjustments"  checked={form.optimizerAI}  onChange={v => update("optimizerAI",  v)} color="#a855f7" />
+          <ToggleRow icon="🧠" label="Emotional Detection" desc="Detect overtrading & revenge trading" checked={form.emotionalAI}  onChange={v => update("emotionalAI",  v)} color="#22c55e" />
+          <ToggleRow icon="🔮" label="Predictive Alerts"   desc="AI-powered early warning signals"    checked={form.predictiveAI} onChange={v => update("predictiveAI", v)} color="#38bdf8" />
+          <ToggleRow icon="⚡" label="Risk Optimizer"      desc="Suggest position size adjustments"   checked={form.optimizerAI}  onChange={v => update("optimizerAI",  v)} color="#a855f7" />
         </Box>
       );
+
       default: return null;
     }
   };
@@ -368,19 +431,28 @@ const SetupWizard: React.FC = () => {
   const current = steps[activeStep];
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(ellipse at 10% 0%,rgba(56,189,248,0.1),transparent 50%),radial-gradient(ellipse at 90% 100%,rgba(168,85,247,0.1),transparent 50%),#080e1a', p: { xs: 2, md: 3 } }}>
-      <Box sx={{ width: '100%', maxWidth: 560, borderRadius: '28px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.5)' }}>
+    <Box sx={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'radial-gradient(ellipse at 10% 0%,rgba(56,189,248,0.1),transparent 50%),radial-gradient(ellipse at 90% 100%,rgba(168,85,247,0.1),transparent 50%),#080e1a',
+      p: { xs: 2, md: 3 },
+    }}>
+      <Box sx={{ width: '100%', maxWidth: 580, borderRadius: '28px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.5)' }}>
         <Box sx={{ height: '3px', background: `linear-gradient(90deg,transparent,${planInfo.color},${current.color},transparent)` }} />
 
         <Box sx={{ px: { xs: 3, md: 4 }, pt: 4, pb: 3, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Box sx={{ width: 4, height: 32, borderRadius: 2, background: 'linear-gradient(180deg,#38bdf8,#a855f7)' }} />
-              <Typography sx={{ fontSize: { xs: '22px', sm: '28px' }, fontWeight: 800, background: 'linear-gradient(90deg,#38bdf8,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em' }}>RiskGuardian Setup</Typography>
+              <Typography sx={{ fontSize: { xs: '22px', sm: '28px' }, fontWeight: 800, background: 'linear-gradient(90deg,#38bdf8,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em' }}>
+                RiskGuardian Setup
+              </Typography>
             </Box>
-            <Chip label={`${planInfo.emoji} ${planInfo.label}`} size="small" sx={{ background: `${planInfo.color}18`, border: `1px solid ${planInfo.color}40`, color: planInfo.color, fontWeight: 700, fontSize: '12px' }} />
+            <Chip label={`${planInfo.emoji} ${planInfo.label}`} size="small"
+              sx={{ background: `${planInfo.color}18`, border: `1px solid ${planInfo.color}40`, color: planInfo.color, fontWeight: 700, fontSize: '12px' }} />
           </Box>
-          <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: { xs: '13px', sm: '16px' }, ml: '20px' }}>Let's get your trading platform configured</Typography>
+          <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '14px', ml: '20px', mt: 0.5 }}>
+            Let's get your trading platform configured
+          </Typography>
         </Box>
 
         <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, pt: 3, pb: 2 }}>
@@ -392,7 +464,9 @@ const SetupWizard: React.FC = () => {
                   <Box sx={{ width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s', background: done ? s.color : active ? `${s.color}20` : 'rgba(255,255,255,0.05)', border: `2px solid ${done || active ? s.color : 'rgba(255,255,255,0.1)'}`, boxShadow: active ? `0 0 16px ${s.color}60` : 'none', fontSize: done ? '14px' : '16px' }}>
                     {done ? <Check sx={{ fontSize: 16, color: 'white' }} /> : <span>{s.icon}</span>}
                   </Box>
-                  <Typography sx={{ fontSize: '13px', fontWeight: active ? 700 : 500, color: active ? s.color : done ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.25)' }}>{s.label}</Typography>
+                  <Typography sx={{ fontSize: '13px', fontWeight: active ? 700 : 500, color: active ? s.color : done ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.25)' }}>
+                    {s.label}
+                  </Typography>
                 </Box>
               );
             })}
@@ -404,10 +478,23 @@ const SetupWizard: React.FC = () => {
 
         <Box sx={{ px: { xs: 2, md: 4 }, pb: 2.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2.5, borderRadius: '18px', background: `${current.color}08`, border: `1px solid ${current.color}20` }}>
-            <Box sx={{ width: 52, height: 52, borderRadius: '15px', background: `linear-gradient(135deg,${current.color}40,${current.color}20)`, border: `1px solid ${current.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>{current.icon}</Box>
+            <Box sx={{ width: 52, height: 52, borderRadius: '15px', background: `linear-gradient(135deg,${current.color}40,${current.color}20)`, border: `1px solid ${current.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>
+              {current.icon}
+            </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography sx={{ fontSize: { xs: '15px', sm: '20px' }, fontWeight: 800, color: 'white' }}>{['Broker Connection','Risk Management','Alert Notifications','AI Monitoring'][activeStep]}</Typography>
-              <Typography sx={{ fontSize: { xs: '12px', sm: '15px' }, color: 'rgba(255,255,255,0.45)', mt: 0.3 }}>{['Connect your trading account','Set your trading risk limits','Choose how you want to be notified','Enable intelligent trade monitoring'][activeStep]}</Typography>
+              <Typography sx={{ fontSize: '20px', fontWeight: 800, color: 'white' }}>
+                {['Broker Connection','Risk Management','Alert Notifications','AI Monitoring'][activeStep]}
+              </Typography>
+              <Typography sx={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', mt: 0.3 }}>
+                {[
+                  selectedBroker === 'deriv' ? 'Connect your Deriv MT5 account'
+                  : selectedBroker === 'oanda' ? 'Connect your OANDA account'
+                  : 'Connect your MT5 broker account',
+                  'Set your trading risk limits',
+                  'Choose how you want to be notified',
+                  'Enable intelligent trade monitoring',
+                ][activeStep]}
+              </Typography>
             </Box>
             <Box sx={{ px: 2, py: 0.8, borderRadius: '10px', background: `${current.color}15`, border: `1px solid ${current.color}30` }}>
               <Typography sx={{ fontSize: '14px', fontWeight: 800, color: current.color }}>{activeStep + 1}/{steps.length}</Typography>
@@ -415,22 +502,30 @@ const SetupWizard: React.FC = () => {
           </Box>
         </Box>
 
-        <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, pb: 3 }}>{renderStep()}</Box>
+        <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, pb: 3 }}>
+          {renderStep()}
+        </Box>
 
-        <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, pb: 4, pt: 1, display: 'flex', justifyContent: 'space-between', gap: 2, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, pb: 4, pt: 1, display: 'flex', gap: 2, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           <Button disabled={activeStep === 0 || loading} onClick={() => setActiveStep(p => p - 1)}
-            sx={{ px: 3, py: 1.3, borderRadius: '14px', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 600, textTransform: 'none', '&:hover': { background: 'rgba(255,255,255,0.05)', color: 'white' }, '&:disabled': { color: 'rgba(255,255,255,0.2)' } }}>
+            sx={{ px: 3, py: 1.3, borderRadius: '14px', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', fontWeight: 600, textTransform: 'none', '&:hover': { background: 'rgba(255,255,255,0.05)', color: 'white' }, '&:disabled': { color: 'rgba(255,255,255,0.2)', borderColor: 'rgba(255,255,255,0.05)' } }}>
             ← Back
           </Button>
+
           {activeStep === steps.length - 1 ? (
             <Button onClick={handleFinish} disabled={loading}
               sx={{ flex: 1, py: 1.4, borderRadius: '14px', background: `linear-gradient(135deg,${planInfo.color},#2563eb)`, color: 'white', fontWeight: 800, fontSize: '16px', textTransform: 'none', boxShadow: `0 6px 24px ${planInfo.color}40`, '&:hover': { transform: 'translateY(-2px)' }, '&:disabled': { background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)' } }}>
-              {loading ? <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}><CircularProgress size={18} sx={{ color: 'white' }} /><span>{loadingMsg || 'Processing...'}</span></Box>
-                : plan === 'free' ? '🚀 Launch RiskGuardian' : `🚀 Launch & Pay for ${planInfo.label}`}
+              {loading ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <CircularProgress size={18} sx={{ color: 'white' }} />
+                  <span>{loadingMsg || 'Processing...'}</span>
+                </Box>
+              ) : plan === 'free' ? '🚀 Launch RiskGuardian' : `🚀 Launch & Pay for ${planInfo.label}`}
             </Button>
           ) : (
             <Button onClick={() => setActiveStep(p => p + 1)}
-              sx={{ flex: 1, py: 1.4, borderRadius: '14px', background: `linear-gradient(135deg,${current.color}cc,${current.color}88)`, color: 'white', fontWeight: 800, fontSize: '16px', textTransform: 'none', '&:hover': { transform: 'translateY(-2px)' } }}>
+              disabled={activeStep === 0 && !step0Valid()}
+              sx={{ flex: 1, py: 1.4, borderRadius: '14px', background: `linear-gradient(135deg,${current.color}cc,${current.color}88)`, color: 'white', fontWeight: 800, fontSize: '16px', textTransform: 'none', boxShadow: `0 6px 20px ${current.color}30`, '&:hover': { transform: 'translateY(-2px)' }, '&:disabled': { background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)', boxShadow: 'none' } }}>
               Continue →
             </Button>
           )}
